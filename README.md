@@ -71,6 +71,17 @@ Architectural recommendation. Output: Recommendation → Reasoning → Tradeoffs
 /advise how should I structure multi-turn Claude conversations?
 ```
 
+### `/fullstack`
+
+Run all 7 agents in dependency order, then synthesize cross-cutting findings that no single agent would catch alone — schema/RLS mismatches, type drift between frontend and backend, secrets present in preview but missing in production, etc.
+
+```
+/fullstack
+/fullstack STACK: auth=NextAuth
+```
+
+Output: per-agent audit sections → Cross-cutting findings → Rollup table with total counts and recommended fix order.
+
 ## Multi-agent coordination
 
 For requests spanning multiple layers, the orchestrator (CLAUDE.md) runs agents in dependency order:

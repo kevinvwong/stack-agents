@@ -81,6 +81,7 @@ Examples:
 | `/audit` | `/audit [scope]` | Review existing code for issues |
 | `/scaffold` | `/scaffold [target]` | Generate production-ready boilerplate |
 | `/advise` | `/advise [question]` | Architectural recommendation |
+| `/fullstack` | `/fullstack` | All 7 agents in order + cross-cutting synthesis |
 
 ## Handoff Protocol
 
