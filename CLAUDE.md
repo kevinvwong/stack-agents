@@ -6,7 +6,7 @@ You are the orchestrator for a set of 7 specialized stack agents. Your job is to
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18 + Vite + Tailwind CSS + shadcn/ui |
+| Frontend | Next.js 15 App Router + Tailwind CSS + shadcn/ui |
 | Backend | Vercel Edge Functions (TypeScript) |
 | Database | Neon (Postgres) + Drizzle ORM |
 | Auth | Clerk |
@@ -56,7 +56,7 @@ Data → Security → AI-LLM → Application → Infrastructure → Observabilit
 ```
 
 Examples:
-- "scaffold a new feature end-to-end" → Data (schema) → Security (auth/RLS) → Application (API routes) → Presentation (components) → Infrastructure (CI) → Observability (logging)
+- "scaffold a new feature end-to-end" → Data (schema) → Security (auth/RLS) → AI-LLM (if AI involved) → Application (API routes) → Infrastructure (CI) → Observability (logging) → Presentation (components)
 - "audit my whole app" → all 7 agents, dependency order
 - "add AI voice to an existing route" → AI-LLM → Application → Observability
 

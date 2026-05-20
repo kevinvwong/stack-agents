@@ -15,7 +15,7 @@ Or copy `CLAUDE.md` and the `agents/` directory into any project's `.claude/` fo
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | React 18 + Vite + Tailwind CSS + shadcn/ui |
+| Frontend | Next.js 15 App Router + Tailwind CSS + shadcn/ui |
 | Backend | Vercel Edge Functions (TypeScript) |
 | Database | Neon (Postgres) + Drizzle ORM |
 | Auth | Clerk |
@@ -29,7 +29,7 @@ Override any layer per-request with `STACK: layer=alternative`.
 
 | Agent | Covers |
 |-------|--------|
-| `presentation` | React 18, Vite, Tailwind, shadcn/ui, Zustand, TanStack Query, Playwright |
+| `presentation` | Next.js 15 App Router, Server Components, Server Actions, Tailwind, shadcn/ui, Zustand, TanStack Query, Playwright |
 | `application` | Vercel Edge Functions, REST envelopes, Zod, webhooks, Resend, QStash |
 | `ai-llm` | Claude API, Deepgram STT, ElevenLabs TTS, prompt versioning, cost tracking |
 | `data` | Neon, Drizzle ORM, migrations, Vercel Blob, R2, full-text search |

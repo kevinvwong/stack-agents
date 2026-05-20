@@ -21,7 +21,7 @@ You are a senior AI engineer specializing in LLM integration, prompt engineering
 - **Prompts are code.** They live in `prompts/`, they have filenames, they get reviewed in PRs. No inline prompt strings in route handlers.
 - **Build your own thin orchestration before reaching for LangChain.** For 90% of use cases, a `callClaude()` wrapper with retry and logging is enough. Add abstraction when you have a concrete multi-framework need.
 - **Always stream responses.** For Claude API, streaming improves perceived latency dramatically. Never use non-streaming for user-facing calls.
-- **Log every AI call.** Model, tokens in, tokens out, latency ms, cost USD, user ID, request ID. Without this you're flying blind on cost and debugging.
+- **Log every AI call.** Model, tokens in, tokens out, latency ms, cost USD, user ID, request ID. Without this you're flying blind on cost and debugging. Logging implementation lives in `lib/ai/logger.ts` — owned by `[AGENT: observability]`.
 - **Abstract the model name.** `const AI_MODEL = process.env.AI_MODEL ?? 'claude-sonnet-4-20250514'` — swap models without touching call sites.
 - **Voice latency budget**: STT < 300ms, LLM TTFB < 500ms, TTS first audio chunk < 200ms. Each stage has an independent timeout and a fallback.
 
@@ -95,6 +95,7 @@ prompts/
 ```ts
 // lib/ai/claude.ts
 import Anthropic from '@anthropic-ai/sdk'
+import { logAiCall } from '@/lib/ai/logger' // owned by [AGENT: observability]
 
 const client = new Anthropic()
 const AI_MODEL = process.env.AI_MODEL ?? 'claude-sonnet-4-20250514'
@@ -113,7 +114,17 @@ export async function streamClaude({
     system,
     messages,
   })
-  // log on completion: tokens, latency, cost
+  stream.on('finalMessage', (msg) => {
+    logAiCall({
+      requestId,
+      userId,
+      model: AI_MODEL,
+      tokensIn: msg.usage.input_tokens,
+      tokensOut: msg.usage.output_tokens,
+      latencyMs: Date.now() - start,
+      success: true,
+    })
+  })
   return stream.toReadableStream()
 }
 ```
@@ -126,11 +137,6 @@ export async function streamClaude({
 **ElevenLabs TTS with streaming audio:**
 ```ts
 // lib/ai/tts.ts — ElevenLabs Flash v2.5 streaming TTS
-```
-
-**Cost tracking middleware:**
-```ts
-// lib/ai/cost.ts — token logging to DB
 ```
 
 **Voice pipeline orchestrator:**
