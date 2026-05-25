@@ -1,0 +1,38 @@
+{
+  "name": "kwong",
+  "owner": { "name": "Kevin Wong" },
+  "metadata": {
+    "description": "Kevin Wong's Claude Code artifacts — agents, skills, and commands spanning web stack engineering, game design, GitHub workflow, GTLI content pipeline, UX persona review, JGCC educational quality auditing, and security/fuzzing tooling",
+    "version": "1.3.0"
+  },
+  "plugins": [
+    {
+      "name": "kwong-stack-agents",
+      "source": "./plugins/kwong-stack-agents",
+      "description": "33 specialist agents across 8 engineering domains: Web Stack, Game Design, GitHub, Quality, Research, Product, Cross-cutting, and Meta. Each agent has /audit, /scaffold, and /advise. Master orchestrator routes in dependency order.",
+      "category": "productivity",
+      "tags": ["web-stack", "game-design", "github", "engineering", "orchestration", "next-js", "vercel"]
+    },
+    {
+      "name": "kwong-agents",
+      "source": "./plugins/kwong-agents",
+      "description": "33 agents: GTLI content pipeline, UX persona reviewers, JGCC educational quality auditors, AI prompt engineer, auth auditors, and design team",
+      "category": "productivity",
+      "tags": ["education", "ux", "gtli", "content-pipeline", "jgcc"]
+    },
+    {
+      "name": "kwong-commands",
+      "source": "./plugins/kwong-commands",
+      "description": "Slash commands for both agent sets — JGCC audit, UX review, doc audit, security baseline, compile-marketplace, stack orchestration, game/github panels, sprint management, and project setup. Requires kwong-agents, kwong-stack-agents, or kwong-skills.",
+      "category": "productivity",
+      "tags": ["education", "jgcc", "orchestration", "web-stack", "sprint", "engineering"]
+    },
+    {
+      "name": "kwong-skills",
+      "source": "./plugins/kwong-skills",
+      "description": "79 skills from the ernest repo covering fuzzing, security auditing, static analysis, blockchain vulnerability scanning, and development tooling",
+      "category": "security",
+      "tags": ["fuzzing", "audit", "static-analysis", "blockchain", "testing"]
+    }
+  ]
+}

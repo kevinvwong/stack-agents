@@ -1,0 +1,8 @@
+{
+  "name": "kwong-stack-agents",
+  "version": "1.0.0",
+  "description": "33 specialist Claude Code agents across 8 engineering domains: Web Stack (data, security, ai-llm, application, infrastructure, observability, presentation), Game Design (game-design, narrative, level-design, game-ux, game-tech, production), GitHub (gh-repo, gh-actions, gh-issues, gh-prs, gh-releases, gh-docs), Quality (web-qa, accessibility, performance, game-qa), Research (user-research, usability-testing, focus-group, expert-review), Product (product, analytics), Cross-cutting (i18n, finops), and Meta (sprint-assembler, project-setup). Includes opinionated /audit checklists, /scaffold templates, and /advise mode per agent. Master orchestrator routes all requests in dependency order.",
+  "author": { "name": "Kevin Wong" },
+  "repository": "https://github.com/kwong318/kwong-claude-marketplace",
+  "license": "MIT"
+}

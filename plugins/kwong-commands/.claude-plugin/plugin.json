@@ -1,0 +1,8 @@
+{
+  "name": "kwong-commands",
+  "version": "1.2.0",
+  "description": "Slash commands: jgcc-review (full JGCC audit suite), ux-review (5-persona UX sweep + synthesis), doc-audit (documentation assessment pass), security-baseline (semgrep/codeql/insecure-defaults/supply-chain sweep), compile-marketplace (self-updating marketplace rebuild). Stack-agents commands: orchestrate (master orchestrator), audit, scaffold, advise, fullstack (web stack), panel:game, panel:github, setup:project, setup:hooks, sprint:assemble, sprint:dissolve, sprint:list, sprint:status. Most commands require kwong-agents, kwong-stack-agents, or kwong-skills.",
+  "author": { "name": "Kevin Wong" },
+  "repository": "https://github.com/kwong318/kwong-claude-marketplace",
+  "license": "MIT"
+}

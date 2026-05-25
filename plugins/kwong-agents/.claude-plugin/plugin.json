@@ -1,0 +1,8 @@
+{
+  "name": "kwong-agents",
+  "version": "1.1.0",
+  "description": "33 agents: GTLI content pipeline (assessment, lesson, orchestrator, qa, video-script), UX persona reviewers (ux-admin, ux-coordinator, ux-director, ux-learner, ux-synthesis), course analysis tools (doc-writer, simulated-user-panel, ux-ui-reviewer), JGCC educational quality auditors (11 jgcc-* agents), AI prompt engineer, auth auditors (nextauth-auditor, clerk-auditor), and design team (visual-designer, interaction-designer, cognitive-psychologist, behavioral-psychologist, information-architect, design-synthesis)",
+  "author": { "name": "Kevin Wong" },
+  "repository": "https://github.com/kwong318/kwong-claude-marketplace",
+  "license": "MIT"
+}

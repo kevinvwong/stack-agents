@@ -1,0 +1,8 @@
+{
+  "name": "kwong-skills",
+  "version": "1.0.0",
+  "description": "79 skills from the ernest repo: fuzzing (aflpp, libfuzzer, libafl, cargo-fuzz, atheris, ruzzy, ossfuzz), vulnerability scanning (semgrep, codeql, trailmark, algorand/cairo/cosmos/solana/substrate/ton scanners), security auditing (audit-context-building, audit-prep-assistant, supply-chain-risk-auditor, insecure-defaults, constant-time-analysis), and development tooling (gh-cli, git-cleanup, modern-python, frontend-design, web-design-guidelines)",
+  "author": { "name": "Kevin Wong" },
+  "repository": "https://github.com/kwong318/kwong-claude-marketplace",
+  "license": "MIT"
+}
