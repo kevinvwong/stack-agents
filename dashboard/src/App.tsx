@@ -1,8 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { AgentGraph } from './components/AgentGraph'
 import { AgentDetail } from './components/AgentDetail'
 import { ProjectDashboard } from './components/ProjectDashboard'
-import { loadAgents, buildEdges, FAMILY_COLORS, type AgentFamily } from './data/agents'
+import { loadAgents, buildEdges, FAMILY_COLORS, type AgentFamily, type AgentMeta, type Edge } from './data/agents'
 
 type Tab = 'graph' | 'projects'
 
@@ -14,9 +14,15 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('graph')
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const [familyFilter, setFamilyFilter] = useState<AgentFamily | null>(null)
+  const [allAgents, setAllAgents] = useState<AgentMeta[]>([])
+  const [allEdges, setAllEdges] = useState<Edge[]>([])
 
-  const allAgents = useMemo(() => loadAgents(), [])
-  const allEdges = useMemo(() => buildEdges(allAgents), [allAgents])
+  useEffect(() => {
+    loadAgents().then((agents) => {
+      setAllAgents(agents)
+      setAllEdges(buildEdges(agents))
+    })
+  }, [])
 
   const agents = useMemo(
     () => (familyFilter ? allAgents.filter((a) => a.family === familyFilter) : allAgents),

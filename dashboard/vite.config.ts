@@ -19,4 +19,13 @@ export default defineConfig({
       },
     },
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('@xyflow')) return 'reactflow'
+        },
+      },
+    },
+  },
 })
