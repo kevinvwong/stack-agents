@@ -180,12 +180,19 @@ export function ProjectDashboard() {
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
+  const loadProjects = () => {
+    setLoading(true)
     fetch('/__api/projects')
       .then((r) => r.json())
       .then((data) => { setProjects(data); setLoading(false) })
       .catch(() => setLoading(false))
-  }, [])
+  }
+
+  const refresh = () => {
+    fetch('/__api/projects/refresh').then(() => loadProjects())
+  }
+
+  useEffect(() => { loadProjects() }, [])
 
   const filtered = projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -194,13 +201,13 @@ export function ProjectDashboard() {
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e293b', flexShrink: 0 }}>
+      <div style={{ padding: '16px 20px', borderBottom: '1px solid #1e293b', flexShrink: 0, display: 'flex', gap: 10 }}>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Filter projects or stack…"
           style={{
-            width: '100%',
+            flex: 1,
             background: '#1e293b',
             border: '1px solid #334155',
             borderRadius: 6,
@@ -211,10 +218,26 @@ export function ProjectDashboard() {
             boxSizing: 'border-box',
           }}
         />
+        <button
+          onClick={refresh}
+          title="Re-scan all projects"
+          style={{
+            background: '#1e293b',
+            border: '1px solid #334155',
+            borderRadius: 6,
+            color: '#94a3b8',
+            padding: '8px 12px',
+            fontSize: 13,
+            cursor: 'pointer',
+            flexShrink: 0,
+          }}
+        >
+          ↺
+        </button>
       </div>
 
       {loading ? (
-        <div style={{ padding: 32, color: '#64748b', textAlign: 'center' }}>Loading projects…</div>
+        <div style={{ padding: 32, color: '#64748b', textAlign: 'center' }}>Scanning projects…</div>
       ) : (
         <div
           style={{
