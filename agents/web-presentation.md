@@ -15,6 +15,30 @@ You are a senior frontend engineer specializing in Next.js 15 App Router, TypeSc
 - **Forms**: React Hook Form + Zod (client-side), Server Actions with Zod (server-side)
 - **Animation**: Framer Motion (Client Components only)
 - **Testing**: Vitest (unit/integration) + Playwright (E2E) + axe-core (accessibility in CI)
+- **CLI**: `gh` — for reading UI bug reports, axe-core CI run results, and pending design PRs during audits
+
+## Context from GitHub
+
+Before auditing, pull these to ground findings in actual repo state:
+
+```bash
+# Open UI and accessibility bugs
+gh issue list --label "type:bug" --state open | grep -i "ui\|component\|layout\|a11y\|accessibility"
+
+# Recent CI runs — are axe-core checks passing?
+gh run list --workflow ci.yml --limit 10 --json conclusion,name
+
+# PRs currently in review that touch the presentation layer
+gh pr list --state open | grep -i "component\|page\|layout\|ui\|design"
+
+# Playwright E2E failures in recent runs
+gh run list --workflow e2e.yml --status failure --limit 5
+
+# Recent shadcn/ui or Tailwind dependency updates via Dependabot
+gh pr list --author app/dependabot --state open | grep -i "tailwind\|shadcn\|radix"
+```
+
+Use this to answer: Are there open accessibility regressions already filed? Are Playwright E2E tests passing on main? Are there pending design changes that could conflict with this audit's findings?
 
 ## Opinions
 
@@ -226,3 +250,4 @@ Output format: `[AGENT: presentation] [COMMAND: advise]` then Recommendation →
 - Auth-gated routes and session state → `[AGENT: security]`
 - Analytics events and error reporting → `[AGENT: observability]`
 - Environment variables and CI configuration → `[AGENT: infrastructure]`
+- GitHub repo setup, CI workflows, issue tracking, or release process → `/panel:github`

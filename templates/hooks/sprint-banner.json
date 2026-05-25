@@ -1,0 +1,19 @@
+{
+  "_recipe": "sprint-banner",
+  "_description": "Print the active sprint name at session start if a SPRINT.md exists in .claude/.",
+  "_requires": "bash, grep, jq",
+  "_test": "echo '{}' | bash -c 'f=\".claude/SPRINT.md\"; if [ -f \"$f\" ]; then name=$(grep -m1 \"^# Sprint:\" \"$f\" | sed \"s/^# Sprint: //\"); echo \"{\\\"systemMessage\\\": \\\"Sprint: $name\\\"}\"; fi'",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=\".claude/SPRINT.md\"; if [ -f \"$f\" ]; then name=$(grep -m1 \"^# Sprint:\" \"$f\" | sed \"s/^# Sprint: //\"); echo \"{\\\"systemMessage\\\": \\\"Active sprint: $name\\\"}\"; fi 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

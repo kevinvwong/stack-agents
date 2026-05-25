@@ -1,0 +1,20 @@
+{
+  "_recipe": "log-bash",
+  "_description": "Log every bash command Claude runs to ~/.claude/bash-log.txt with a timestamp.",
+  "_requires": "jq, date",
+  "_test": "echo '{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"ls\"}}' | jq -r '\"[\" + (now | strftime(\"%Y-%m-%dT%H:%M:%SZ\")) + \"] \" + .tool_input.command' >> /tmp/claude-hook-test.txt",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\"[\" + (now | strftime(\"%Y-%m-%dT%H:%M:%SZ\")) + \"] \" + .tool_input.command' >> ~/.claude/bash-log.txt 2>/dev/null || true",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

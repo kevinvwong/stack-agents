@@ -1,0 +1,21 @@
+{
+  "_recipe": "format-on-write",
+  "_description": "Run prettier after Claude writes or edits a file. Skips files prettier doesn't handle.",
+  "_requires": "prettier installed (npx prettier or local node_modules)",
+  "_test": "echo '{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"test.ts\"}}' | jq -r '.tool_input.file_path' | { read -r f; npx prettier --write \"$f\" --ignore-unknown; }",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; npx prettier --write \"$f\" --ignore-unknown; } 2>/dev/null || true",
+            "timeout": 30,
+            "statusMessage": "Formatting..."
+          }
+        ]
+      }
+    ]
+  }
+}

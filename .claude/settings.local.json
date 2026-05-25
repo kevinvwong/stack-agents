@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem *)",
+      "Bash(grep -v '^\\\\.$')",
+      "Skill(vercel:marketplace)",
+      "Skill(update-config)",
+      "Bash(winget install *)",
+      "Bash(Copy-Item \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\sprint\\\\sprint-assemble.md\" \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\.claude\\\\commands\\\\sprint-assemble.md\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\sprint\\\\sprint-list.md\" \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\.claude\\\\commands\\\\sprint-list.md\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\sprint\\\\sprint-status.md\" \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\.claude\\\\commands\\\\sprint-status.md\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\sprint\\\\sprint-dissolve.md\" \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\.claude\\\\commands\\\\sprint-dissolve.md\")",
+      "Bash(Copy-Item \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\github\\\\github-panel.md\" \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\.claude\\\\commands\\\\panel-github.md\")",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(chmod +x *)",
+      "Bash(bash .claude/hooks/wrap-check.sh)",
+      "Bash(bash .claude/hooks/session-start.sh)",
+      "Bash(cp .claude/commands/wrap.md .claude/commands/session-close.md)",
+      "Bash(rm .claude/commands/wrap.md)"
+    ]
+  }
+}
