@@ -192,7 +192,10 @@ export function ProjectDashboard() {
     fetch('/__api/projects/refresh').then(() => loadProjects())
   }
 
-  useEffect(() => { loadProjects() }, [])
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadProjects()
+  }, [])
 
   const filtered = projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||

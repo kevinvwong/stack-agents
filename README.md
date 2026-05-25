@@ -1,115 +1,131 @@
 # stack-agents
 
-Two panels of specialized Claude Code agents: **Web Stack** (7 agents) and **Game Design** (6 agents), plus slash commands to audit, scaffold, advise, and run full-panel reviews.
-
-## Install
-
-```
-/plugin marketplace add kwong318/stack-agents
-/plugin install stack-agents@kwong318
-```
-
-Or copy `CLAUDE.md` and the `agents/` directory into any project's `.claude/` folder.
+A system of 33 specialist Claude Code agents across 8 domains, a master orchestrator, and a local dashboard for visualizing agents and your project portfolio.
 
 ---
 
-## Web Stack
+## What it is
 
-Seven agents covering every layer of a modern TypeScript web stack.
+**Agent system** — specialist `.md` agents invoked through Claude Code slash commands. Each agent has an opinionated `/audit` checklist, `/scaffold` templates, and a `/advise` mode. The master orchestrator (`CLAUDE.md`) routes requests to the right agents in dependency order and synthesizes cross-cutting findings.
 
-| Agent | Covers |
-|-------|--------|
-| `presentation` | Next.js 15 App Router, Server Components, Server Actions, Tailwind, shadcn/ui, Zustand, TanStack Query, Playwright |
-| `application` | Vercel Edge Functions, REST envelopes, Zod, webhooks, Resend, QStash |
-| `ai-llm` | Claude API, Deepgram STT, ElevenLabs TTS, prompt versioning, cost tracking |
-| `data` | Neon, Drizzle ORM, migrations, Vercel Blob, R2, full-text search |
-| `infrastructure` | Vercel, GitHub Actions, secrets, feature flags, pnpm workspaces |
-| `security` | Clerk, RBAC, Upstash rate limiting, RLS, CSP/HSTS headers |
-| `observability` | Sentry, Axiom, Vercel Analytics, AI call logging, alerting |
+**Dashboard** — a local Vite + React app that renders the agent graph (nodes, dependency chains, handoff edges), lets you browse agent specs, and shows a project explorer with git status, stack detection, and open GitHub issues across all your repos.
 
-**Default stack** — override any layer per-request with `STACK: layer=alternative`:
+---
+
+## Agent Families
+
+| Family | Agents | Covers |
+|--------|--------|--------|
+| **Web Stack** | 7 | Next.js, Drizzle/Neon, Clerk, Claude API, Vercel, Sentry, React |
+| **Game Design** | 6 | Mechanics, narrative, level design, UX, tech architecture, production |
+| **GitHub** | 6 | Branch protection, Actions, issues, PRs, releases, docs |
+| **Quality** | 4 | Playwright E2E, Vitest, WCAG accessibility, Core Web Vitals |
+| **Research** | 4 | User interviews, usability testing, focus groups, heuristic review |
+| **Product** | 2 | PRDs, RICE prioritization, OKRs, PostHog analytics |
+| **Cross-cutting** | 2 | next-intl i18n, AI/infra cost tracking (finops) |
+| **Meta** | 2 | Sprint assembler, project setup |
+
+### Web Stack dependency chain
+
+```
+data → security → ai-llm → application → infrastructure → observability → presentation
+```
+
+### Default stack (override with `STACK: key=value`)
 
 | Layer | Default |
 |-------|---------|
-| Frontend | Next.js 15 App Router + Tailwind CSS + shadcn/ui |
-| Backend | Vercel Edge Functions (TypeScript) |
+| Frontend | Next.js 15 App Router + Tailwind CSS 4 |
+| Backend | Vercel Edge Functions (TypeScript strict) |
 | Database | Neon (Postgres) + Drizzle ORM |
 | Auth | Clerk |
-| AI | Anthropic Claude API + Deepgram (STT) + ElevenLabs (TTS) |
-| CI/CD | GitHub Actions + Vercel Preview Deployments |
-| Observability | Sentry + Axiom + Vercel Analytics |
+| Cache | Upstash Redis |
+| AI | Anthropic Claude API + ElevenLabs TTS + Deepgram STT |
+| Analytics | PostHog + Sentry |
 
 ---
 
-## Game Design
+## Dashboard
 
-Six agents covering the full game design discipline stack. Engine-agnostic by default — override with `ENGINE: Godot | Unity | Unreal | Web`.
+A local interactive graph of all agents, dependency chains, and handoff edges — plus a project explorer.
 
-| Agent | Covers |
-|-------|--------|
-| `game-design` | Core mechanics, systems design, game loop, balance, design pillars |
-| `narrative` | Story structure, dialogue systems, branching narrative, lore |
-| `level-design` | Spaces, pacing, encounter design, player flow, beat maps |
-| `game-ux` | Controls, HUD, feedback, accessibility (Game Accessibility Guidelines), onboarding |
-| `game-tech` | ECS architecture, state machines, save/load, behavior trees, asset pipeline |
-| `production` | Scope, milestones (Alpha/Beta/Gold), playtesting protocols, risk register, release checklist |
+```bash
+cd dashboard
+npm install
+npm run dev
+# → http://localhost:5173
+```
+
+- **Agent Graph tab** — 33 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
+- **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, open sprints, and lazy-loaded GitHub issues.
 
 ---
 
 ## Commands
 
-### `/audit [scope]`
-
-Review existing code or design documents. Output: findings grouped Critical / High / Medium / Low with checkboxes, why-it-matters, and actionable fix.
+### Orchestrator (works from any project)
 
 ```
-/audit                    # full-stack — all web agents
-/audit auth
-/audit database schema
-/audit GDD                # routes to game agents
-/audit level-design
+/orchestrate audit my auth setup
+/orchestrate scaffold a webhook handler
+/orchestrate full web stack
 ```
 
-### `/scaffold [target]`
+Routes requests to the correct agent(s), emits output in dependency order, synthesizes cross-cutting findings after multi-agent runs.
 
-Generate production-ready boilerplate or design document templates. Output: files/documents in dependency order, setup steps, required env vars.
+### Web Stack
 
-```
-/scaffold new feature
-/scaffold webhook handler
-/scaffold game feature "crafting system"
-/scaffold GDD
-```
+| Command | Usage |
+|---------|-------|
+| `/stack:audit [scope]` | Audit one or more layers |
+| `/stack:scaffold [target]` | Generate boilerplate |
+| `/stack:advise [question]` | Architectural recommendation |
+| `/stack:fullstack` | All 7 agents in dependency order |
 
-### `/advise [question]`
+### Panels
 
-Architectural or design recommendation. Output: Recommendation → Reasoning → Tradeoffs → Alternatives → Next step.
+| Command | Agents |
+|---------|--------|
+| `/panel:github [focus]` | All 6 GitHub agents |
+| `/panel:game [artifact]` | All 6 Game Design agents |
+| `/panel:stack` | All 7 Web agents |
+| `/panel:quality [scope]` | web-qa + accessibility + performance |
+| `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review |
 
-```
-/advise should I use RLS or application-level auth?
-/advise Drizzle vs Prisma
-/advise how should I structure a branching dialogue system?
-```
-
-### `/fullstack`
-
-All 7 web agents in dependency order, then cross-cutting synthesis that surfaces contradictions no single agent would catch — schema/RLS mismatches, type drift, secrets gaps, etc.
+### Sprints
 
 ```
-/fullstack
-/fullstack STACK: auth=NextAuth
+/sprint:assemble "voice coaching feature" --project ../GTLI_YLAI
+/sprint:list
+/sprint:status
+/sprint:dissolve "voice coaching feature"
 ```
 
-### `/gamepanel [artifact]`
-
-All 6 game design agents as a panel reviewing the same artifact. Each speaks from their discipline, then a synthesis pass identifies cross-discipline conflicts (mechanics vs. narrative, scope vs. feasibility, UX vs. tech). Ends with a mandatory Panel Verdict naming the single most important decision.
+### Setup
 
 ```
-/gamepanel "design a crafting system"
-/gamepanel GDD
-/gamepanel "the combat loop feels bad — diagnose it"
-/gamepanel "is our alpha scope realistic?"
-/gamepanel ENGINE: Unity
+/setup:project --target ../my-app --mode config        # add orchestration to existing repo
+/setup:project --target ../my-app --mode bootstrap --stack nextjs  # bootstrap new repo
+/setup:hooks --add format-on-write
+```
+
+---
+
+## Install
+
+### Global (available in all Claude Code sessions)
+
+Copy `CLAUDE.md` to `~/.claude/CLAUDE.md` and copy `agents/` to `~/.claude/agents/`.
+
+Or copy just the commands you want to `~/.claude/commands/`.
+
+### Per-project
+
+Copy `CLAUDE.md` and `agents/` into your project's `.claude/` folder.
+
+```bash
+cp -r agents/ your-project/.claude/agents/
+cp CLAUDE.md your-project/.claude/CLAUDE.md
 ```
 
 ---
@@ -117,48 +133,33 @@ All 6 game design agents as a panel reviewing the same artifact. Each speaks fro
 ## Structure
 
 ```
-agents/
-  web-presentation.md     — web stack agents (web-* prefix)
-  web-application.md
-  web-ai-llm.md
-  web-data.md
-  web-infrastructure.md
-  web-security.md
-  web-observability.md
-  game-design.md          — game design agents (game-* prefix)
-  game-narrative.md
-  game-level-design.md
-  game-ux.md
-  game-tech.md
-  game-production.md
-  README.md               — agent index
-
+agents/              — 33 specialist agent .md files
 commands/
-  web/        — web command definitions (human-readable mirror)
-  game/       — game command definitions (human-readable mirror)
-  README.md   — command index
-
-.claude/
-  commands/   — flat command files loaded by Claude Code
+  web/               — /stack:* commands
+  game/              — /panel:game command
+  github/            — /panel:github command
+  sprint/            — /sprint:* commands
+  setup/             — /setup:* commands
+  orchestrate.md     — master orchestrator command
+dashboard/           — Vite + React local dashboard
+  src/
+    components/      — AgentGraph, AgentDetail, ProjectDashboard
+    data/            — agents.ts (graph builder), layout
+sprints/             — sprint registry and assembled sprint definitions
+templates/           — agent template, stack/service presets
+CLAUDE.md            — master orchestrator (loaded in every Claude session)
 ```
-
-> `.claude/commands/` must stay flat — Claude Code does not load from subdirectories.
 
 ---
 
-## Multi-agent coordination
+## Adding a new agent
 
-**Web chain:**
-```
-Data → Security → AI-LLM → Application → Infrastructure → Observability → Presentation
-```
+1. Copy `templates/agent-template.md` → `agents/<name>.md`
+2. Fill in: frontmatter (`name`, `description`), persona, `## Stack`, `## Opinions`, `## /audit`, `## /scaffold`, `## /advise`, `## Handoffs`
+3. Add the agent to the family table in `CLAUDE.md` and `~/.claude/CLAUDE.md`
+4. Run `cd dashboard && npm run dev` — the agent appears in the graph automatically
 
-**Game chain:**
-```
-game-design → narrative → level-design → game-ux → game-tech → production
-```
-
-Handoffs between agents are explicit: each agent flags what the next one needs.
+See `agents/README.md` for the full agent index.
 
 ---
 
