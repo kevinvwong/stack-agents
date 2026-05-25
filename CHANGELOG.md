@@ -2,6 +2,33 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.4.0] — 2026-05-25
+
+### kwong-stack-agents (1.1.0)
+
+**Added — `notion` agent (new Workspace family):**
+- `notion` — Notion workspace + database design, page templates, views, canonical-database scaffolding, idempotent publishing of agent/panel/sprint outputs, and importing pages/databases as session context. Owns the Notion MCP surface (`notion-search`, `notion-fetch`, `notion-create-pages`, `notion-update-page`, `notion-create-database`, `notion-create-view`, comments).
+
+**Changed — Handoff edits across existing agents to route publishing to Notion:**
+- `product` — PRD → `/notion:publish prd`; import existing PRDs via `/notion:import --as prd --into product`
+- `analytics` — event schemas + A/B test plans → `/notion:publish analytics`
+- `user-research`, `focus-group`, `expert-review` — research reports → `/notion:publish research`
+- `sprint-assembler` — sprint roster + status → `/notion:publish sprint`
+- `gh-docs` — ADRs/runbooks → `/notion:publish runbook`; panel audit summaries → `/notion:publish github-audit`
+- `/panel:github` — synthesis now emits a handoff line to publish the audit
+
+**Updated — orchestrator routing:**
+- `CLAUDE.md` adds a Workspace family, routing rules for Notion requests, and a `/notion:*` command table.
+
+### kwong-commands (new)
+
+**Added — 3 `/notion:*` slash commands (source: `stack-agents/commands/notion/`):**
+- `/notion:setup --parent <page-url-or-id>` — bootstrap canonical databases (Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design docs, Runbooks) with default views. Non-destructive; `--force` is additive (never deletes).
+- `/notion:publish <type> <identifier>` — idempotent upsert by `Source` URL for: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook`.
+- `/notion:import <url-or-id> [--as <type>] [--into <agent>]` — read-only fetch of a page or database into session context, with optional handoff to a downstream agent.
+
+---
+
 ## [1.3.0] — 2026-05-25
 
 ### kwong-stack-agents (new — 1.0.0)

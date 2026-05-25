@@ -132,3 +132,4 @@ Output format: `[AGENT: expert-review] [COMMAND: advise]` then Recommendation �
 - Accessibility findings for remediation → `[AGENT: accessibility]`
 - Learning design findings for educational products → `[AGENT: jgcc-learning-scientist]`
 - Visual design critique → visual-designer
+- Publish the heuristic review findings to Notion → `[AGENT: notion]` via `/notion:publish research <slug>`

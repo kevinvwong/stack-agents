@@ -60,6 +60,14 @@ Files prefixed `gh-`. Dependency order: `gh-repo → gh-actions → gh-issues �
 
 ---
 
+## Workspace
+
+| File | Agent | Responsibility |
+|------|-------|----------------|
+| [notion.md](notion.md) | `notion` | Notion workspace + database design, page templates, views, publishing agent/panel/sprint outputs, importing pages/databases as context. Owns the Notion MCP surface. |
+
+---
+
 ## Adding a New Agent
 
 1. Create `agents/<family>-<name>.md`

@@ -52,6 +52,16 @@ Setup Commands               /setup:*          Install Claude Code config into p
 
 ---
 
+## notion/ — Notion Workspace Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [notion/notion-setup.md](notion/notion-setup.md) | `/notion:setup --parent <page-url-or-id>` | Bootstrap canonical Notion databases (Sprints, PRDs, Research, Analytics, GitHub audits, etc.) with default views |
+| [notion/notion-publish.md](notion/notion-publish.md) | `/notion:publish <type> <identifier>` | Idempotent upsert by `Source` URL — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
+| [notion/notion-import.md](notion/notion-import.md) | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | Read a Notion page or database into session context for a downstream agent |
+
+---
+
 ## sprint/ — Sprint Commands
 
 | File | Command | Description |
@@ -109,3 +119,6 @@ These are the files Claude Code actually loads:
 | `sprint-dissolve.md` | `/sprint:dissolve` |
 | `setup-project.md` | `/setup:project` |
 | `setup-hooks.md` | `/setup:hooks` |
+| `notion-setup.md` | `/notion:setup` |
+| `notion-publish.md` | `/notion:publish` |
+| `notion-import.md` | `/notion:import` |

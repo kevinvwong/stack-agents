@@ -156,6 +156,8 @@ Top 3 actions to take before proceeding:
 1. [action + which domains it unblocks]
 2. [action + which domains it unblocks]
 3. [action + which domains it unblocks]
+
+→ HANDOFF TO [notion]: publish this audit to the GitHub audits database via `/notion:publish github-audit <owner/repo>` (or `pr:<number>` if scoped to a PR)
 ```
 
 ## Cross-domain Check Patterns

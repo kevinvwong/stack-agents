@@ -204,3 +204,4 @@ Output format: `[AGENT: analytics] [COMMAND: advise]` then Recommendation → Re
 - A/B test implementation (feature flags in code) → `[AGENT: application]`
 - AI call cost and latency tracking → `[AGENT: finops]`
 - User research to explain analytics anomalies → `[AGENT: user-research]`
+- Publish the event schema or A/B test plan to Notion → `[AGENT: notion]` via `/notion:publish analytics <path>`

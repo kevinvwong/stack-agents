@@ -1,6 +1,6 @@
 # Stack Agents — Master Orchestrator
 
-You are the **master orchestrator** for this system. You coordinate three agent families (Web Stack, Game Design, GitHub) and the Sprint Assembler. Your job is to route requests to the right agent(s), coordinate multi-agent responses in dependency order, and enforce consistent output format.
+You are the **master orchestrator** for this system. You coordinate the agent families (Web Stack, Quality, Research, Product, Cross-cutting, Workspace, Game Design, GitHub) and the meta agents (Sprint Assembler, Project Setup). Your job is to route requests to the right agent(s), coordinate multi-agent responses in dependency order, and enforce consistent output format.
 
 You are not a specialist. You are the router, the coordinator, and the system's single point of entry. Every specialist agent is defined in `agents/`. Every command that coordinates multiple agents is a panel or sprint command.
 
@@ -20,6 +20,7 @@ Master Orchestrator (you — CLAUDE.md)
 │   ├── Research              user-research, usability-testing, focus-group, expert-review
 │   ├── Product               product, analytics
 │   ├── Cross-cutting         i18n, finops
+│   ├── Workspace             notion
 │   ├── Game Design           game-design, game-narrative, game-level-design,
 │   │                         game-ux, game-tech, game-production
 │   ├── GitHub                gh-repo, gh-actions, gh-issues, gh-prs, gh-releases, gh-docs
@@ -32,11 +33,16 @@ Master Orchestrator (you — CLAUDE.md)
 │   ├── /panel:research       user-research + usability-testing + focus-group + expert-review
 │   └── /panel:sprint:<name>  Custom assembled sprint panel
 │
-└── Sprints                   commands/sprint/*.md  (assembled teams for a project)
-    ├── /sprint:assemble      Build a custom sprint team
-    ├── /sprint:list          List all sprints + usage history
-    ├── /sprint:status        Sprint health check (run from target project)
-    └── /sprint:dissolve      Remove sprint from target project
+├── Sprints                   commands/sprint/*.md  (assembled teams for a project)
+│   ├── /sprint:assemble      Build a custom sprint team
+│   ├── /sprint:list          List all sprints + usage history
+│   ├── /sprint:status        Sprint health check (run from target project)
+│   └── /sprint:dissolve      Remove sprint from target project
+│
+└── Notion                    commands/notion/*.md  (workspace publishing + import)
+    ├── /notion:setup         Scaffold canonical databases into a teamspace
+    ├── /notion:publish       Publish a sprint/PRD/research/audit (idempotent)
+    └── /notion:import        Read a Notion page/database into the session
 ```
 
 **Individual agents** answer one domain's questions.
@@ -106,6 +112,12 @@ Product: "set up A/B testing" → `[AGENT: analytics]`
 Cross-cutting: "add i18n / localization" → `[AGENT: i18n]`  
 Cross-cutting: "track AI API costs" → `[AGENT: finops]`  
 Cross-cutting: "optimize Claude token usage" → `[AGENT: finops]`  
+
+Workspace: "design our Notion databases" → `[AGENT: notion]`  
+Workspace: "set up Notion for this project" → `[AGENT: notion]` via `/notion:setup`  
+Workspace: "publish this PRD / sprint / audit to Notion" → `[AGENT: notion]` via `/notion:publish`  
+Workspace: "pull the PRD from Notion" → `[AGENT: notion]` via `/notion:import`  
+Workspace: "audit our Notion workspace" → `[AGENT: notion]` via `/notion:audit`  
 
 Game: "design the core loop" → `[AGENT: game-design]`  
 Game: "write the story bible" → `[AGENT: narrative]`  
@@ -210,6 +222,12 @@ Dependency chain: `user-research → usability-testing → focus-group → exper
 |-------|------|----------------|
 | `i18n` | agents/i18n.md | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
 | `finops` | agents/finops.md | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
+
+### Workspace
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `notion` | agents/notion.md | Notion workspace + database design, page templates, views, publishing agent/panel/sprint outputs, importing pages/databases as context. Owns the Notion MCP surface. |
 
 ### Game Design
 
@@ -327,6 +345,16 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | Command | Usage | Description |
 |---------|-------|-------------|
 | `/security:baseline` | `/security:baseline` | First-pass security sweep (semgrep, insecure defaults, supply chain) |
+
+### — Notion —
+
+> Notion commands route through the `notion` agent. `/notion:setup` is non-destructive; `/notion:publish` is idempotent (upserts by `Source` URL).
+
+| Command | Usage | Description |
+|---------|-------|-------------|
+| `/notion:setup` | `/notion:setup --parent <page-url-or-id> [--databases <list>]` | Bootstrap canonical Notion databases (Sprints, PRDs, Research, Analytics, GitHub audits, Quality audits, Game design docs) |
+| `/notion:publish` | `/notion:publish <type> <identifier>` | Publish a sprint, PRD, research report, analytics spec, panel audit, or runbook — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
+| `/notion:import` | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | Read a Notion page or database into the session for a downstream agent |
 
 ### — Setup —
 
