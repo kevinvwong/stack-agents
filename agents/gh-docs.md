@@ -226,4 +226,5 @@ Output format: `[AGENT: gh-docs] [COMMAND: advise]` then Recommendation → Reas
 - CONTRIBUTING.md references to PR process → `[AGENT: gh-prs]`
 - SECURITY.md and secret scanning configuration → `[AGENT: gh-repo]`
 - CI badge accuracy requires passing workflows → `[AGENT: gh-actions]`
-- Publish ADRs, runbooks, or panel audit summaries to the Notion knowledge base → `[AGENT: notion]` via `/notion:publish runbook <path>` or `/notion:publish github-audit <repo-or-pr>`
+- Publish ADRs, runbooks, or panel audit summaries to the Notion knowledge base → `[AGENT: notion-publisher]` via `/notion:publish runbook <path>` or `/notion:publish github-audit <repo-or-pr>`
+- Cross-surface docs audit (Notion + repo) → `/panel:knowledge`

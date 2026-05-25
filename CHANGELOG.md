@@ -2,6 +2,40 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.5.0] — 2026-05-25
+
+### kwong-stack-agents (1.2.0)
+
+**Changed — split the single `notion` agent into 4 Workspace specialists:**
+- `notion-architect` — workspace topology, database schemas, properties, relations, views, templates. Owns `/notion:setup`.
+- `notion-publisher` — outbound publishing, idempotent upserts by `Source`, body block rendering, property mapping. Owns `/notion:publish`.
+- `notion-importer` — inbound reading, ID resolution, page/database rendering to markdown, provenance stamping. Read-only. Owns `/notion:import`.
+- `notion-governance` — workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions. Owns `/notion:audit`.
+
+The pre-split `notion` agent has been removed. Existing handoff lines in `product`, `analytics`, `user-research`, `focus-group`, `expert-review`, `sprint-assembler`, `gh-docs`, and the `/panel:github` synthesis have been re-pointed to the correct specialist (publisher for `/notion:publish`, importer for `/notion:import`, etc.).
+
+Dependency chain: `notion-architect → notion-publisher → notion-importer → notion-governance`
+
+### kwong-commands
+
+**Added — `/notion:audit`:**
+- `/notion:audit [--scope <list>] [--auto-flag] [--propose-archives]` — runs by `notion-governance`. Surfaces ownerless pages, stale drafts, duplicates, broken `Source` URLs, schema drift, and permission risks. Read-only by default; archive proposals always require confirmation.
+
+**Added — 3 cross-agent panels:**
+- `/panel:notion` — all 4 Notion specialists in dependency order, with cross-specialty synthesis (where architect/publisher/importer/governance conflict).
+- `/panel:knowledge` — `notion-architect` + `notion-governance` + `gh-docs`. Cross-surface documentation audit between Notion and the repo. Surfaces docs in the wrong home, duplicated truth, and broken cross-links.
+- `/panel:publish` — `product` + `analytics` + `notion-publisher`. Quality gate before publishing a PRD or analytics spec. Verdict is binary: READY / READY WITH FIXES / NOT READY. Supports `--auto-publish` only when verdict is READY.
+
+**Updated — existing `/notion:*` commands re-pointed to specialists:**
+- `/notion:setup` → `notion-architect`
+- `/notion:publish` → `notion-publisher`
+- `/notion:import` → `notion-importer`
+
+### kwong (marketplace)
+- Bumped to 1.5.0.
+
+---
+
 ## [1.4.0] — 2026-05-25
 
 ### kwong-stack-agents (1.1.0)

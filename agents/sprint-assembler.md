@@ -235,4 +235,4 @@ Output format: `[AGENT: sprint-assembler] [COMMAND: advise]` then Recommendation
 - Target project's GitHub setup → `/panel:github`
 - Root orchestrator for non-sprint routing → `CLAUDE.md` (root)
 - Any generated agent's domain questions → the generated agent itself
-- Publish the assembled sprint (roster + status) to Notion → `[AGENT: notion]` via `/notion:publish sprint <slug>`
+- Publish the assembled sprint (roster + status) to Notion → `[AGENT: notion-publisher]` via `/notion:publish sprint <slug>`

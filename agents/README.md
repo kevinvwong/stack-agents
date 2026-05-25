@@ -62,9 +62,14 @@ Files prefixed `gh-`. Dependency order: `gh-repo → gh-actions → gh-issues �
 
 ## Workspace
 
+Files prefixed `notion-`. Dependency order: `notion-architect → notion-publisher → notion-importer → notion-governance`
+
 | File | Agent | Responsibility |
 |------|-------|----------------|
-| [notion.md](notion.md) | `notion` | Notion workspace + database design, page templates, views, publishing agent/panel/sprint outputs, importing pages/databases as context. Owns the Notion MCP surface. |
+| [notion-architect.md](notion-architect.md) | `notion-architect` | Workspace topology, database schemas, properties, relations, views, templates. Owns `/notion:setup`. |
+| [notion-publisher.md](notion-publisher.md) | `notion-publisher` | Outbound publishing — idempotent upserts by `Source` URL, body block rendering, property mapping. Owns `/notion:publish`. |
+| [notion-importer.md](notion-importer.md) | `notion-importer` | Inbound reading — ID resolution, page/database rendering to markdown, provenance stamping. Read-only. Owns `/notion:import`. |
+| [notion-governance.md](notion-governance.md) | `notion-governance` | Workspace health — ownership, freshness, duplicates, source integrity, schema drift, permissions. Owns `/notion:audit`. |
 
 ---
 

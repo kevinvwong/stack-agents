@@ -5,7 +5,7 @@ description: Publish an agent, panel, or sprint output to its canonical Notion d
 
 # /notion:publish
 
-Convene the `notion` agent to publish a stack-agents artifact into its canonical Notion database. Idempotent on the `Source` property — running twice updates the same page.
+Convene the `notion-publisher` agent to publish a stack-agents artifact into its canonical Notion database. Idempotent on the `Source` property — running twice updates the same page.
 
 ## Usage
 
@@ -40,7 +40,7 @@ Convene the `notion` agent to publish a stack-agents artifact into its canonical
 
 1. **Resolve the database** — `notion-search` for the canonical database title that matches `<type>` under `--parent`. Stop if not found and tell the user to run `/notion:setup` first.
 2. **Locate the source artifact** — read the file or pull the panel output from the active session by `<identifier>`.
-3. **Build the page payload** — properties (`Source`, `Status`, `Owner`, type-specific fields) + body blocks (headings, callouts, checklists). The template is whatever the type-specific section in `agents/notion.md` → `/scaffold` defines.
+3. **Build the page payload** — properties (`Source`, `Status`, `Owner`, type-specific fields) + body blocks (headings, callouts, checklists). The template is whatever the type-specific section in `agents/notion-publisher.md` → `/scaffold` defines.
 4. **Upsert by `Source`** — `notion-search` the database for an existing row whose `Source` URL matches. If absent: `notion-create-pages`. If present: `notion-update-page` + replace body blocks.
 5. **Verify** — `notion-fetch` the upserted page. Confirm title, key properties, and that body blocks are present. Report page URL + ID.
 
@@ -66,7 +66,7 @@ Convene the `notion` agent to publish a stack-agents artifact into its canonical
 ## Output Format
 
 ```
-[AGENT: notion] [COMMAND: publish]
+[AGENT: notion-publisher] [COMMAND: publish]
 Type:        <type>
 Identifier:  <identifier>
 Parent:      <page title> (<URL>)

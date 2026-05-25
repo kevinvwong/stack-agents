@@ -5,7 +5,7 @@ description: Read a Notion page or database into the current session as context 
 
 # /notion:import
 
-Convene the `notion` agent to fetch a Notion page or database and surface its content as session context for another agent.
+Convene the `notion-importer` agent to fetch a Notion page or database and surface its content as session context for another agent.
 
 ## Usage
 
@@ -43,7 +43,7 @@ Convene the `notion` agent to fetch a Notion page or database and surface its co
 ## Output Format
 
 ```
-[AGENT: notion] [COMMAND: import]
+[AGENT: notion-importer] [COMMAND: import]
 Source:        <Notion URL>
 Title:         <page or database title>
 Type:          page | database

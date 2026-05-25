@@ -148,4 +148,4 @@ Output format: `[AGENT: user-research] [COMMAND: advise]` then Recommendation �
 - Translating insights into product requirements → `[AGENT: product]`
 - Behavioral psychology of user motivation → `[AGENT: behavioral-psychologist]`
 - Analytics to complement qualitative findings → `[AGENT: analytics]`
-- Publish the research report to Notion → `[AGENT: notion]` via `/notion:publish research <slug>`
+- Publish the research report to Notion → `[AGENT: notion-publisher]` via `/notion:publish research <slug>`

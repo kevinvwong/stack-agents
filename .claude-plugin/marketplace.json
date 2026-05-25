@@ -3,13 +3,13 @@
   "owner": { "name": "Kevin Wong" },
   "metadata": {
     "description": "Kevin Wong's Claude Code artifacts — agents, skills, and commands spanning web stack engineering, game design, GitHub workflow, Notion workspace publishing, GTLI content pipeline, UX persona review, JGCC educational quality auditing, and security/fuzzing tooling",
-    "version": "1.4.0"
+    "version": "1.5.0"
   },
   "plugins": [
     {
       "name": "kwong-stack-agents",
       "source": "./plugins/kwong-stack-agents",
-      "description": "34 specialist agents across 9 engineering domains: Web Stack, Game Design, GitHub, Quality, Research, Product, Cross-cutting, Workspace (Notion), and Meta. Each agent has /audit, /scaffold, and /advise. Master orchestrator routes in dependency order.",
+      "description": "37 specialist agents across 9 engineering domains: Web Stack, Game Design, GitHub, Quality, Research, Product, Cross-cutting, Workspace (Notion: architect, publisher, importer, governance), and Meta. Each agent has /audit, /scaffold, and /advise. Master orchestrator routes in dependency order.",
       "category": "productivity",
       "tags": ["web-stack", "game-design", "github", "notion", "engineering", "orchestration", "next-js", "vercel"]
     },
@@ -23,7 +23,7 @@
     {
       "name": "kwong-commands",
       "source": "./plugins/kwong-commands",
-      "description": "Slash commands for both agent sets — JGCC audit, UX review, doc audit, security baseline, compile-marketplace, stack orchestration, game/github panels, sprint management, Notion publishing (setup/publish/import), and project setup. Requires kwong-agents, kwong-stack-agents, or kwong-skills.",
+      "description": "Slash commands for both agent sets — JGCC audit, UX review, doc audit, security baseline, compile-marketplace, stack orchestration, game/github/notion/knowledge/publish panels, sprint management, Notion publishing (setup/publish/import/audit), and project setup. Requires kwong-agents, kwong-stack-agents, or kwong-skills.",
       "category": "productivity",
       "tags": ["education", "jgcc", "orchestration", "web-stack", "sprint", "notion", "engineering"]
     },

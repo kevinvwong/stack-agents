@@ -5,7 +5,7 @@ description: Bootstrap the canonical Notion workspace layout for stack-agents �
 
 # /notion:setup
 
-Convene the `notion` agent to scaffold the canonical workspace layout into a Notion teamspace or page.
+Convene the `notion-architect` agent to scaffold the canonical workspace layout into a Notion teamspace or page.
 
 ## Usage
 
@@ -32,12 +32,12 @@ Convene the `notion` agent to scaffold the canonical workspace layout into a Not
 
 ## What Happens
 
-The `notion` agent runs the workspace scaffold in 5 steps:
+The `notion-architect` agent runs the workspace scaffold in 5 steps:
 
 1. **Resolve the parent** — `notion-fetch` on the URL/ID. Confirm it's a page or teamspace and the MCP integration has write access. If not, stop and report.
 2. **Inventory existing databases** — `notion-search` for each canonical title under the parent. Build a `{ create | skip | update }` plan.
 3. **Confirm the plan with the user** — show the plan; require confirmation unless `--dry-run`.
-4. **Create databases + default views** — for each database in the plan, call `notion-create-database` with the canonical property schema from `agents/notion.md` → `/scaffold`, then `notion-create-view` for each default view.
+4. **Create databases + default views** — for each database in the plan, call `notion-create-database` with the canonical property schema from `agents/notion-architect.md` → `/scaffold`, then `notion-create-view` for each default view.
 5. **Verify** — `notion-fetch` each created database, confirm the title, property set, and at least one view exist. Report database IDs + URLs.
 
 ## Canonical Databases
@@ -55,12 +55,12 @@ The scaffold writes the following from `agents/notion.md`:
 | Game design docs | Game panel outputs | `/panel:game`, `game-*` agents |
 | Runbooks | Operational docs, ADRs (page, not database) | All agents |
 
-Each database is created with: `Source` (url), `Status` (status), `Owner` (person), and at least one filtered view. Full schemas live in `agents/notion.md`.
+Each database is created with: `Source` (url), `Status` (status), `Owner` (person), and at least one filtered view. Full schemas live in `agents/notion-architect.md`.
 
 ## Output Format
 
 ```
-[AGENT: notion] [COMMAND: scaffold]
+[AGENT: notion-architect] [COMMAND: scaffold]
 Setup: workspace bootstrap
 Parent: <page title> (<URL>)
 

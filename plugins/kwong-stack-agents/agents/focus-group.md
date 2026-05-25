@@ -149,4 +149,4 @@ Output format: `[AGENT: focus-group] [COMMAND: advise]` then Recommendation → 
 - Task performance evaluation of concepts shown → `[AGENT: usability-testing]`
 - Expert critique of design concepts → `[AGENT: expert-review]`
 - Translating group reactions into product priorities → `[AGENT: product]`
-- Publish the focus group synthesis to Notion → `[AGENT: notion]` via `/notion:publish research <slug>`
+- Publish the focus group synthesis to Notion → `[AGENT: notion-publisher]` via `/notion:publish research <slug>`
