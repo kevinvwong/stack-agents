@@ -16,6 +16,10 @@ Master Orchestrator (you — CLAUDE.md)
 ├── Individual Agents         agents/*.md
 │   ├── Web Stack             web-presentation, web-application, web-ai-llm,
 │   │                         web-data, web-infrastructure, web-security, web-observability
+│   ├── Quality               web-qa, game-qa, accessibility, performance
+│   ├── Research              user-research, usability-testing, focus-group, expert-review
+│   ├── Product               product, analytics
+│   ├── Cross-cutting         i18n, finops
 │   ├── Game Design           game-design, game-narrative, game-level-design,
 │   │                         game-ux, game-tech, game-production
 │   ├── GitHub                gh-repo, gh-actions, gh-issues, gh-prs, gh-releases, gh-docs
@@ -24,6 +28,8 @@ Master Orchestrator (you — CLAUDE.md)
 ├── Panels                    commands/*/panel-*.md  (multiple agents, one topic)
 │   ├── /panel:github         All 6 GitHub agents
 │   ├── /panel:game           All 6 Game Design agents
+│   ├── /panel:quality        web-qa + accessibility + performance
+│   ├── /panel:research       user-research + usability-testing + focus-group + expert-review
 │   └── /panel:sprint:<name>  Custom assembled sprint panel
 │
 └── Sprints                   commands/sprint/*.md  (assembled teams for a project)
@@ -83,6 +89,24 @@ Web: "audit my Clerk config" → `[AGENT: security]`
 Web: "scaffold a CI pipeline" → `[AGENT: infrastructure]`  
 Web: "design a system prompt" → `[AGENT: ai-llm]`  
 
+Quality: "write E2E tests" → `[AGENT: web-qa]`  
+Quality: "audit accessibility" → `[AGENT: accessibility]`  
+Quality: "improve Lighthouse score" → `[AGENT: performance]`  
+Quality: "design a playtesting protocol" → `[AGENT: game-qa]`  
+
+Research: "plan user interviews" → `[AGENT: user-research]`  
+Research: "design a usability test" → `[AGENT: usability-testing]`  
+Research: "run a focus group" → `[AGENT: focus-group]`  
+Research: "do a heuristic evaluation" → `[AGENT: expert-review]`  
+
+Product: "write a PRD" → `[AGENT: product]`  
+Product: "design our event schema" → `[AGENT: analytics]`  
+Product: "set up A/B testing" → `[AGENT: analytics]`  
+
+Cross-cutting: "add i18n / localization" → `[AGENT: i18n]`  
+Cross-cutting: "track AI API costs" → `[AGENT: finops]`  
+Cross-cutting: "optimize Claude token usage" → `[AGENT: finops]`  
+
 Game: "design the core loop" → `[AGENT: game-design]`  
 Game: "write the story bible" → `[AGENT: narrative]`  
 Game: "design the first level" → `[AGENT: level-design]`  
@@ -112,6 +136,8 @@ Setup: "add the format-on-write hook" → `[AGENT: project-setup]` via `/setup:h
 
 "review my whole GitHub setup" → `/panel:github`  
 "review my game design" → `/panel:game`  
+"full quality sweep" → `/panel:quality`  
+"run a full research pass" → `/panel:research`  
 "what does my sprint team think?" → `/panel:sprint:<name>` (from target project)  
 
 **Multi-agent request** — coordinate in dependency order, emit each agent's output in full:
@@ -119,6 +145,8 @@ Setup: "add the format-on-write hook" → `[AGENT: project-setup]` via `/setup:h
 Web chain: `Data → Security → AI-LLM → Application → Infrastructure → Observability → Presentation`  
 Game chain: `game-design → narrative → level-design → game-ux → game-tech → production`  
 GitHub chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releases → gh-docs`  
+Quality chain: `web-qa → accessibility → performance`  
+Research chain: `user-research → usability-testing → focus-group → expert-review`  
 
 **Ambiguous request** — ask exactly one clarifying question, then route.
 
@@ -146,6 +174,42 @@ GitHub chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releases �
 | `observability` | agents/web-observability.md | Sentry, Axiom, alerting, AI call logging |
 
 Dependency chain: `data → security → ai-llm → application → infrastructure → observability → presentation`
+
+### Quality
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `web-qa` | agents/web-qa.md | Playwright E2E, Vitest unit/integration, test pyramid strategy, flake triage, CI test pipeline |
+| `game-qa` | agents/game-qa.md | Game playtesting protocols, functional QA, regression suites, platform testing, certification |
+| `accessibility` | agents/accessibility.md | WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring, focus management |
+| `performance` | agents/performance.md | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy, edge caching |
+
+Dependency chain: `web-qa → accessibility → performance`
+
+### Research
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `user-research` | agents/user-research.md | User interviews, surveys, personas, JTBD, affinity mapping, research planning |
+| `usability-testing` | agents/usability-testing.md | Think-aloud protocols, moderated/unmoderated studies, task analysis, session recording |
+| `focus-group` | agents/focus-group.md | Focus group design, facilitation, concept testing, synthesis, insight reporting |
+| `expert-review` | agents/expert-review.md | Heuristic evaluation (Nielsen, Mayer, PLAY), design critique, structured walkthroughs |
+
+Dependency chain: `user-research → usability-testing → focus-group → expert-review`
+
+### Product
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `product` | agents/product.md | PRDs, user stories, RICE/MoSCoW prioritization, OKRs, success metrics, roadmap framing |
+| `analytics` | agents/analytics.md | PostHog event schemas, funnel design, A/B test design, retention analysis, feature flags |
+
+### Cross-cutting
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `i18n` | agents/i18n.md | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
+| `finops` | agents/finops.md | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
 
 ### Game Design
 
@@ -198,6 +262,8 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | `/panel:github` | `/panel:github [focus]` | All 6 GitHub agents + cross-domain synthesis |
 | `/panel:game` | `/panel:game [artifact]` | All 6 Game Design agents + cross-discipline synthesis |
 | `/panel:stack` | `/panel:stack` | All 7 Web agents + cross-layer synthesis |
+| `/panel:quality` | `/panel:quality [scope]` | web-qa + accessibility + performance |
+| `/panel:research` | `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review |
 | `/panel:design` | `/panel:design [scope]` | visual-designer + interaction-designer + information-architect |
 | `/panel:psych` | `/panel:psych [scope]` | cognitive-psychologist + behavioral-psychologist |
 | `/panel:security` | `/panel:security` | security + env-debugger + static analysis |
