@@ -74,3 +74,44 @@ All 7 open issues resolved.
 | Sort cards | Dropdown: A-Z name / most recent commit / issue count |
 | Pinned projects | Star toggle per card; persisted to `localStorage`; pinned cards float to top with purple border |
 | Vercel deployment status badge | Lazy-fetches `/__api/vercel-status` per card; shows READY/BUILDING/ERROR; links to deployment URL when `VERCEL_TOKEN` env var present |
+
+---
+
+## 🔲 Phase 6 — Claude Code feature leverage
+
+Unlock the remaining Claude Code primitives that are available but not yet wired up.
+
+### 6a — Hooks
+
+| Item | What | File |
+|------|------|------|
+| `PostToolUse` format-on-write | Auto-format/lint every file after `Edit` or `Write` tool calls | `.claude/settings.json` + hook script |
+| `PreToolUse` Bash guard | Block `rm -rf` and other destructive patterns without an explicit flag | `.claude/settings.json` + hook script |
+| `Stop` hook → auto session-state | Write session state automatically at end of every turn so `/session:close` data is always fresh | `.claude/settings.json` + hook script |
+| `Notification` hook → system toast | Pipe Claude notifications to a Windows toast or terminal bell | `.claude/settings.json` + hook script |
+
+### 6b — Project context files
+
+| Item | What | File |
+|------|------|------|
+| `frcapp` CLAUDE.md | Add project-specific context (stack, constraints, key paths) to the frcapp repo so every session starts informed | `C:\Users\kwong318\GitHub\frcapp\CLAUDE.md` |
+
+### 6c — Scheduled agents
+
+| Item | What | Cadence |
+|------|------|---------|
+| Daily CI + dependency audit | `/schedule` task running `gh-actions` + `gh-repo` agents against this repo | Daily |
+| Weekly PR health check | `/schedule` task running `gh-prs` agent to surface stale PRs | Weekly |
+
+### 6d — MCP server gaps
+
+| Item | What | Config |
+|------|------|--------|
+| Sentry MCP | Let agents read real error traces during observability audits | `~/.claude/mcp.json` |
+| Slack MCP | Route hook notifications to Slack | `~/.claude/mcp.json` |
+
+### 6e — Worktree isolation in agent specs
+
+| Item | What |
+|------|------|
+| Add `isolation: worktree` guidance to destructive agent specs | Agents that scaffold or rewrite large files should run in isolated worktrees to protect the working tree |
