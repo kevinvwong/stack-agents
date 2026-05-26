@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash *)"
+      "Bash(bash *)",
+      "PowerShell(Copy-Item *)",
+      "Read(//c/Users/kwong318/**)",
+      "Read(//c/Users/kwong318/GitHub/**)",
+      "Bash(gh issue *)",
+      "Bash(gh label *)",
+      "Bash(gh repo *)",
+      "Bash(gh pr *)"
     ]
   }
 }
