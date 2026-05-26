@@ -105,6 +105,15 @@ Dependency order: `user-research → usability-testing → focus-group → exper
 
 ---
 
+## Fun / Demo
+
+| File | Agent | Responsibility |
+|------|-------|----------------|
+| [dog-add.md](dog-add.md) | `dog-add` | Adds a centered dog image to the dashboard landing page (`dashboard/src/App.tsx`) |
+| [dog-remove.md](dog-remove.md) | `dog-remove` | Removes the dog image added by `dog-add` from the dashboard landing page |
+
+---
+
 ## Adding a New Agent
 
 1. Create `agents/<family>-<name>.md` using `templates/agent-template.md`
