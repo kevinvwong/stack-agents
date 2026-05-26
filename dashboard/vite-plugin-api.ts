@@ -6,13 +6,29 @@ import { join, basename } from 'path'
 
 const GITHUB_ROOT = 'C:/Users/kwong318/GitHub'
 
+interface ProjectLinks {
+  github?: string
+  production?: string
+  local?: string
+}
+
+interface GitInfo {
+  branch: string
+  recentCommits: string[]    // format: "abc1234 commit message (2d ago)"
+  ahead: number
+  behind: number
+  dirty: number
+}
+
 interface ProjectData {
   name: string
   path: string
-  git: { branch: string; recentCommits: string[] }
+  git: GitInfo
   stack: string[]
   sprints: string[]
   hasClaude: boolean
+  links: ProjectLinks
+  vercelProjectId?: string
 }
 
 // In-memory cache — survives browser refreshes, cleared on server restart or /refresh
@@ -33,16 +49,35 @@ function discoverRepoPaths(): string[] {
     .map((e) => join(GITHUB_ROOT, e.name))
 }
 
-function getGitInfo(projectPath: string): { branch: string; recentCommits: string[] } {
-  // Single git log call — %D gives ref names (includes HEAD -> branch)
-  const out = runGit(
-    ['log', '--oneline', '-5', '--format=%h %s', '--no-merges'],
+function getGitInfo(projectPath: string): GitInfo {
+  const statusOut = runGit(['status', '--porcelain=v2', '--branch'], projectPath)
+  let branch = 'unknown'
+  let ahead = 0
+  let behind = 0
+  let dirty = 0
+
+  for (const line of statusOut.split('\n')) {
+    if (line.startsWith('# branch.head ')) {
+      branch = line.slice('# branch.head '.length).trim()
+    } else if (line.startsWith('# branch.ab ')) {
+      const m = line.match(/\+(\d+)\s+-(\d+)/)
+      if (m) { ahead = parseInt(m[1], 10); behind = parseInt(m[2], 10) }
+    } else if (line.startsWith('1 ') || line.startsWith('2 ') || line.startsWith('u ') || line.startsWith('? ')) {
+      dirty++
+    }
+  }
+
+  const logOut = runGit(
+    ['log', '--oneline', '-5', '--format=%h %s (%cr)', '--no-merges'],
     projectPath,
   )
-  const branch = runGit(['symbolic-ref', '--short', 'HEAD'], projectPath) || 'unknown'
+
   return {
     branch,
-    recentCommits: out.split('\n').filter(Boolean),
+    recentCommits: logOut.split('\n').filter(Boolean),
+    ahead,
+    behind,
+    dirty,
   }
 }
 
@@ -84,9 +119,88 @@ function detectSprints(projectPath: string): string[] {
   }
 }
 
-// Parallel scan: run all git calls concurrently via Promise + setImmediate scheduling
+function normalizeGitHubUrl(raw: string): string | undefined {
+  if (!raw) return undefined
+  const ssh = raw.match(/^git@github\.com[:/](.+?)(?:\.git)?$/)
+  if (ssh) return `https://github.com/${ssh[1]}`
+  const https = raw.match(/^(https:\/\/github\.com\/.+?)(?:\.git)?$/)
+  if (https) return https[1]
+  return undefined
+}
+
+function detectLinks(projectPath: string, stack: string[]): ProjectLinks {
+  const links: ProjectLinks = {}
+
+  const remoteUrl = runGit(['remote', 'get-url', 'origin'], projectPath)
+  const github = normalizeGitHubUrl(remoteUrl)
+  if (github) links.github = github
+
+  const envFiles = ['.env.production', '.env.local', '.env']
+  const urlKeys = ['NEXT_PUBLIC_APP_URL', 'NEXT_PUBLIC_SITE_URL', 'NEXT_PUBLIC_BASE_URL', 'APP_URL']
+  outer: for (const envFile of envFiles) {
+    const envPath = join(projectPath, envFile)
+    if (!existsSync(envPath)) continue
+    try {
+      const lines = readFileSync(envPath, 'utf-8').split('\n')
+      for (const key of urlKeys) {
+        const line = lines.find((l) => l.startsWith(`${key}=`))
+        if (line) {
+          const val = line.slice(key.length + 1).replace(/^['"]|['"]$/g, '').trim()
+          if (val.startsWith('http')) { links.production = val; break outer }
+        }
+      }
+    } catch { /* skip */ }
+  }
+
+  const pkgPath = join(projectPath, 'package.json')
+  if (existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
+      const devScript: string = pkg?.scripts?.dev ?? ''
+      const portMatch = devScript.match(/(?:--port|-p)\s+(\d+)/)
+      if (portMatch) {
+        links.local = `http://localhost:${portMatch[1]}`
+      } else {
+        const defaultPort = stack.includes('Next.js') ? 3000
+          : devScript.includes('vite') ? 5173
+          : devScript.includes('astro') ? 4321
+          : 3000
+        links.local = `http://localhost:${defaultPort}`
+      }
+    } catch { /* skip */ }
+  }
+
+  return links
+}
+
+function detectVercelProjectId(projectPath: string): string | undefined {
+  const vercelJson = join(projectPath, '.vercel', 'project.json')
+  if (!existsSync(vercelJson)) return undefined
+  try {
+    const data = JSON.parse(readFileSync(vercelJson, 'utf-8'))
+    return data?.projectId ?? undefined
+  } catch {
+    return undefined
+  }
+}
+
+async function getVercelDeploymentStatus(projectId: string, token: string): Promise<{ state: string; url?: string } | null> {
+  try {
+    const res = await fetch(
+      `https://api.vercel.com/v6/deployments?projectId=${projectId}&limit=1&target=production`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    )
+    if (!res.ok) return null
+    const data = await res.json() as { deployments?: { readyState: string; url?: string }[] }
+    const d = data.deployments?.[0]
+    if (!d) return null
+    return { state: d.readyState, url: d.url ? `https://${d.url}` : undefined }
+  } catch {
+    return null
+  }
+}
+
 async function scanAllProjects(paths: string[]): Promise<ProjectData[]> {
-  // Use Promise.all with a concurrency limit so we don't spawn 20 processes at once
   const CONCURRENCY = 8
   const results: ProjectData[] = []
   let index = 0
@@ -95,16 +209,18 @@ async function scanAllProjects(paths: string[]): Promise<ProjectData[]> {
     while (index < paths.length) {
       const i = index++
       const p = paths[i]
-      // Each project's git calls are fast (< 200ms each) — run them in a microtask
       results[i] = await new Promise<ProjectData>((resolve) => {
         setImmediate(() => {
+          const stack = detectStack(p)
           resolve({
             name: basename(p),
             path: p,
             git: getGitInfo(p),
-            stack: detectStack(p),
+            stack,
             sprints: detectSprints(p),
             hasClaude: existsSync(join(p, '.claude')),
+            links: detectLinks(p, stack),
+            vercelProjectId: detectVercelProjectId(p),
           })
         })
       })
@@ -133,7 +249,6 @@ export function apiPlugin(): Plugin {
   return {
     name: 'stack-agents-api',
     configureServer(server) {
-      // Pre-warm cache in the background when the dev server starts
       setImmediate(async () => {
         if (projectCache) return
         const paths = discoverRepoPaths()
@@ -163,6 +278,20 @@ export function apiPlugin(): Plugin {
         const issues = getGitHubIssues(projectPath)
         res.setHeader('Content-Type', 'application/json')
         res.end(JSON.stringify(issues))
+      })
+
+      server.middlewares.use('/__api/vercel-status', async (req, res) => {
+        const token = process.env.VERCEL_TOKEN
+        if (!token) {
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'no_token' }))
+          return
+        }
+        const url = new URL(req.url!, 'http://localhost')
+        const projectId = url.searchParams.get('projectId') ?? ''
+        const status = await getVercelDeploymentStatus(projectId, token)
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(status ?? { error: 'not_found' }))
       })
     },
   }
