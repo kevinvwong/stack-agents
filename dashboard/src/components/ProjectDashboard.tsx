@@ -414,7 +414,7 @@ export function ProjectDashboard() {
   const toggleChip = (tech: string) => {
     setActiveChips((prev) => {
       const next = new Set(prev)
-      next.has(tech) ? next.delete(tech) : next.add(tech)
+      if (next.has(tech)) { next.delete(tech) } else { next.add(tech) }
       return next
     })
   }
@@ -422,7 +422,7 @@ export function ProjectDashboard() {
   const togglePin = (path: string) => {
     setPinned((prev) => {
       const next = new Set(prev)
-      next.has(path) ? next.delete(path) : next.add(path)
+      if (next.has(path)) { next.delete(path) } else { next.add(path) }
       savePinned(next)
       return next
     })
