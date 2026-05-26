@@ -66,11 +66,11 @@ All 7 open issues resolved.
 
 ---
 
-## Phase 5 — Dashboard enhancements (next)
+## ✅ Phase 5 — Dashboard enhancements
 
-Priority order based on utility:
-
-- [ ] **Filter by stack (chips)** — clickable tech chips above the project grid that toggle stack-based filtering; combine with existing text filter
-- [ ] **Sort cards** — dropdown: last commit date / project name / issue count
-- [ ] **Pinned projects** — star icon on card, persisted to localStorage; pinned cards float to top
-- [ ] **Vercel deployment status badge** — call Vercel API if `VERCEL_TOKEN` env var present; show latest deployment state (Ready / Error / Building) on card
+| Item | What |
+|------|------|
+| Stack filter chips | Clickable tech badges above grid; OR within selection, AND with text search |
+| Sort cards | Dropdown: A-Z name / most recent commit / issue count |
+| Pinned projects | Star toggle per card; persisted to `localStorage`; pinned cards float to top with purple border |
+| Vercel deployment status badge | Lazy-fetches `/__api/vercel-status` per card; shows READY/BUILDING/ERROR; links to deployment URL when `VERCEL_TOKEN` env var present |
