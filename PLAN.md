@@ -56,11 +56,13 @@ All 7 open issues resolved.
 | Labels | Added `agent`, `priority:critical/high/medium/low`, `status:triage/in-progress/blocked` |
 | Milestone `v1.4.0` | Created — "GitHub settings + issue infrastructure (Phase 4)" |
 
-### Pending (requires GitHub UI — Settings page)
+### Done (GitHub API)
 
-- [ ] **Branch protection on `main`** — Settings → Branches: require 1 PR review, require `Dashboard — lint + build` status check, disallow force push
-- [ ] **Squash merge only** — Settings → General → Pull Requests: disable merge commit + rebase
-- [ ] **Auto-delete head branches** — Settings → General: enable
+| Setting | Value |
+|---------|-------|
+| Branch protection on `main` | 1 required review, `Dashboard — lint + build` status check required, force push blocked, deletions blocked, enforce_admins on |
+| Squash merge only | merge commit + rebase disabled |
+| Auto-delete head branches | enabled |
 
 ---
 
