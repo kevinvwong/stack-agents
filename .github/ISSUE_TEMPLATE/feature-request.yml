@@ -1,0 +1,56 @@
+name: Feature request
+description: Propose an enhancement to the dashboard, orchestrator, commands, or system design
+labels: [enhancement, status:triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for dashboard features, new commands, orchestrator improvements, or system-level changes. For new agent proposals use the "New agent proposal" template instead.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't you do today, or what's frustrating? Link related issues if any.
+      placeholder: "When I have 20+ projects in the dashboard, I can't filter by stack technology — I have to scroll through all cards to find Next.js projects."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What should change? Be specific about the interaction or behavior.
+      placeholder: "Add clickable tech chips (Next.js, Claude API, etc.) above the project grid that toggle stack-based filtering. Combine with the existing text filter."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else did you consider? Why is the proposed solution better?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Dashboard — Agent Graph
+        - Dashboard — Projects
+        - Orchestrator / routing
+        - Slash commands
+        - Agent content
+        - install.ps1 / marketplace
+        - CI / GitHub Actions
+        - Docs
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: agents
+    attributes:
+      label: Affected agents or commands
+      description: Which agents or commands does this touch? Leave blank if not applicable.
+      placeholder: "/orchestrate, [AGENT: gh-issues]"

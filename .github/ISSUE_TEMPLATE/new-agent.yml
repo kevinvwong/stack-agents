@@ -1,0 +1,77 @@
+name: New agent proposal
+description: Propose a new specialist agent for the roster
+labels: [enhancement, agent, status:triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to propose a new specialist agent. Good proposals explain the gap the agent fills — what can't you do well with the existing roster?
+
+  - type: input
+    id: name
+    attributes:
+      label: Agent name
+      description: Short kebab-case identifier used in `[AGENT: name]` tags.
+      placeholder: "stripe, redis-pubsub, a11y-testing"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: family
+    attributes:
+      label: Family
+      options:
+        - Web Stack
+        - Game Design
+        - GitHub
+        - Quality
+        - Research
+        - Product
+        - Cross-cutting
+        - Meta
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What it handles
+      description: 2–3 sentences. What does this agent know that the existing roster doesn't cover?
+    validations:
+      required: true
+
+  - type: textarea
+    id: chain
+    attributes:
+      label: Dependency chain position
+      description: Where does it sit? What does it depend on? What hands off to it?
+      placeholder: "Sits after `security`, before `application`. Depends on Drizzle schema from `data`. Hands off to `application` with payment intent handlers."
+
+  - type: textarea
+    id: audit
+    attributes:
+      label: Sample /audit checklist items
+      description: At least 3 concrete items this agent would check.
+      placeholder: |
+        - [ ] Webhook signature verified before processing payment events
+        - [ ] Idempotency key set on all charge creation requests
+        - [ ] Failed payment retries capped with exponential backoff
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Check off what the completed agent must include before it can be merged.
+      options:
+        - label: "`agents/<family>-<name>.md` file with all required sections (frontmatter, persona, Stack, Opinions, /audit, /scaffold, /advise, Handoffs)"
+          required: true
+        - label: "`agents/README.md` updated with new row in the correct family table"
+          required: true
+        - label: "`CLAUDE.md` roster table and dependency chain updated"
+          required: true
+        - label: "Dashboard node visible after `npm run dev` in `dashboard/`"
+          required: true
+        - label: "`CHANGELOG.md` entry added under `kwong-agents`"
+          required: true

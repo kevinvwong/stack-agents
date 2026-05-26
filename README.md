@@ -1,6 +1,17 @@
 # stack-agents
 
+[![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
+
 A system of 33 specialist Claude Code agents across 8 domains, a master orchestrator, and a local dashboard for visualizing agents and your project portfolio.
+
+---
+
+## Prerequisites
+
+- [Claude Code](https://claude.ai/code) CLI installed and authenticated
+- Node.js 18+ (for the dashboard)
+- PowerShell 5.1+ (Windows — for `install.ps1`)
+- [GitHub CLI](https://cli.github.com/) (`gh`) — optional, enables project issue loading in the dashboard
 
 ---
 
@@ -8,7 +19,7 @@ A system of 33 specialist Claude Code agents across 8 domains, a master orchestr
 
 **Agent system** — specialist `.md` agents invoked through Claude Code slash commands. Each agent has an opinionated `/audit` checklist, `/scaffold` templates, and a `/advise` mode. The master orchestrator (`CLAUDE.md`) routes requests to the right agents in dependency order and synthesizes cross-cutting findings.
 
-**Dashboard** — a local Vite + React app that renders the agent graph (nodes, dependency chains, handoff edges), lets you browse agent specs, and shows a project explorer with git status, stack detection, and open GitHub issues across all your repos.
+**Dashboard** — a local Vite + React app that renders the agent graph (nodes, dependency chains, handoff edges), lets you browse agent specs, and shows a project explorer with git status, stack detection, links, and open GitHub issues across all your repos.
 
 ---
 
@@ -57,7 +68,7 @@ npm run dev
 ```
 
 - **Agent Graph tab** — 33 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
-- **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, open sprints, and lazy-loaded GitHub issues.
+- **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, git status (ahead/behind/dirty), GitHub/production/local links, and open issues.
 
 ---
 
@@ -101,6 +112,24 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 /sprint:dissolve "voice coaching feature"
 ```
 
+### More commands
+
+| Command | Usage |
+|---------|-------|
+| `/review:code [file]` | Code quality — correctness, complexity, naming, dead code |
+| `/review:data-model [schema]` | Schema — entities, relationships, normalization |
+| `/review:artifact [file]` | Agent/skill/command quality gate before publishing |
+| `/debug:env [scope]` | Trace env vars, find missing vars, NEXT_PUBLIC_ violations |
+| `/ai:prompt-design [feature]` | Design or review a system prompt |
+| `/ai:prompt-test [prompt]` | Regression test suite for a prompt or AI feature |
+| `/auth:clerk [scope]` | Clerk authentication security audit |
+| `/auth:nextauth [scope]` | NextAuth.js security audit |
+| `/docs:audit` | Audit documentation for completeness and accuracy |
+| `/docs:write [file]` | Rewrite documentation in the correct voice for its audience |
+| `/security:baseline` | First-pass security sweep (semgrep, insecure defaults, supply chain) |
+
+For the full command reference see `CLAUDE.md`.
+
 ### Setup
 
 ```
@@ -113,15 +142,25 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 
 ## Install
 
-### Global (available in all Claude Code sessions)
+### Quick install (Windows)
 
-Copy `CLAUDE.md` to `~/.claude/CLAUDE.md` and copy `agents/` to `~/.claude/agents/`.
+```powershell
+.\install.ps1
+```
 
-Or copy just the commands you want to `~/.claude/commands/`.
+Copies all agents, commands, and skills into `~/.claude/` with deduplication and backup, and syncs `CLAUDE.md` to `~/.claude/CLAUDE.md`. Restart Claude Code after running.
 
-### Per-project
+### Manual install (all platforms)
 
-Copy `CLAUDE.md` and `agents/` into your project's `.claude/` folder.
+**Global** — available in all Claude Code sessions:
+
+```bash
+cp CLAUDE.md ~/.claude/CLAUDE.md
+cp -r agents/ ~/.claude/agents/
+cp -r commands/ ~/.claude/commands/
+```
+
+**Per-project** — scoped to one repo:
 
 ```bash
 cp -r agents/ your-project/.claude/agents/
@@ -133,7 +172,7 @@ cp CLAUDE.md your-project/.claude/CLAUDE.md
 ## Structure
 
 ```
-agents/              — 33 specialist agent .md files
+agents/              — 33 specialist agent .md files (see agents/README.md)
 commands/
   web/               — /stack:* commands
   game/              — /panel:game command
@@ -145,6 +184,8 @@ dashboard/           — Vite + React local dashboard
   src/
     components/      — AgentGraph, AgentDetail, ProjectDashboard
     data/            — agents.ts (graph builder), layout
+docs/
+  adr/               — Architecture Decision Records
 sprints/             — sprint registry and assembled sprint definitions
 templates/           — agent template, stack/service presets
 CLAUDE.md            — master orchestrator (loaded in every Claude session)
@@ -156,10 +197,11 @@ CLAUDE.md            — master orchestrator (loaded in every Claude session)
 
 1. Copy `templates/agent-template.md` → `agents/<name>.md`
 2. Fill in: frontmatter (`name`, `description`), persona, `## Stack`, `## Opinions`, `## /audit`, `## /scaffold`, `## /advise`, `## Handoffs`
-3. Add the agent to the family table in `CLAUDE.md` and `~/.claude/CLAUDE.md`
-4. Run `cd dashboard && npm run dev` — the agent appears in the graph automatically
+3. Add the agent to the family table in `CLAUDE.md` and to `agents/README.md`
+4. Run `.\install.ps1` to sync to `~/.claude/` (no manual copy needed)
+5. Run `cd dashboard && npm run dev` — the agent appears in the graph automatically
 
-See `agents/README.md` for the full agent index.
+See `agents/README.md` for the full agent index and `CONTRIBUTING.md` for the full workflow.
 
 ---
 
