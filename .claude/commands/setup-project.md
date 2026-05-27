@@ -31,7 +31,7 @@ Wire up GitHub, Vercel, and Neon as the base services layer, then install Claude
 | `--mode bootstrap` | Create a new repo from scratch |
 | `--stack <name>` | Preset to scaffold — see Stacks table below |
 | `--services <list>` | Extra service modules to add on top of a preset |
-| `--hooks <list>` | Hook recipes: `format-on-write`, `log-bash`, `sprint-banner` |
+| `--hooks <list>` | Project-scope hook recipes: `format-on-write`, `log-bash`, `sprint-banner`. User-scope recipes (`lint-references`, `notion-url-sanitize`) are checked separately — see User-scope hooks below. |
 | `--commands <list>` | Command families to copy: `web`, `game`, `github`, `sprint`, `setup` |
 | `--force` | Overwrite existing files (default: skip with warning) |
 
@@ -161,7 +161,10 @@ Claude Code:
 ✓ .claude/settings.json installed (or merged)
 ✓ .gitignore updated
 ✓ .env.example scaffolded
-[ ] Hooks: run /setup:hooks to add
+✓ User-scope hooks checked — `lint-references` and `notion-url-sanitize` are
+   recommended for every project. If they aren't yet in `~/.claude/settings.json`,
+   run: /setup:hooks --add lint-references,notion-url-sanitize --scope user
+[ ] Project-scope hooks: run /setup:hooks to add (format-on-write, sprint-banner, etc.)
 [ ] Commands: <installed families>
 
 Next steps:

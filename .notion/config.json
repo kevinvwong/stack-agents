@@ -1,0 +1,65 @@
+{
+  "$schema": "https://raw.githubusercontent.com/kevinvwong/stack-agents/main/templates/notion-config.schema.json",
+  "version": 1,
+  "parent": {
+    "id": "36dc266f-7d7c-8008-94e1-e29de65fa9b7",
+    "url": "https://www.notion.so/36dc266f7d7c800894e1e29de65fa9b7",
+    "title": "Claude Code",
+    "ancestor_path": "Workspace root"
+  },
+  "databases": {
+    "projects": {
+      "id": "fae1f503-ac00-428c-b15c-ca4b95ae9b14",
+      "data_source_id": "fd2d81c0-79ae-4a12-b991-79e5c44c7f8c",
+      "url": "https://www.notion.so/fae1f503ac00428cb15cca4b95ae9b14"
+    },
+    "agents": {
+      "id": "5b8a5f4a-6283-4e3d-87eb-affe447fd5fe",
+      "data_source_id": "13f4dfbb-5746-477e-b7b0-41215c07dc22",
+      "url": "https://www.notion.so/5b8a5f4a62834e3d87ebaffe447fd5fe"
+    },
+    "sprints": {
+      "id": "98f9b840-ed8e-4157-b593-b68387cc16b2",
+      "data_source_id": "16770389-a353-417b-b288-8d85adcf989d",
+      "url": "https://www.notion.so/98f9b840ed8e4157b593b68387cc16b2"
+    },
+    "prds": {
+      "id": "9586e5bd-bdeb-4b43-93f8-f2717989bae1",
+      "data_source_id": "a9bf2fc6-4a6c-4777-8eeb-fd0c6de70eee",
+      "url": "https://www.notion.so/9586e5bdbdeb4b4393f8f2717989bae1"
+    },
+    "research": {
+      "id": "c5b57f0b-528d-4c92-ad63-b202202a88a8",
+      "data_source_id": "45505411-ec40-4ba3-bfa5-efdc558989ad",
+      "url": "https://www.notion.so/c5b57f0b528d4c92ad63b202202a88a8"
+    },
+    "analytics": {
+      "id": "064c98b2-1113-4c2b-9f44-7f5d4e648d27",
+      "data_source_id": "d5c24361-81ec-4e2a-99a1-2cd6b92616a0",
+      "url": "https://www.notion.so/064c98b211134c2b9f447f5d4e648d27"
+    },
+    "github-audits": {
+      "id": "cd51f592-c1f4-4d4a-9c46-b499aeff665a",
+      "data_source_id": "dd85a2db-bec2-4d71-9e65-1339e49d943f",
+      "url": "https://www.notion.so/cd51f592c1f44d4a9c46b499aeff665a"
+    },
+    "quality-audits": {
+      "id": "c73197a3-04a4-4dca-b857-7f96caae5091",
+      "data_source_id": "6fd8f530-fae4-4542-acde-e72f21f5bd7b",
+      "url": "https://www.notion.so/c73197a304a44dcab8577f96caae5091"
+    },
+    "game-design": {
+      "id": "9b50ec47-c2ab-4209-bc92-e6f10ae25478",
+      "data_source_id": "2225b62b-8266-4741-bf37-1fe2dd1f9c9e",
+      "url": "https://www.notion.so/9b50ec47c2ab4209bc92e6f10ae25478"
+    },
+    "runbooks": {
+      "id": "481518bc-4242-45b4-b9f8-e302a2954f94",
+      "data_source_id": "7d7f9a11-91b4-45fa-8fe3-8c1ce5f450bb",
+      "url": "https://www.notion.so/481518bc424245b4b9f8e302a2954f94"
+    }
+  },
+  "schema_version": 1,
+  "created": "2026-05-27T00:48:49Z",
+  "last_verified": "2026-05-27T02:55:00Z"
+}

@@ -1,0 +1,35 @@
+{
+  "_recipe": "notion-url-sanitize",
+  "_description": "Block Notion write MCP calls (notion-create-pages, notion-update-page) when the payload contains a URL with credential query params (token, api_key, secret, etc.). Belt-and-suspenders for notion-publisher's sanitizeSourceUrl spec.",
+  "_requires": "jq",
+  "_scope_default": "user",
+  "_files": [
+    {
+      "src": "templates/hooks/scripts/notion-url-sanitize.sh",
+      "dest_user": "$HOME/.claude/hooks/notion-url-sanitize.sh",
+      "dest_project": ".claude/hooks/notion-url-sanitize.sh",
+      "mode": "0755"
+    }
+  ],
+  "_test": "echo '{\"tool_name\":\"mcp__x__notion-create-pages\",\"tool_input\":{\"pages\":[{\"properties\":{\"Source\":\"https://example.com/?token=abc\"}}]}}' | bash templates/hooks/scripts/notion-url-sanitize.sh 2>/dev/null; test $? -eq 2",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*notion-(create-pages|update-page)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_HOOK_DIR/notion-url-sanitize.sh",
+            "timeout": 5,
+            "statusMessage": "Scanning Notion payload for credentials..."
+          }
+        ]
+      }
+    ]
+  },
+  "_notes": [
+    "$CLAUDE_HOOK_DIR resolves to $HOME/.claude/hooks for user scope, .claude/hooks for project scope.",
+    "Catches: ?token=, ?access_token=, ?api_key=, ?secret=, ?password=, ?signature=, ?sig=, ?auth=, ?x-amz-signature=.",
+    "Doesn't redact — just blocks. Sanitize the URL and retry the publish."
+  ]
+}

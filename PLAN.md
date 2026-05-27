@@ -115,3 +115,92 @@ Unlock the remaining Claude Code primitives that are available but not yet wired
 | Item | What |
 |------|------|
 | Add `isolation: worktree` guidance to destructive agent specs | Agents that scaffold or rewrite large files should run in isolated worktrees to protect the working tree |
+
+---
+
+## 🔲 Phase 7 — Harden + close the Notion integration loop
+
+Post-merge debt and gaps surfaced by running the Notion integration end-to-end. Grouped by impact, not effort.
+
+### 7a — Broken / risky now
+
+| Item | What | Issue |
+|------|------|-------|
+| Re-tighten branch protection on `main` | Direct push to `main` succeeded with zero checks earlier. Require a real status check (Vercel deploy once it's wired up) and re-enable admin bypass restrictions, or accept that `main` is admin-trusted. | #28 |
+| Verify Vercel actually deploys this repo | ADR-002 assumes a `Vercel` check posts to PRs. Confirm the repo is connected to a Vercel project; if not, the ADR is theoretical and the required-check name doesn't exist. | #29 |
+| Clean up stale branches + enable auto-delete on merge | `feat/dog-agents`, `claude/notion-workflow-integration-SEwAc` still on origin. Settings → "Automatically delete head branches" not enabled. | #30 |
+
+### 7b — Next features to build
+
+| Item | What | Issue |
+|------|------|-------|
+| Wire up or delete `Quality audits` + `Game design docs` databases | Both are empty with no handoff path from any agent. Either build `/panel:quality` and `/panel:game` Notion publish flow, or remove the databases to avoid governance noise. | #31 |
+| End-to-end test the actual `/notion:publish` command | Every publish to date went via direct MCP calls. Run `/notion:publish runbook docs/SETUP.md` to verify config.json resolution, URL sanitization, upsert-by-Source, body block rendering. | #32 |
+| Build or remove documented-but-unbuilt panel commands | `panel:quality`, `panel:research`, `panel:stack`, `panel:design`, `panel:psych`, `panel:security`, `panel:website`, `panel:content`, `panel:ai-feature`, `panel:launch`, `panel:gtli-*` are in CLAUDE.md routing tables and `.lint-references-ignore`. Promote or drop. | #33 |
+
+### 7c — Polish / observability
+
+| Item | What | Issue |
+|------|------|-------|
+| PostHog telemetry on Notion specialists | No data on `/notion:publish` frequency, failure rate, type distribution. PostHog is in the default stack. | #34 |
+| Update `Source` URL on published runbook | Currently points to PR #2 (merged). Should point to canonical `docs/SETUP.md` commit or permalink. | #35 |
+| `/notion:promote-to-repo` command | If a runbook gets drafted in Notion (against the rule but it happens), there's no extraction path back to `docs/runbooks/`. The importer reads; this would write. | #36 |
+
+---
+
+## 🔲 Phase 8 — Agent lifecycle management (workforce pattern)
+
+Treat the agent roster like staff: hire, train, upskill, combine, fire, eliminate. The Agents database (added in 1.7.4) is the substrate; this phase adds lifecycle fields, commands, sync, and governance.
+
+### 8a — Schema + backfill (immediate; ~30 min)
+
+| Item | What | Issue |
+|------|------|-------|
+| Augment Agents schema | Add `Hired` (date), `Last upskilled` (date), `Deprecation reason` (rich_text), `Replaced by` (self-relation), `Owner` (person), `Usage 30d` (number — populated by #34) | #37 |
+| Backfill `Hired` dates | First commit date per `agents/*.md` from `git log --diff-filter=A --follow` | #38 |
+
+### 8b — Lifecycle commands
+
+| Item | What | Issue |
+|------|------|-------|
+| `/agents:hire <name> --family <X>` | Create new agent file from template + add row to Agents database with `Status=Active`, `Hired=today` | #39 |
+| `/agents:fire <name> --reason "<text>"` | Set `Status=Deprecated`, populate `Deprecation reason`, optionally `Replaced by`. Move file to `agents/.deprecated/`. lint-references catches stale refs. | #40 |
+| `/agents:train <name>` | Run the agent's own `/audit` on itself; surface gaps (missing handoffs, outdated tools, broken `[AGENT:]` refs); propose spec diff | #41 |
+| `/agents:combine A B --into C` | Merge two agents. Both old → `Status=Deprecated`, `Replaced by → C`. New spec proposed for review. | #42 |
+| `/agents:review` | Quarterly performance review across whole roster: usage thresholds, drift, overlap candidates, elimination candidates | #43 |
+
+### 8c — Sync + governance
+
+| Item | What | Issue |
+|------|------|-------|
+| PostToolUse sync hook | Hook on `Write`/`Edit` to `agents/*.md` → `/notion:publish agent <name>` (upserts the row). On delete → `Status=Deprecated`. | #44 |
+| `agent-lifecycle` meta-agent | Owns the 5 `/agents:*` commands. Sibling to `sprint-assembler` and `project-setup` in the Meta family. | #45 |
+| ADR-003 — workforce pattern | Documents the lifecycle: definitions, when to hire vs train vs combine vs fire, the elimination ritual (90-day deprecation window). | #46 |
+
+---
+
+## 🔲 Phase 9 — Docs surface (dashboard as docs UX)
+
+Extend the existing `dashboard/` Vite app into the docs UX for stack-agents. The repo stays canonical; the dashboard becomes the rendered/visual docs surface. No separate docs site (vitepress/astro) — single source via the existing `sync-agents` pattern.
+
+### 9a — Foundation
+
+| Item | What | Issue |
+|------|------|-------|
+| Extend the sync script | `dashboard/package.json` `sync-agents` currently copies `agents/` only. Extend to also sync `docs/` and `commands/` into `dashboard/src/content/{docs,commands}/`. | #47 |
+| Add `/docs` route + nav | New route in dashboard that lists `docs/*.md` pages and renders them with markdown-it (already a dep) | #48 |
+
+### 9b — Content fill
+
+| Item | What | Issue |
+|------|------|-------|
+| `docs/concepts.md` | Single-page intro to Agent / Panel / Sprint / Command / Hook / Runbook. Diagrams. ~300 lines. | #49 |
+| `docs/getting-started.md` | Narrative walkthrough: install → first audit → first sprint → first Notion publish. ~200 lines. | #50 |
+| README polish | Tagline, why-this-exists paragraph, dashboard screenshot, one-line install, top 5 commands, link to dashboard URL for full docs. | #51 |
+
+### 9c — Reference + visuals
+
+| Item | What | Issue |
+|------|------|-------|
+| Per-command detail pages | Mirror of per-agent pages. Route: `/commands/<name>`. Renders frontmatter + body of `commands/**/*.md`. | #52 |
+| Architecture diagram component | React component rendering the orchestrator → families → agents tree (already partially in the agent graph; needs labels + entry point view). | #53 |

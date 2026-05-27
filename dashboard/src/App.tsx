@@ -1,13 +1,24 @@
 import { useState, useMemo, useEffect } from 'react'
 import { AgentGraph } from './components/AgentGraph'
+import { ArchitectureDiagram } from './components/ArchitectureDiagram'
 import { AgentDetail } from './components/AgentDetail'
 import { ProjectDashboard } from './components/ProjectDashboard'
+import { DocsViewer } from './components/DocsViewer'
+import { CommandsViewer } from './components/CommandsViewer'
 import { loadAgents, buildEdges, FAMILY_COLORS, type AgentFamily, type AgentMeta, type Edge } from './data/agents'
 
-type Tab = 'graph' | 'projects'
+// TODO(Phase 9 follow-up): real URL routing for deep linkable docs/commands
+type Tab = 'graph' | 'projects' | 'docs' | 'commands'
+
+const TAB_LABELS: Record<Tab, string> = {
+  graph: '🗺 Agent Graph',
+  projects: '📁 Projects',
+  docs: '📖 Docs',
+  commands: '⌘ Commands',
+}
 
 const ALL_FAMILIES: AgentFamily[] = [
-  'Web Stack', 'Quality', 'Research', 'Product', 'Cross-cutting', 'Game Design', 'GitHub', 'Meta',
+  'Web Stack', 'Quality', 'Research', 'Product', 'Cross-cutting', 'Workspace', 'Game Design', 'GitHub', 'Meta',
 ]
 
 export default function App() {
@@ -65,7 +76,7 @@ export default function App() {
         <span style={{ fontWeight: 800, fontSize: 15, color: '#f1f5f9', marginRight: 24 }}>
           stack-agents
         </span>
-        {(['graph', 'projects'] as Tab[]).map((t) => (
+        {(['graph', 'projects', 'docs', 'commands'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -82,7 +93,7 @@ export default function App() {
               textTransform: 'capitalize',
             }}
           >
-            {t === 'graph' ? '🗺 Agent Graph' : '📁 Projects'}
+            {TAB_LABELS[t]}
           </button>
         ))}
 
@@ -126,15 +137,35 @@ export default function App() {
 
       {/* Body */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        {tab === 'graph' ? (
+        {tab === 'graph' && (
           <>
-            <div style={{ flex: selected ? '1 1 60%' : '1 1 100%', minWidth: 0, transition: 'flex 0.2s' }}>
-              <AgentGraph
-                agents={agents}
-                edges={edges}
-                selectedAgent={selectedAgent}
-                onSelectAgent={setSelectedAgent}
-              />
+            <div
+              style={{
+                flex: selected ? '1 1 60%' : '1 1 100%',
+                minWidth: 0,
+                transition: 'flex 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {familyFilter === null ? (
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <ArchitectureDiagram
+                    agents={allAgents}
+                    onSelect={setSelectedAgent}
+                    onFilterFamily={setFamilyFilter}
+                  />
+                </div>
+              ) : (
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <AgentGraph
+                    agents={agents}
+                    edges={edges}
+                    selectedAgent={selectedAgent}
+                    onSelectAgent={setSelectedAgent}
+                  />
+                </div>
+              )}
             </div>
             {selected && (
               <div style={{ flex: '0 0 420px', overflow: 'hidden' }}>
@@ -142,9 +173,20 @@ export default function App() {
               </div>
             )}
           </>
-        ) : (
+        )}
+        {tab === 'projects' && (
           <div style={{ flex: 1, overflow: 'hidden' }}>
             <ProjectDashboard />
+          </div>
+        )}
+        {tab === 'docs' && (
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <DocsViewer />
+          </div>
+        )}
+        {tab === 'commands' && (
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <CommandsViewer />
           </div>
         )}
       </div>

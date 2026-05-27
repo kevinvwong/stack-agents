@@ -1,40 +1,58 @@
+[![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
+[![Marketplace](https://img.shields.io/badge/marketplace-1.7.5-blue)](./CHANGELOG.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
+
 # stack-agents
 
-[![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
+37 specialist Claude Code agents + a master orchestrator + a Notion-integrated dashboard for solo and small-team multi-agent workflows.
 
-A system of 33 specialist Claude Code agents across 8 domains, a master orchestrator, and a local dashboard for visualizing agents and your project portfolio.
+## Why this exists
+
+Claude Code can run any prompt, but on a real project the hard part is knowing which prompt to run and where the answer lives a week later. stack-agents gives you a routing layer (the master orchestrator in `CLAUDE.md`), a roster of opinionated specialists for the layers of a modern web/game stack, and persistent project memory in Notion via the bundled publishing and import commands. The dashboard makes the agent graph and your project portfolio browsable so the system stays legible as it grows.
+
+![Dashboard agent graph](docs/screenshots/dashboard-agent-graph.png)
+
+## Install
+
+```
+/plugin marketplace add kevinvwong/kwong-claude-marketplace
+/plugin install kwong-stack-agents kwong-commands kwong-skills
+```
+
+Full install options (manual, Windows, per-project) in [`docs/SETUP.md`](./docs/SETUP.md).
+
+## Top 5 commands
+
+| Command | What it does |
+|---------|--------------|
+| `/stack:audit data` | Audit one stack layer |
+| `/panel:github` | Full GitHub-repo health review (6 agents) |
+| `/sprint:assemble "<goal>" --project <path>` | Convene a custom sprint team |
+| `/notion:bootstrap --parent <url>` | Wire up a Notion workspace for a repo |
+| `/setup:project --target <path> --mode bootstrap --stack nextjs` | Create a new repo with the canonical layout |
+
+Routing rules for every command and agent live in [`CLAUDE.md`](./CLAUDE.md). Catalogs in [`agents/README.md`](./agents/README.md) and [`commands/README.md`](./commands/README.md).
+
+## Full docs
+
+Live dashboard: <https://stack-agents-dashboard.vercel.app/>
 
 ---
 
-## Prerequisites
+## Architecture
+
+### Prerequisites
 
 - [Claude Code](https://claude.ai/code) CLI installed and authenticated
 - Node.js 18+ (for the dashboard)
 - PowerShell 5.1+ (Windows — for `install.ps1`)
 - [GitHub CLI](https://cli.github.com/) (`gh`) — optional, enables project issue loading in the dashboard
 
----
-
-## What it is
+### What it is
 
 **Agent system** — specialist `.md` agents invoked through Claude Code slash commands. Each agent has an opinionated `/audit` checklist, `/scaffold` templates, and a `/advise` mode. The master orchestrator (`CLAUDE.md`) routes requests to the right agents in dependency order and synthesizes cross-cutting findings.
 
 **Dashboard** — a local Vite + React app that renders the agent graph (nodes, dependency chains, handoff edges), lets you browse agent specs, and shows a project explorer with git status, stack detection, links, and open GitHub issues across all your repos.
-
----
-
-## Agent Families
-
-| Family | Agents | Covers |
-|--------|--------|--------|
-| **Web Stack** | 7 | Next.js, Drizzle/Neon, Clerk, Claude API, Vercel, Sentry, React |
-| **Game Design** | 6 | Mechanics, narrative, level design, UX, tech architecture, production |
-| **GitHub** | 6 | Branch protection, Actions, issues, PRs, releases, docs |
-| **Quality** | 4 | Playwright E2E, Vitest, WCAG accessibility, Core Web Vitals |
-| **Research** | 4 | User interviews, usability testing, focus groups, heuristic review |
-| **Product** | 2 | PRDs, RICE prioritization, OKRs, PostHog analytics |
-| **Cross-cutting** | 2 | next-intl i18n, AI/infra cost tracking (finops) |
-| **Meta** | 2 | Sprint assembler, project setup |
 
 ### Web Stack dependency chain
 
@@ -54,9 +72,44 @@ data → security → ai-llm → application → infrastructure → observabilit
 | AI | Anthropic Claude API + ElevenLabs TTS + Deepgram STT |
 | Analytics | PostHog + Sentry |
 
+### Structure
+
+```
+agents/              — 33 specialist agent .md files (see agents/README.md)
+commands/
+  web/               — /stack:* commands
+  game/              — /panel:game command
+  github/            — /panel:github command
+  sprint/            — /sprint:* commands
+  setup/             — /setup:* commands
+  orchestrate.md     — master orchestrator command
+dashboard/           — Vite + React local dashboard
+  src/
+    components/      — AgentGraph, AgentDetail, ProjectDashboard
+    data/            — agents.ts (graph builder), layout
+docs/
+  adr/               — Architecture Decision Records
+sprints/             — sprint registry and assembled sprint definitions
+templates/           — agent template, stack/service presets
+CLAUDE.md            — master orchestrator (loaded in every Claude session)
+```
+
 ---
 
-## Dashboard
+## Agent roster
+
+| Family | Agents | Covers |
+|--------|--------|--------|
+| **Web Stack** | 7 | Next.js, Drizzle/Neon, Clerk, Claude API, Vercel, Sentry, React |
+| **Game Design** | 6 | Mechanics, narrative, level design, UX, tech architecture, production |
+| **GitHub** | 6 | Branch protection, Actions, issues, PRs, releases, docs |
+| **Quality** | 4 | Playwright E2E, Vitest, WCAG accessibility, Core Web Vitals |
+| **Research** | 4 | User interviews, usability testing, focus groups, heuristic review |
+| **Product** | 2 | PRDs, RICE prioritization, OKRs, PostHog analytics |
+| **Cross-cutting** | 2 | next-intl i18n, AI/infra cost tracking (finops) |
+| **Meta** | 2 | Sprint assembler, project setup |
+
+### Dashboard
 
 A local interactive graph of all agents, dependency chains, and handoff edges — plus a project explorer.
 
@@ -70,11 +123,9 @@ npm run dev
 - **Agent Graph tab** — 33 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
 - **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, git status (ahead/behind/dirty), GitHub/production/local links, and open issues.
 
----
+### Commands
 
-## Commands
-
-### Orchestrator (works from any project)
+#### Orchestrator (works from any project)
 
 ```
 /orchestrate audit my auth setup
@@ -84,7 +135,7 @@ npm run dev
 
 Routes requests to the correct agent(s), emits output in dependency order, synthesizes cross-cutting findings after multi-agent runs.
 
-### Web Stack
+#### Web Stack
 
 | Command | Usage |
 |---------|-------|
@@ -93,7 +144,7 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 | `/stack:advise [question]` | Architectural recommendation |
 | `/stack:fullstack` | All 7 agents in dependency order |
 
-### Panels
+#### Panels
 
 | Command | Agents |
 |---------|--------|
@@ -103,7 +154,7 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 | `/panel:quality [scope]` | web-qa + accessibility + performance |
 | `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review |
 
-### Sprints
+#### Sprints
 
 ```
 /sprint:assemble "voice coaching feature" --project ../GTLI_YLAI
@@ -112,7 +163,7 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 /sprint:dissolve "voice coaching feature"
 ```
 
-### More commands
+#### More commands
 
 | Command | Usage |
 |---------|-------|
@@ -130,7 +181,7 @@ Routes requests to the correct agent(s), emits output in dependency order, synth
 
 For the full command reference see `CLAUDE.md`.
 
-### Setup
+#### Setup
 
 ```
 /setup:project --target ../my-app --mode config        # add orchestration to existing repo
@@ -140,7 +191,7 @@ For the full command reference see `CLAUDE.md`.
 
 ---
 
-## Install
+## Marketplace
 
 ### Quick install (Windows)
 
@@ -169,31 +220,9 @@ cp CLAUDE.md your-project/.claude/CLAUDE.md
 
 ---
 
-## Structure
+## Contributing
 
-```
-agents/              — 33 specialist agent .md files (see agents/README.md)
-commands/
-  web/               — /stack:* commands
-  game/              — /panel:game command
-  github/            — /panel:github command
-  sprint/            — /sprint:* commands
-  setup/             — /setup:* commands
-  orchestrate.md     — master orchestrator command
-dashboard/           — Vite + React local dashboard
-  src/
-    components/      — AgentGraph, AgentDetail, ProjectDashboard
-    data/            — agents.ts (graph builder), layout
-docs/
-  adr/               — Architecture Decision Records
-sprints/             — sprint registry and assembled sprint definitions
-templates/           — agent template, stack/service presets
-CLAUDE.md            — master orchestrator (loaded in every Claude session)
-```
-
----
-
-## Adding a new agent
+### Adding a new agent
 
 1. Copy `templates/agent-template.md` → `agents/<name>.md`
 2. Fill in: frontmatter (`name`, `description`), persona, `## Stack`, `## Opinions`, `## /audit`, `## /scaffold`, `## /advise`, `## Handoffs`

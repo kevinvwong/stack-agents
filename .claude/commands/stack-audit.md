@@ -1,4 +1,4 @@
-﻿---
+---
 name: stack:audit
 description: Run a structured code review across one or more stack layers. Routes to the appropriate agent(s) based on scope. Output is grouped by severity with checkboxes, findings, explanations, and recommended fixes.
 ---
@@ -10,7 +10,7 @@ Run a structured review of existing code. Routes to the appropriate agent(s) bas
 ## Usage
 
 ```
-/audit                          # full-stack audit â€” all 7 agents
+/audit                          # full-stack audit — all 7 agents
 /audit auth                     # security agent only
 /audit database schema          # data agent only
 /audit API routes               # application agent only
@@ -33,7 +33,7 @@ Supports `STACK:` override:
 Target: <what was reviewed>
 
 ### Critical
-- [ ] **[Finding title]** â€” [file:line if known]
+- [ ] **[Finding title]** — [file:line if known]
   Why it matters: [consequence if not fixed]
   Fix: [specific, actionable remediation]
 
@@ -46,7 +46,7 @@ Target: <what was reviewed>
 ### Low
 - [ ] ...
 
-Summary: X critical, Y high, Z medium, W low â€” estimated remediation effort: [S/M/L/XL]
+Summary: X critical, Y high, Z medium, W low — estimated remediation effort: [S/M/L/XL]
 ```
 
 For multi-agent audits, emit each agent's output in full before the next.

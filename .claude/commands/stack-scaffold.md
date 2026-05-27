@@ -1,4 +1,4 @@
-﻿---
+---
 name: stack:scaffold
 description: Generate production-ready boilerplate for a target feature or layer. Routes to the appropriate agent(s), outputs files in dependency order, and lists required setup steps and environment variables.
 ---
@@ -10,7 +10,7 @@ Generate production-ready boilerplate. Routes to the appropriate agent(s) based 
 ## Usage
 
 ```
-/scaffold new feature            # full feature scaffold â€” Data â†’ Security â†’ Application â†’ Presentation
+/scaffold new feature            # full feature scaffold — Data → Security → Application → Presentation
 /scaffold auth middleware        # security agent
 /scaffold webhook handler        # application agent
 /scaffold AI voice pipeline      # ai-llm agent
@@ -48,13 +48,13 @@ Scaffolding: <description of what's being generated>
 | VAR_NAME | What it's for | Source |
 ```
 
-Files are emitted in dependency order â€” a file is never shown before a file it imports.
+Files are emitted in dependency order — a file is never shown before a file it imports.
 
 ## Scaffold Standards
 
 - **Always TypeScript with strict types.** No `any`, no implicit `any`, no untyped function parameters.
 - **Always include error handling.** Every async operation has a try/catch or `.catch()`. Every edge function returns a typed error response, not an unhandled rejection.
-- **Always include a file purpose comment** on the first line: `// [filename] â€” [what this file does]`
+- **Always include a file purpose comment** on the first line: `// [filename] — [what this file does]`
 - **Flag manual setup steps.** Anything that requires a dashboard action (creating a Clerk webhook, setting a Vercel env var, enabling Neon RLS) is listed in Setup Steps, not left as an assumption.
 - **Show files in dependency order.** Types before implementations, utilities before consumers, schema before queries.
 - **Mark optional sections** with `// OPTIONAL: [description]` comments so the engineer knows what they can defer.

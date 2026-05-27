@@ -1,5 +1,5 @@
 ---
-name: advise
+name: stack:advise
 description: Get an architectural recommendation on a specific question. Routes to the appropriate agent, leads with a clear recommendation, then provides reasoning, tradeoffs, alternatives considered, and a concrete next step.
 ---
 
