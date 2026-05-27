@@ -51,7 +51,7 @@ Generated agents are **never removed** — they become permanent additions to th
 ## Output Format
 
 ```
-[AGENT: sprint-assembler] [COMMAND: dissolve]
+[AGENT: meta-sprint-assembler] [COMMAND: dissolve]
 Sprint: <name>
 Project: <target path>
 

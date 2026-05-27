@@ -10,8 +10,8 @@ Use a preset with: `/setup:project --target <path> --mode bootstrap --stack <pre
 
 | Preset | Use case | Key services |
 |--------|----------|-------------|
-| [`nextjs`](../../agents/project-setup.md#--stack-nextjs) | Any Next.js project starting point | Neon + Drizzle only |
-| [`nextjs-ai`](../../agents/project-setup.md#--stack-nextjs-ai) | AI/voice product with full observability | + Neon Auth, Anthropic, Upstash, ElevenLabs, Sentry, PostHog |
+| [`nextjs`](../../agents/meta-project-setup.md#--stack-nextjs) | Any Next.js project starting point | Neon + Drizzle only |
+| [`nextjs-ai`](../../agents/meta-project-setup.md#--stack-nextjs-ai) | AI/voice product with full observability | + Neon Auth, Anthropic, Upstash, ElevenLabs, Sentry, PostHog |
 | [`nextjs-edu`](nextjs-edu.md) | Language learning / education platform | + Deepgram, pronunciation engine, i18n, Resend, Recharts |
 | [`nextjs-events`](nextjs-events.md) | Event management / volunteer coordination | + Clerk, Stripe, Resend, Twilio, Cloudinary, Recharts |
 | [`nextjs-knowledge`](nextjs-knowledge.md) | Knowledge base / second brain with AI search | + pgvector, Tiptap, Anthropic RAG, Recharts |

@@ -40,7 +40,7 @@ For each **Deprecated** agent:
 ## Output Format
 
 ```
-[AGENT: agent-lifecycle] [COMMAND: review]
+[AGENT: meta-agent-lifecycle] [COMMAND: review]
 Date:             <ISO date>
 Family scope:     <family or "all">
 Thresholds:       usage=<N>, stale=<days>, elim=<days>
@@ -121,4 +121,4 @@ Next:
 - Right after `/agents:hire` of a new agent — usage and inbound-ref data won't be meaningful yet. Wait a quarter.
 - As a pre-commit gate — this is a review, not a lint. The reference linter (`scripts/lint-references.mjs`) is what blocks commits.
 
-Source: PLAN.md Phase 8b · Owned by `[AGENT: agent-lifecycle]` · Soft-depends on telemetry (issue #34)
+Source: PLAN.md Phase 8b · Owned by `[AGENT: meta-agent-lifecycle]` · Soft-depends on telemetry (issue #34)

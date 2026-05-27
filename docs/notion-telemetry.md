@@ -16,7 +16,7 @@ After 7.x of building this integration we still can't answer:
 - Which `Source` URLs get republished most (= artifacts iterating fastest = areas of active work)?
 - How often does the URL sanitizer block a publish? Is the false-positive rate acceptable, or is it noisy?
 
-Without data, every future tuning decision is a guess. PostHog is already in the default stack (`agents/analytics.md`, `agents/web-observability.md`); five well-placed events would unlock the answers.
+Without data, every future tuning decision is a guess. PostHog is already in the default stack (`agents/product-analytics.md`, `agents/web-observability.md`); five well-placed events would unlock the answers.
 
 ## Events
 

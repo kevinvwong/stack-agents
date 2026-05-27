@@ -43,7 +43,7 @@ Convene the `agent-lifecycle` meta-agent to onboard a new agent into the workfor
 ## Output Format
 
 ```
-[AGENT: agent-lifecycle] [COMMAND: hire]
+[AGENT: meta-agent-lifecycle] [COMMAND: hire]
 Agent:       <name>
 Family:      <family>
 Description: <text>
@@ -93,4 +93,4 @@ Next:
 - Splitting one agent into two — there's no `/agents:split` yet; this is a `/agents:fire` of the old followed by two `/agents:hire` calls.
 - Bulk import of an existing agent roster — use a one-off script; this command is for deliberate per-agent onboarding.
 
-Source: PLAN.md Phase 8b · Owned by `[AGENT: agent-lifecycle]`
+Source: PLAN.md Phase 8b · Owned by `[AGENT: meta-agent-lifecycle]`

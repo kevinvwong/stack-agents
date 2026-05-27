@@ -49,7 +49,7 @@ If the user does not respond with an affirmative, the command exits 0 with no mu
 ## Output Format
 
 ```
-[AGENT: agent-lifecycle] [COMMAND: fire]
+[AGENT: meta-agent-lifecycle] [COMMAND: fire]
 Agent:        <name>
 Reason:       <text>
 Replaced by:  <other-agent> | none
@@ -111,4 +111,4 @@ Next:
 - You're merging two agents into one — use `/agents:combine`, which calls this command internally with `--replaced-by` set.
 - You want to delete the agent immediately — there's no `/agents:eliminate` command yet. Manual deletion is allowed only after 90 days, zero inbound refs, and zero usage (per `/agents:review`).
 
-Source: PLAN.md Phase 8b · Owned by `[AGENT: agent-lifecycle]`
+Source: PLAN.md Phase 8b · Owned by `[AGENT: meta-agent-lifecycle]`

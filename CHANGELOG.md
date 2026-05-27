@@ -23,7 +23,7 @@ All notable changes to this marketplace are documented here.
 - `agents/web-observability.md` — `## MCP Tools` section + `/audit` updated to call live Sentry data when configured.
 
 **Phase 6e — Worktree isolation (PR #57)**
-- `agents/project-setup.md`, `agents/sprint-assembler.md`, `dog-add.md`, `dog-remove.md` — `## Isolation` section added.
+- `agents/meta-project-setup.md`, `agents/meta-sprint-assembler.md`, `dog-add.md`, `dog-remove.md` — `## Isolation` section added.
 - `agents/README.md` — step 7 in "Adding a New Agent" checklist for scaffold agents.
 
 **Phase 9a — sync-content fix (PR #59)**
@@ -43,7 +43,7 @@ All notable changes to this marketplace are documented here.
 Massive session-driven build. Five parallel writing agents executed Phase 7-9 work; reference linter green throughout.
 
 **Phase 8 — Agent lifecycle (workforce pattern):**
-- `agents/agent-lifecycle.md` (#45) — new meta-agent, sibling to `sprint-assembler` and `project-setup`. Owns `/agents:*` commands; treats roster as staff.
+- `agents/meta-agent-lifecycle.md` (#45) — new meta-agent, sibling to `sprint-assembler` and `project-setup`. Owns `/agents:*` commands; treats roster as staff.
 - `commands/agents/agents-hire.md` (#39) — atomic create: agent file + Notion row with rollback.
 - `commands/agents/agents-fire.md` (#40) — deprecate (Notion Status=Deprecated, file → `agents/.deprecated/`, surfaces stale `[AGENT:]` refs).
 - `commands/agents/agents-train.md` (#41) — self-audit + unified-diff spec improvements; bumps `Last upskilled` on apply.

@@ -15,7 +15,13 @@
       "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-update-data-source",
       "Bash(gh run *)",
       "Bash(gh api *)",
-      "PowerShell(gh run *)"
+      "PowerShell(gh run *)",
+      "Bash(gh pr create --title 'chore: add gh run/api permission allowlist to settings.local.json' --body 'Adds `Bash\\(gh run *\\)`, `Bash\\(gh api *\\)`, and `PowerShell\\(gh run *\\)` to the project-scope permission allowlist. These were granted interactively during the session and should persist. *)",
+      "Bash(gh pr *)",
+      "Bash(gh release *)",
+      "Bash(gh label *)",
+      "Bash(gh issue *)",
+      "Bash(awk -F'\\\\t' '$2==\"\"')"
     ]
   }
 }

@@ -28,9 +28,9 @@ Convene the `notion-publisher` agent to publish a stack-agents artifact into its
 | Type | Identifier | Source artifact |
 |------|------------|-----------------|
 | `sprint` | sprint slug (e.g. `ai-voice-coaching`) | `sprints/<slug>/roster.md` + latest `/sprint:status` |
-| `prd` | path to PRD file or feature slug | `[AGENT: product] /scaffold` output |
+| `prd` | path to PRD file or feature slug | `[AGENT: product-product] /scaffold` output |
 | `research` | path to research report or study slug | `user-research` / `focus-group` / `expert-review` output |
-| `analytics` | path to event schema / experiment plan | `[AGENT: analytics] /scaffold` output |
+| `analytics` | path to event schema / experiment plan | `[AGENT: product-analytics] /scaffold` output |
 | `github-audit` | repo (`owner/name`) or `pr:<number>` | `/panel:github` output |
 | `quality-audit` | scope (`web-qa,accessibility,performance` or path) | `/panel:quality` output |
 | `game-design` | path or artifact slug | `/panel:game` output |
