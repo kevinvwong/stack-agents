@@ -7,8 +7,30 @@ import { DocsViewer } from './components/DocsViewer'
 import { CommandsViewer } from './components/CommandsViewer'
 import { loadAgents, buildEdges, FAMILY_COLORS, type AgentFamily, type AgentMeta, type Edge } from './data/agents'
 
-// TODO(Phase 9 follow-up): real URL routing for deep linkable docs/commands
 type Tab = 'graph' | 'projects' | 'docs' | 'commands'
+
+function useHashTab(): [Tab, (t: Tab) => void] {
+  const hashToTab = (h: string): Tab => {
+    const raw = h.replace('#', '')
+    return (['graph', 'projects', 'docs', 'commands'] as Tab[]).includes(raw as Tab)
+      ? (raw as Tab)
+      : 'graph'
+  }
+  const [tab, setTabState] = useState<Tab>(() => hashToTab(window.location.hash))
+
+  useEffect(() => {
+    const handler = () => setTabState(hashToTab(window.location.hash))
+    window.addEventListener('hashchange', handler)
+    return () => window.removeEventListener('hashchange', handler)
+  }, [])
+
+  const setTab = (t: Tab) => {
+    window.location.hash = t === 'graph' ? '' : t
+    setTabState(t)
+  }
+
+  return [tab, setTab]
+}
 
 const TAB_LABELS: Record<Tab, string> = {
   graph: '🗺 Agent Graph',
@@ -22,7 +44,7 @@ const ALL_FAMILIES: AgentFamily[] = [
 ]
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>('graph')
+  const [tab, setTab] = useHashTab()
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null)
   const [familyFilter, setFamilyFilter] = useState<AgentFamily | null>(null)
   const [allAgents, setAllAgents] = useState<AgentMeta[]>([])
