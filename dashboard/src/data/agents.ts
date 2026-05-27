@@ -32,11 +32,11 @@ export const CHAINS: { family: AgentFamily; chain: string[] }[] = [
   },
   {
     family: 'Quality',
-    chain: ['web-qa', 'accessibility', 'performance'],
+    chain: ['web-qa', 'quality-accessibility', 'quality-performance'],
   },
   {
     family: 'Research',
-    chain: ['user-research', 'usability-testing', 'focus-group', 'expert-review'],
+    chain: ['research-user-research', 'research-usability-testing', 'research-focus-group', 'research-expert-review'],
   },
   {
     family: 'Game Design',
@@ -66,6 +66,7 @@ export const FAMILY_COLORS: Record<AgentFamily, string> = {
 
 // Map agent file stem → family
 const FAMILY_MAP: Record<string, AgentFamily> = {
+  // Web Stack
   'web-data': 'Web Stack',
   'web-security': 'Web Stack',
   'web-ai-llm': 'Web Stack',
@@ -73,41 +74,50 @@ const FAMILY_MAP: Record<string, AgentFamily> = {
   'web-infrastructure': 'Web Stack',
   'web-observability': 'Web Stack',
   'web-presentation': 'Web Stack',
+  // Quality
   'web-qa': 'Quality',
   'game-qa': 'Quality',
-  'accessibility': 'Quality',
-  'performance': 'Quality',
-  'user-research': 'Research',
-  'usability-testing': 'Research',
-  'focus-group': 'Research',
-  'expert-review': 'Research',
-  'product': 'Product',
-  'analytics': 'Product',
-  'i18n': 'Cross-cutting',
-  'finops': 'Cross-cutting',
+  'quality-accessibility': 'Quality',
+  'quality-performance': 'Quality',
+  // Research
+  'research-user-research': 'Research',
+  'research-usability-testing': 'Research',
+  'research-focus-group': 'Research',
+  'research-expert-review': 'Research',
+  // Product
+  'product-product': 'Product',
+  'product-analytics': 'Product',
+  // Cross-cutting
+  'cross-i18n': 'Cross-cutting',
+  'cross-finops': 'Cross-cutting',
+  // Game Design
   'game-design': 'Game Design',
   'game-narrative': 'Game Design',
   'game-level-design': 'Game Design',
   'game-ux': 'Game Design',
   'game-tech': 'Game Design',
   'game-production': 'Game Design',
+  // GitHub
   'gh-repo': 'GitHub',
   'gh-actions': 'GitHub',
   'gh-issues': 'GitHub',
   'gh-prs': 'GitHub',
   'gh-releases': 'GitHub',
   'gh-docs': 'GitHub',
+  // Workspace
   'notion-architect': 'Workspace',
   'notion-publisher': 'Workspace',
   'notion-importer': 'Workspace',
   'notion-governance': 'Workspace',
-  'sprint-assembler': 'Meta',
-  'project-setup': 'Meta',
-  'agent-lifecycle': 'Meta',
+  // Meta
+  'meta-sprint-assembler': 'Meta',
+  'meta-project-setup': 'Meta',
+  'meta-agent-lifecycle': 'Meta',
 }
 
 // Map file stem → chain id (some file names differ from chain ids)
 const STEM_TO_CHAIN_ID: Record<string, string> = {
+  // Web Stack — file stems have web- prefix, chain uses short ids
   'web-data': 'data',
   'web-security': 'security',
   'web-ai-llm': 'ai-llm',
@@ -115,6 +125,7 @@ const STEM_TO_CHAIN_ID: Record<string, string> = {
   'web-infrastructure': 'infrastructure',
   'web-observability': 'observability',
   'web-presentation': 'presentation',
+  // Game Design — file stems have game- prefix, some chain ids are short
   'game-narrative': 'narrative',
   'game-level-design': 'level-design',
   'game-production': 'production',
