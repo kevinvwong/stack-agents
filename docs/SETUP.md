@@ -19,6 +19,7 @@ Estimated time: 15 minutes for the one-time pieces, 2 minutes per additional rep
 Install missing pieces:
 - macOS: `brew install node jq git`
 - Linux (Debian/Ubuntu): `apt install nodejs npm jq git`
+- Windows: `winget install jqlang.jq` (or `choco install jq` if Chocolatey is installed)
 - Claude Code: https://docs.claude.com/en/docs/claude-code
 
 ---
@@ -108,6 +109,28 @@ git commit -m "test"        # ← linter hook should block this
 # Reset:
 git checkout agents/notion-architect.md
 ```
+
+---
+
+## 3b. Project-scope hooks (pre-deployed in this repo)
+
+If you're working within the `stack-agents` repo itself (not a downstream project), a second set of hooks is already pre-wired in `.claude/settings.json` at the repo level. These activate automatically when Claude Code runs from `stack-agents/`.
+
+| Hook | Event | What it does |
+|------|-------|--------------|
+| `bash-guard.sh` | `PreToolUse / Bash` | Blocks destructive shell patterns (`rm -rf` unscoped, `git reset --hard`, `DROP TABLE`, etc.) |
+| `format-on-write.sh` | `PostToolUse / Edit+Write` | Runs Prettier after every file write (async, no-op if Prettier absent) |
+| `session-stop.sh` | `Stop` | Writes `.claude/session-state.json` with branch, SHA, clean/dirty status at end of every turn |
+| `notify.sh` | `Notification` | Routes notifications to Slack (if `SLACK_BOT_TOKEN` set), BurntToast (Windows), or terminal bell |
+| `session-start.sh` | `SessionStart` | Prints the session briefing box (SYNC warnings, CI status, recent changes) |
+
+These are project-scope (`.claude/settings.json`), not user-scope — they only fire in this repo. To install the equivalent hooks for your own downstream project, run:
+
+```
+/setup:hooks --add format-on-write,bash-guard --scope project --target <your-repo>
+```
+
+**Activation gotcha**: hooks installed mid-session don't fire until the config reloads. Always open `/hooks` in the Claude Code UI or restart Claude Code after modifying `.claude/settings.json`.
 
 ---
 
@@ -206,18 +229,33 @@ See the **Quick start** section of the runbook at the top of this repo's Notion 
 After completing this guide:
 
 ```
-~/.claude/
+~/.claude/                                 # User scope — applies to every project
 ├── CLAUDE.md                              # Master orchestrator (from stack-agents)
-├── settings.json                          # Hooks + MCP server config
+├── settings.json                          # User-scope hooks + MCP server config
+│                                          #   mcpServers: notion, github, neon, sentry, slack
+│                                          #   hooks: lint-references-on-commit, notion-url-sanitize
 ├── scripts/
 │   └── lint-references.mjs                # User-scope linter
 └── hooks/
-    ├── lint-references-on-commit.sh       # Pre-commit hook
-    └── notion-url-sanitize.sh             # Pre-Notion-write hook
+    ├── lint-references-on-commit.sh       # PreToolUse / git commit — blocks broken refs
+    └── notion-url-sanitize.sh             # PreToolUse / Notion MCP — strips credential params
+
+stack-agents/                              # Project scope — stack-agents repo only
+└── .claude/
+    ├── settings.json                      # Project-scope hooks (pre-deployed, Phase 6)
+    ├── hooks/
+    │   ├── bash-guard.sh                  # PreToolUse / Bash — blocks destructive patterns
+    │   ├── format-on-write.sh             # PostToolUse — Prettier after Edit/Write
+    │   ├── session-start.sh               # SessionStart — briefing box
+    │   ├── session-stop.sh                # Stop — writes session-state.json
+    │   └── notify.sh                      # Notification — Slack / BurntToast / bell
+    └── scheduled/
+        ├── daily-ci-audit.sh              # Cron 08:00 — CI + Dependabot triage
+        └── weekly-pr-health.sh            # Cron Mon 09:00 — stale PR triage
 
 <each repo>/
 └── .notion/
-    └── config.json                        # Per-repo workspace map
+    └── config.json                        # Per-repo workspace map (Notion database IDs)
 ```
 
 ---
