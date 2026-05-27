@@ -2,6 +2,20 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.2] — 2026-05-27
+
+### Changed
+
+- **`dashboard/package.json`**: `build` script now chains `eslint "src/**/*.{ts,tsx}" && tsc -b && vite build` so a single `npm run build` is a complete CI gate. Added `build:fast` for tight local iteration (typecheck + vite only, no lint), plus standalone `lint` and `typecheck` aliases.
+- **Vercel's automatic deploy check** is now the intended branch-protection requirement for merging to `main` (replaces `Dashboard — lint + build` from GH Actions). The GH Actions workflow stays in place as a fallback; it's no longer the merge gate.
+- **`docs/adr/ADR-002-vercel-as-ci-gate.md`** documents the switch and the manual GitHub branch-protection update required on the repo settings page.
+
+### Why
+
+GH Actions billable minutes can be exhausted (it just was on PR #2), blocking PRs unless an admin bypass is used. Vercel already runs an equivalent build on every PR — single source of truth + no quota dependency.
+
+---
+
 ## [1.7.1] — 2026-05-27
 
 ### Added
