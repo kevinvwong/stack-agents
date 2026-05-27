@@ -25,7 +25,7 @@ gh issue list --state open --limit 5 2>/dev/null || true
 | If you find… | Then… |
 |---|---|
 | `drizzle.config.ts` | Weight `data` agent; flag migrations in any audit |
-| `elevenlabs` or `deepgram` in deps | Include `ai-llm` and `finops` in any full-stack run |
+| `elevenlabs` or `deepgram` in deps | Include `ai-llm` and `cross-finops` in any full-stack run |
 | `clerk` in deps | Weight `security` agent for auth questions |
 | `next.config.ts` | This is a Next.js web project — default to web stack agents |
 | `playwright.config.ts` | A test suite exists — `web-qa` can audit it directly |
@@ -58,37 +58,37 @@ Only ask a clarifying question if context is insufficient to determine the domai
 | `observability` | Sentry, Axiom, structured logging, AI call monitoring, alerting |
 | `presentation` | React components, Next.js App Router, Server/Client boundaries, Tailwind |
 
-**Quality** — chain: `web-qa → accessibility → performance`
+**Quality** — chain: `web-qa → quality-accessibility → quality-performance`
 
 | Agent | Handles |
 |---|---|
 | `web-qa` | Playwright E2E, Vitest unit/integration, test pyramid, flake triage |
 | `game-qa` | Playtesting protocols, functional QA, regression suites, certification |
-| `accessibility` | WCAG 2.1/2.2, axe-core, screen readers, ARIA, focus management |
-| `performance` | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy |
+| `quality-accessibility` | WCAG 2.1/2.2, axe-core, screen readers, ARIA, focus management |
+| `quality-performance` | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy |
 
-**Research** — chain: `user-research → usability-testing → focus-group → expert-review`
+**Research** — chain: `research-user-research → research-usability-testing → research-focus-group → research-expert-review`
 
 | Agent | Handles |
 |---|---|
-| `user-research` | User interviews, surveys, JTBD, persona development, affinity mapping |
-| `usability-testing` | Think-aloud protocols, moderated/unmoderated studies, task analysis |
-| `focus-group` | Focus group design, facilitation, concept testing |
-| `expert-review` | Nielsen's heuristics, Mayer's multimedia principles, PLAY heuristics |
+| `research-user-research` | User interviews, surveys, JTBD, persona development, affinity mapping |
+| `research-usability-testing` | Think-aloud protocols, moderated/unmoderated studies, task analysis |
+| `research-focus-group` | Focus group design, facilitation, concept testing |
+| `research-expert-review` | Nielsen's heuristics, Mayer's multimedia principles, PLAY heuristics |
 
 **Product**
 
 | Agent | Handles |
 |---|---|
-| `product` | PRDs, user stories, RICE/MoSCoW, OKRs, success metrics |
-| `analytics` | PostHog event schemas, funnel design, A/B tests, retention analysis |
+| `product-product` | PRDs, user stories, RICE/MoSCoW, OKRs, success metrics |
+| `product-analytics` | PostHog event schemas, funnel design, A/B tests, retention analysis |
 
 **Cross-cutting**
 
 | Agent | Handles |
 |---|---|
-| `i18n` | next-intl, ICU messages, RTL support, locale routing |
-| `finops` | Claude/ElevenLabs/Deepgram cost tracking, Vercel/Neon spend, prompt caching |
+| `cross-i18n` | next-intl, ICU messages, RTL support, locale routing |
+| `cross-finops` | Claude/ElevenLabs/Deepgram cost tracking, Vercel/Neon spend, prompt caching |
 
 **Game Design** — chain: `game-design → narrative → level-design → game-ux → game-tech → production`
 
@@ -116,8 +116,8 @@ Only ask a clarifying question if context is insufficient to determine the domai
 
 | Keyword | Chain |
 |---|---|
-| "full quality sweep" | `web-qa → accessibility → performance` |
-| "full research pass" | `user-research → usability-testing → focus-group → expert-review` |
+| "full quality sweep" | `web-qa → quality-accessibility → quality-performance` |
+| "full research pass" | `research-user-research → research-usability-testing → research-focus-group → research-expert-review` |
 | "full web stack" | all 7 web agents in dependency order |
 | "full game review" | all 6 game agents in dependency order |
 | "full GitHub review" | all 6 GitHub agents in dependency order |
@@ -155,7 +155,7 @@ Collect every `→ HANDOFF TO` emitted during the run. Then look for these inter
 | Environment gap | `infrastructure` + `security` | Secrets in code absent from `.env.example` or Vercel environment |
 | Error visibility gap | `application` + `observability` | Caught errors not forwarded to Sentry before returning 500 |
 | CI coverage gap | `infrastructure` + `web-qa` | Tests exist but not wired into GitHub Actions workflow |
-| Cost blindspot | `ai-llm` + `finops` | AI calls without per-session cost accumulation or budget limits |
+| Cost blindspot | `ai-llm` + `cross-finops` | AI calls without per-session cost accumulation or budget limits |
 
 Emit only findings that span two or more agents. Don't repeat findings already filed by an individual agent unless the *interaction* between layers is the issue.
 
