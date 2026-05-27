@@ -115,3 +115,33 @@ Unlock the remaining Claude Code primitives that are available but not yet wired
 | Item | What |
 |------|------|
 | Add `isolation: worktree` guidance to destructive agent specs | Agents that scaffold or rewrite large files should run in isolated worktrees to protect the working tree |
+
+---
+
+## 🔲 Phase 7 — Harden + close the Notion integration loop
+
+Post-merge debt and gaps surfaced by running the Notion integration end-to-end. Grouped by impact, not effort.
+
+### 7a — Broken / risky now
+
+| Item | What | Issue |
+|------|------|-------|
+| Re-tighten branch protection on `main` | Direct push to `main` succeeded with zero checks earlier. Require a real status check (Vercel deploy once it's wired up) and re-enable admin bypass restrictions, or accept that `main` is admin-trusted. | #28 |
+| Verify Vercel actually deploys this repo | ADR-002 assumes a `Vercel` check posts to PRs. Confirm the repo is connected to a Vercel project; if not, the ADR is theoretical and the required-check name doesn't exist. | #29 |
+| Clean up stale branches + enable auto-delete on merge | `feat/dog-agents`, `claude/notion-workflow-integration-SEwAc` still on origin. Settings → "Automatically delete head branches" not enabled. | #30 |
+
+### 7b — Next features to build
+
+| Item | What | Issue |
+|------|------|-------|
+| Wire up or delete `Quality audits` + `Game design docs` databases | Both are empty with no handoff path from any agent. Either build `/panel:quality` and `/panel:game` Notion publish flow, or remove the databases to avoid governance noise. | #31 |
+| End-to-end test the actual `/notion:publish` command | Every publish to date went via direct MCP calls. Run `/notion:publish runbook docs/SETUP.md` to verify config.json resolution, URL sanitization, upsert-by-Source, body block rendering. | #32 |
+| Build or remove documented-but-unbuilt panel commands | `panel:quality`, `panel:research`, `panel:stack`, `panel:design`, `panel:psych`, `panel:security`, `panel:website`, `panel:content`, `panel:ai-feature`, `panel:launch`, `panel:gtli-*` are in CLAUDE.md routing tables and `.lint-references-ignore`. Promote or drop. | #33 |
+
+### 7c — Polish / observability
+
+| Item | What | Issue |
+|------|------|-------|
+| PostHog telemetry on Notion specialists | No data on `/notion:publish` frequency, failure rate, type distribution. PostHog is in the default stack. | #34 |
+| Update `Source` URL on published runbook | Currently points to PR #2 (merged). Should point to canonical `docs/SETUP.md` commit or permalink. | #35 |
+| `/notion:promote-to-repo` command | If a runbook gets drafted in Notion (against the rule but it happens), there's no extraction path back to `docs/runbooks/`. The importer reads; this would write. | #36 |
