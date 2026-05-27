@@ -145,3 +145,34 @@ Post-merge debt and gaps surfaced by running the Notion integration end-to-end. 
 | PostHog telemetry on Notion specialists | No data on `/notion:publish` frequency, failure rate, type distribution. PostHog is in the default stack. | #34 |
 | Update `Source` URL on published runbook | Currently points to PR #2 (merged). Should point to canonical `docs/SETUP.md` commit or permalink. | #35 |
 | `/notion:promote-to-repo` command | If a runbook gets drafted in Notion (against the rule but it happens), there's no extraction path back to `docs/runbooks/`. The importer reads; this would write. | #36 |
+
+---
+
+## 🔲 Phase 8 — Agent lifecycle management (workforce pattern)
+
+Treat the agent roster like staff: hire, train, upskill, combine, fire, eliminate. The Agents database (added in 1.7.4) is the substrate; this phase adds lifecycle fields, commands, sync, and governance.
+
+### 8a — Schema + backfill (immediate; ~30 min)
+
+| Item | What | Issue |
+|------|------|-------|
+| Augment Agents schema | Add `Hired` (date), `Last upskilled` (date), `Deprecation reason` (rich_text), `Replaced by` (self-relation), `Owner` (person), `Usage 30d` (number — populated by #34) | #37 |
+| Backfill `Hired` dates | First commit date per `agents/*.md` from `git log --diff-filter=A --follow` | #38 |
+
+### 8b — Lifecycle commands
+
+| Item | What | Issue |
+|------|------|-------|
+| `/agents:hire <name> --family <X>` | Create new agent file from template + add row to Agents database with `Status=Active`, `Hired=today` | #39 |
+| `/agents:fire <name> --reason "<text>"` | Set `Status=Deprecated`, populate `Deprecation reason`, optionally `Replaced by`. Move file to `agents/.deprecated/`. lint-references catches stale refs. | #40 |
+| `/agents:train <name>` | Run the agent's own `/audit` on itself; surface gaps (missing handoffs, outdated tools, broken `[AGENT:]` refs); propose spec diff | #41 |
+| `/agents:combine A B --into C` | Merge two agents. Both old → `Status=Deprecated`, `Replaced by → C`. New spec proposed for review. | #42 |
+| `/agents:review` | Quarterly performance review across whole roster: usage thresholds, drift, overlap candidates, elimination candidates | #43 |
+
+### 8c — Sync + governance
+
+| Item | What | Issue |
+|------|------|-------|
+| PostToolUse sync hook | Hook on `Write`/`Edit` to `agents/*.md` → `/notion:publish agent <name>` (upserts the row). On delete → `Status=Deprecated`. | #44 |
+| `agent-lifecycle` meta-agent | Owns the 5 `/agents:*` commands. Sibling to `sprint-assembler` and `project-setup` in the Meta family. | #45 |
+| ADR-003 — workforce pattern | Documents the lifecycle: definitions, when to hire vs train vs combine vs fire, the elimination ritual (90-day deprecation window). | #46 |
