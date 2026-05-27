@@ -2,6 +2,50 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.9.0] — 2026-05-27
+
+### Added — 25 planned commands + Notion session hooks + dashboard URL routing
+
+**25 planned commands implemented (PRs #73, #76):**
+
+All `_(planned)_` markers removed from `CLAUDE.md` — 0 remaining across the full command roster.
+
+Panel commands (PR #73):
+- `/panel:stack` — all 7 web stack agents in one pass
+- `/panel:quality` — web-qa + accessibility + performance
+- `/panel:research` — user-research + usability-testing + focus-group + expert-review
+- `/panel:design` — visual-designer + interaction-designer + information-architect
+- `/panel:psych` — cognitive-psychologist + behavioral-psychologist
+- `/panel:security` — security + env-debugger + static analysis
+- `/panel:website` — website-audit + student-lens + UX
+- `/panel:content` — video-script + lesson + assessment + QA
+- `/panel:ai-feature` — ai-llm + prompt-engineer + application
+- `/panel:launch` — full pre-launch sweep → Ship / No-Ship verdict
+
+Review, debug, AI, auth, docs, security, and GTLI commands (PR #76):
+- `/review:code`, `/review:data-model`, `/review:artifact`
+- `/debug:env`
+- `/ai:prompt-test`, `/ai:prompt-design`
+- `/auth:clerk`, `/auth:nextauth`
+- `/docs:audit`, `/docs:write`
+- `/security:baseline`
+- `/gtli:student-audit`
+- `/panel:gtli-ux`, `/panel:gtli-jgcc`, `/panel:gtli-sim`
+
+**Notion session hooks (PRs #74, #75):**
+- `.claude/hooks/notion-status.sh` — new hook with two entry points:
+  - `open` mode: emits workspace status lines (title, db count) + `NOTION_CONFIGURED` machine signal for MCP queries
+  - `close` mode: diffs HEAD vs `origin/main` for publishable docs (runbooks, ADRs, PRDs); emits `NOTION_PUBLISH:` lines
+- `.claude/hooks/session-start.sh` — integrates Notion status section into briefing box; emits `NOTION_CONFIGURED` after box for `session-open.md` to act on
+- `.claude/commands/session-open.md` — detects `NOTION_CONFIGURED`, queries Notion MCP tools live, renders second NOTION box with recent runbooks + stale PRD detection
+- `.claude/commands/session-close.md` — after git clean + push, runs `notion-status.sh close`, renders publish candidates, prompts to publish via `/notion:publish`
+- Fix (PR #75): Windows MSYS path converted to native Windows path for Node.js (`/c/Users/...` → `C:/Users/...`); `NOTION_CONFIGURED` filtered from rendered box output
+
+**Dashboard URL routing (PR #76):**
+- `dashboard/src/App.tsx` — `useHashTab` hook: hash-based tab routing (`#graph`, `#projects`, `#docs`, `#commands`); browser back/forward supported; no router dependency
+
+---
+
 ## [1.8.0] — 2026-05-27
 
 ### Added — Panel sweep: GitHub health + CI hardening + docs
