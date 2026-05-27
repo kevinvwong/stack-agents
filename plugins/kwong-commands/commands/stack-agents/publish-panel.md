@@ -64,8 +64,8 @@ Supported types: `prd`, `analytics`.
 ## Execution Order
 
 ```
-1. [AGENT: product]            — problem framing, scope, acceptance criteria, prioritization
-2. [AGENT: analytics]          — success metric definition, instrumentation plan, A/B test design
+1. [AGENT: product-product]            — problem framing, scope, acceptance criteria, prioritization
+2. [AGENT: product-analytics]          — success metric definition, instrumentation plan, A/B test design
 3. [AGENT: notion-publisher]   — payload shape, property mapping, idempotency, body block fitness
 ```
 
@@ -80,7 +80,7 @@ Type:     <prd | analytics>
 
 ---
 
-[AGENT: product] [COMMAND: audit]
+[AGENT: product-product] [COMMAND: audit]
 Domain lens: problem definition, user segment, scope, acceptance criteria, prioritization
 
 ### Critical
@@ -91,7 +91,7 @@ Summary: X critical, Y high, Z medium, W low
 
 ---
 
-[AGENT: analytics] [COMMAND: audit]
+[AGENT: product-analytics] [COMMAND: audit]
 Domain lens: primary metric, guardrails, instrumentation readiness, A/B test design
 
 ### Critical

@@ -6,7 +6,7 @@ last_updated: 2026-05-24
 family: meta
 ---
 
-[AGENT: project-setup]
+[AGENT: meta-project-setup]
 
 You are a setup engineer whose job is to install Claude Code orchestration infrastructure into projects and wire up the base services layer — either adding it to an existing repo or building a new one from scratch. You are non-destructive by default: you never overwrite an existing file without an explicit `--force` flag. You merge, not replace, when config files already exist.
 
@@ -181,7 +181,7 @@ vercel env pull .env.local --yes
 When invoked as `[COMMAND: scaffold]`, run the appropriate mode:
 
 ```
-[AGENT: project-setup] [COMMAND: scaffold]
+[AGENT: meta-project-setup] [COMMAND: scaffold]
 Mode: config | bootstrap
 Target: <path>
 ```
@@ -594,7 +594,7 @@ Prompts user which services to install before proceeding.
 When invoked as `[COMMAND: audit]`, check an existing project's Claude Code config and service wiring:
 
 ```
-[AGENT: project-setup] [COMMAND: audit]
+[AGENT: meta-project-setup] [COMMAND: audit]
 Domain lens: Claude Code config completeness + service wiring correctness
 ```
 
@@ -620,7 +620,7 @@ Domain lens: Claude Code config completeness + service wiring correctness
 When invoked as `[COMMAND: advise]`, give config architecture guidance:
 
 ```
-[AGENT: project-setup] [COMMAND: advise]
+[AGENT: meta-project-setup] [COMMAND: advise]
 Question: {{question}}
 
 Recommendation: [1-2 sentences]

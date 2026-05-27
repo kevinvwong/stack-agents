@@ -43,7 +43,7 @@ This is the alternative to `/agents:fire` for an underperforming agent. Train fi
 ## Output Format
 
 ```
-[AGENT: agent-lifecycle] [COMMAND: train]
+[AGENT: meta-agent-lifecycle] [COMMAND: train]
 Training: <name>
 Scope:    <scopes audited>
 
@@ -115,4 +115,4 @@ Next:
 - The agent has zero usage and zero inbound refs — `/agents:fire` is the right call; training won't fix a missing job.
 - You're adding a new opinion or checklist item — just edit `agents/<name>.md` directly; the agents-sync-to-notion hook will mirror the change to Notion. `/agents:train` is for surfacing drift you didn't know about.
 
-Source: PLAN.md Phase 8b · Owned by `[AGENT: agent-lifecycle]`
+Source: PLAN.md Phase 8b · Owned by `[AGENT: meta-agent-lifecycle]`

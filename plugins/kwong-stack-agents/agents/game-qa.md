@@ -179,6 +179,6 @@ Output format: `[AGENT: game-qa] [COMMAND: advise]` then Recommendation → Reas
 
 - Playtesting findings to game design → `[AGENT: game-design]`
 - UX friction findings → `[AGENT: game-ux]`
-- Performance findings → `[AGENT: performance]`
+- Performance findings → `[AGENT: quality-performance]`
 - Release readiness sign-off → `[AGENT: production]`
-- Expert heuristic review to complement playtesting → `[AGENT: expert-review]`
+- Expert heuristic review to complement playtesting → `[AGENT: research-expert-review]`

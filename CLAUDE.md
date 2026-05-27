@@ -102,22 +102,22 @@ Web: "scaffold a CI pipeline" → `[AGENT: infrastructure]`
 Web: "design a system prompt" → `[AGENT: ai-llm]`  
 
 Quality: "write E2E tests" → `[AGENT: web-qa]`  
-Quality: "audit accessibility" → `[AGENT: accessibility]`  
-Quality: "improve Lighthouse score" → `[AGENT: performance]`  
+Quality: "audit accessibility" → `[AGENT: quality-accessibility]`  
+Quality: "improve Lighthouse score" → `[AGENT: quality-performance]`  
 Quality: "design a playtesting protocol" → `[AGENT: game-qa]`  
 
-Research: "plan user interviews" → `[AGENT: user-research]`  
-Research: "design a usability test" → `[AGENT: usability-testing]`  
-Research: "run a focus group" → `[AGENT: focus-group]`  
-Research: "do a heuristic evaluation" → `[AGENT: expert-review]`  
+Research: "plan user interviews" → `[AGENT: research-user-research]`  
+Research: "design a usability test" → `[AGENT: research-usability-testing]`  
+Research: "run a focus group" → `[AGENT: research-focus-group]`  
+Research: "do a heuristic evaluation" → `[AGENT: research-expert-review]`  
 
-Product: "write a PRD" → `[AGENT: product]`  
-Product: "design our event schema" → `[AGENT: analytics]`  
-Product: "set up A/B testing" → `[AGENT: analytics]`  
+Product: "write a PRD" → `[AGENT: product-product]`  
+Product: "design our event schema" → `[AGENT: product-analytics]`  
+Product: "set up A/B testing" → `[AGENT: product-analytics]`  
 
-Cross-cutting: "add i18n / localization" → `[AGENT: i18n]`  
-Cross-cutting: "track AI API costs" → `[AGENT: finops]`  
-Cross-cutting: "optimize Claude token usage" → `[AGENT: finops]`  
+Cross-cutting: "add i18n / localization" → `[AGENT: cross-i18n]`  
+Cross-cutting: "track AI API costs" → `[AGENT: cross-finops]`  
+Cross-cutting: "optimize Claude token usage" → `[AGENT: cross-finops]`  
 
 Workspace: "design our Notion databases" → `[AGENT: notion-architect]`  
 Workspace: "wire up Notion for this repo" / "first-time Notion setup" → `[AGENT: notion-architect]` via `/notion:bootstrap`  
@@ -143,22 +143,22 @@ GitHub: "improve our PR review process" → `[AGENT: gh-prs]`
 GitHub: "scaffold a release workflow" → `[AGENT: gh-releases]`  
 GitHub: "audit our README" → `[AGENT: gh-docs]`  
 
-Sprint: "spin up a sprint for X" → `[AGENT: sprint-assembler]` via `/sprint:assemble`  
-Sprint: "what sprints are active?" → `[AGENT: sprint-assembler]` via `/sprint:list`  
+Sprint: "spin up a sprint for X" → `[AGENT: meta-sprint-assembler]` via `/sprint:assemble`  
+Sprint: "what sprints are active?" → `[AGENT: meta-sprint-assembler]` via `/sprint:list`  
 
-Setup: "add Claude config to this repo" → `[AGENT: project-setup]` via `/setup:project --mode config`  
-Setup: "bootstrap a new Next.js project" → `[AGENT: project-setup]` via `/setup:project --mode bootstrap --stack nextjs`  
-Setup: "bootstrap a language learning platform" → `[AGENT: project-setup]` via `/setup:project --mode bootstrap --stack nextjs-edu`  
-Setup: "bootstrap an event management platform" → `[AGENT: project-setup]` via `/setup:project --mode bootstrap --stack nextjs-events`  
-Setup: "bootstrap a knowledge base" → `[AGENT: project-setup]` via `/setup:project --mode bootstrap --stack nextjs-knowledge`  
-Setup: "bootstrap a lightweight SPA" → `[AGENT: project-setup]` via `/setup:project --mode bootstrap --stack vite-react`  
-Setup: "add the format-on-write hook" → `[AGENT: project-setup]` via `/setup:hooks --add format-on-write`  
+Setup: "add Claude config to this repo" → `[AGENT: meta-project-setup]` via `/setup:project --mode config`  
+Setup: "bootstrap a new Next.js project" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack nextjs`  
+Setup: "bootstrap a language learning platform" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack nextjs-edu`  
+Setup: "bootstrap an event management platform" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack nextjs-events`  
+Setup: "bootstrap a knowledge base" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack nextjs-knowledge`  
+Setup: "bootstrap a lightweight SPA" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack vite-react`  
+Setup: "add the format-on-write hook" → `[AGENT: meta-project-setup]` via `/setup:hooks --add format-on-write`  
 
-Agents (workforce): "create a new agent X" → `[AGENT: agent-lifecycle]` via `/agents:hire`  
-Agents (workforce): "deprecate agent X" → `[AGENT: agent-lifecycle]` via `/agents:fire`  
-Agents (workforce): "update / improve agent X's spec" → `[AGENT: agent-lifecycle]` via `/agents:train`  
-Agents (workforce): "merge agents X and Y" → `[AGENT: agent-lifecycle]` via `/agents:combine`  
-Agents (workforce): "review the roster" → `[AGENT: agent-lifecycle]` via `/agents:review`  
+Agents (workforce): "create a new agent X" → `[AGENT: meta-agent-lifecycle]` via `/agents:hire`  
+Agents (workforce): "deprecate agent X" → `[AGENT: meta-agent-lifecycle]` via `/agents:fire`  
+Agents (workforce): "update / improve agent X's spec" → `[AGENT: meta-agent-lifecycle]` via `/agents:train`  
+Agents (workforce): "merge agents X and Y" → `[AGENT: meta-agent-lifecycle]` via `/agents:combine`  
+Agents (workforce): "review the roster" → `[AGENT: meta-agent-lifecycle]` via `/agents:review`  
 
 **Panel request** — convene the full agent family:
 
@@ -187,9 +187,9 @@ Notion chain: `notion-architect → notion-publisher → notion-importer → not
 
 | Agent | File | Responsibility |
 |-------|------|----------------|
-| `sprint-assembler` | agents/sprint-assembler.md | Assembles sprint teams, generates missing agents, installs sprint orchestrators, tracks usage |
-| `project-setup` | agents/project-setup.md | Installs Claude Code config into existing repos (--mode config) or bootstraps new repos from scratch (--mode bootstrap) |
-| `agent-lifecycle` | agents/agent-lifecycle.md | Owns `/agents:*` lifecycle commands. Hire / fire / train / combine / review across the agent roster. Treats agents as a workforce. |
+| `sprint-assembler` | agents/meta-sprint-assembler.md | Assembles sprint teams, generates missing agents, installs sprint orchestrators, tracks usage |
+| `project-setup` | agents/meta-project-setup.md | Installs Claude Code config into existing repos (--mode config) or bootstraps new repos from scratch (--mode bootstrap) |
+| `agent-lifecycle` | agents/meta-agent-lifecycle.md | Owns `/agents:*` lifecycle commands. Hire / fire / train / combine / review across the agent roster. Treats agents as a workforce. |
 
 ### Web Stack
 
@@ -211,8 +211,8 @@ Dependency chain: `data → security → ai-llm → application → infrastructu
 |-------|------|----------------|
 | `web-qa` | agents/web-qa.md | Playwright E2E, Vitest unit/integration, test pyramid strategy, flake triage, CI test pipeline |
 | `game-qa` | agents/game-qa.md | Game playtesting protocols, functional QA, regression suites, platform testing, certification |
-| `accessibility` | agents/accessibility.md | WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring, focus management |
-| `performance` | agents/performance.md | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy, edge caching |
+| `accessibility` | agents/quality-accessibility.md | WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring, focus management |
+| `performance` | agents/quality-performance.md | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy, edge caching |
 
 Dependency chain: `web-qa → accessibility → performance`
 
@@ -220,10 +220,10 @@ Dependency chain: `web-qa → accessibility → performance`
 
 | Agent | File | Responsibility |
 |-------|------|----------------|
-| `user-research` | agents/user-research.md | User interviews, surveys, personas, JTBD, affinity mapping, research planning |
-| `usability-testing` | agents/usability-testing.md | Think-aloud protocols, moderated/unmoderated studies, task analysis, session recording |
-| `focus-group` | agents/focus-group.md | Focus group design, facilitation, concept testing, synthesis, insight reporting |
-| `expert-review` | agents/expert-review.md | Heuristic evaluation (Nielsen, Mayer, PLAY), design critique, structured walkthroughs |
+| `user-research` | agents/research-user-research.md | User interviews, surveys, personas, JTBD, affinity mapping, research planning |
+| `usability-testing` | agents/research-usability-testing.md | Think-aloud protocols, moderated/unmoderated studies, task analysis, session recording |
+| `focus-group` | agents/research-focus-group.md | Focus group design, facilitation, concept testing, synthesis, insight reporting |
+| `expert-review` | agents/research-expert-review.md | Heuristic evaluation (Nielsen, Mayer, PLAY), design critique, structured walkthroughs |
 
 Dependency chain: `user-research → usability-testing → focus-group → expert-review`
 
@@ -231,15 +231,15 @@ Dependency chain: `user-research → usability-testing → focus-group → exper
 
 | Agent | File | Responsibility |
 |-------|------|----------------|
-| `product` | agents/product.md | PRDs, user stories, RICE/MoSCoW prioritization, OKRs, success metrics, roadmap framing |
-| `analytics` | agents/analytics.md | PostHog event schemas, funnel design, A/B test design, retention analysis, feature flags |
+| `product` | agents/product-product.md | PRDs, user stories, RICE/MoSCoW prioritization, OKRs, success metrics, roadmap framing |
+| `analytics` | agents/product-analytics.md | PostHog event schemas, funnel design, A/B test design, retention analysis, feature flags |
 
 ### Cross-cutting
 
 | Agent | File | Responsibility |
 |-------|------|----------------|
-| `i18n` | agents/i18n.md | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
-| `finops` | agents/finops.md | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
+| `i18n` | agents/cross-i18n.md | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
+| `finops` | agents/cross-finops.md | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
 
 ### Workspace
 

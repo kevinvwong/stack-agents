@@ -146,6 +146,6 @@ Panel and sprint runs emit a structured event per invoked agent. The dashboard r
 - PLAN.md Phase 8 — sub-issues #37–#45 implement this ADR
 - ADR-001 — establishes `agents/*.md` as canonical (the constraint this ADR works within)
 - ADR-002 — same template; precedent for the "operational substrate vs. canonical source" split
-- `agents/agent-lifecycle.md` (#45) — meta-agent that owns the `/agents:*` commands
-- `agents/sprint-assembler.md` — sibling meta-agent; precedent for the Meta family pattern
+- `agents/meta-agent-lifecycle.md` (#45) — meta-agent that owns the `/agents:*` commands
+- `agents/meta-sprint-assembler.md` — sibling meta-agent; precedent for the Meta family pattern
 - `agents/notion-architect.md` — owns the Agents database schema this ADR depends on

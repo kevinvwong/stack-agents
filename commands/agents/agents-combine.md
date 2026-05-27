@@ -62,7 +62,7 @@ The user must resolve every `// CONFLICT` marker before the merged spec is produ
 ## Output Format
 
 ```
-[AGENT: agent-lifecycle] [COMMAND: combine]
+[AGENT: meta-agent-lifecycle] [COMMAND: combine]
 Combining: <A> + <B> → <C>
 Family:    <family>
 
@@ -135,4 +135,4 @@ Next:
 - The two agents are in different families and the merge would create a cross-family Frankenstein — keep them separate; let the orchestrator route to both.
 - You want to split one agent into two (the inverse) — there is no `/agents:split`; do `/agents:fire <name> --reason "splitting"` then two `/agents:hire` calls.
 
-Source: PLAN.md Phase 8b · Owned by `[AGENT: agent-lifecycle]`
+Source: PLAN.md Phase 8b · Owned by `[AGENT: meta-agent-lifecycle]`

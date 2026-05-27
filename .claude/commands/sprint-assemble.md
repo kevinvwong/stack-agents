@@ -81,11 +81,11 @@ The sprint orchestrator is **scoped** — it only routes to its assembled agents
 ## Output
 
 ```
-[AGENT: sprint-assembler] [COMMAND: scaffold]
+[AGENT: meta-sprint-assembler] [COMMAND: scaffold]
 Sprint: <name>
 Goal: <goal>
 ...
 Panel command: /panel:sprint:<name>
 ```
 
-See `agents/sprint-assembler.md` for the full output format.
+See `agents/meta-sprint-assembler.md` for the full output format.
