@@ -72,3 +72,40 @@ Commit style: imperative, lowercase, no period.
 
 Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 ```
+
+---
+
+## Notion publish step (runs after git is clean + pushed)
+
+After the git state is clean and pushed, run:
+
+```bash
+bash .claude/hooks/notion-status.sh close
+```
+
+Parse the output lines:
+
+- Lines starting `NOTION_PUBLISH:<type>:<path>` — one per publishable file
+- Line starting `NOTION_FOUND:` — `1` if any publishables exist, `0` if none
+
+**If `NOTION_FOUND:0`** — skip this section entirely. Do not mention Notion.
+
+**If `NOTION_FOUND:1`** — render a **NOTION** section below the git box:
+
+```
+┌─ NOTION · <N> publishable artifact(s) ─────────────────────────────────┐
+│                                                                          │
+│  PUBLISH CANDIDATES                                                      │
+│  · runbook  docs/runbooks/release-process.md                            │
+│  · prd      docs/prds/voice-onboarding.md                               │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+Then ask: **"Publish to Notion, skip, or pick individual files?"**
+
+- **PUBLISH ALL**: run `/notion:publish <type> <path>` for each candidate in sequence. Report the Notion page URL for each after publishing.
+- **SKIP**: note that files can be published later with `/notion:publish`.
+- **PICK**: list each candidate with a Y/N choice; run publish only for confirmed ones.
+
+If `.notion/config.json` is absent or `NOTION_API_KEY` is unset, skip this section silently.
