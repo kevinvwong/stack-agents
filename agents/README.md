@@ -10,9 +10,9 @@ The **master orchestrator** is `CLAUDE.md` at the repo root — it routes all re
 
 | File | Agent | Responsibility |
 |------|-------|----------------|
-| [sprint-assembler.md](sprint-assembler.md) | `meta-sprint-assembler` | Assembles sprint teams, generates missing agents, installs sprint orchestrators, tracks usage in registry |
-| [agent-lifecycle.md](agent-lifecycle.md) | `meta-agent-lifecycle` | Owns the `/agents:*` lifecycle commands (hire, fire, train, combine, review). Treats the roster as a workforce; mutates agent files as a normal operation. |
-| [project-setup.md](project-setup.md) | `meta-project-setup` | Installs Claude Code orchestration into existing repos (--mode config) or bootstraps new repos from scratch (--mode bootstrap) |
+| [meta-sprint-assembler.md](meta-sprint-assembler.md) | `meta-sprint-assembler` | Assembles sprint teams, generates missing agents, installs sprint orchestrators, tracks usage in registry |
+| [meta-agent-lifecycle.md](meta-agent-lifecycle.md) | `meta-agent-lifecycle` | Owns the `/agents:*` lifecycle commands (hire, fire, train, combine, review). Treats the roster as a workforce; mutates agent files as a normal operation. |
+| [meta-project-setup.md](meta-project-setup.md) | `meta-project-setup` | Installs Claude Code orchestration into existing repos (--mode config) or bootstraps new repos from scratch (--mode bootstrap) |
 
 ---
 
@@ -69,8 +69,8 @@ Dependency order: `web-qa → accessibility → performance`
 | File | Agent | Responsibility |
 |------|-------|----------------|
 | [web-qa.md](web-qa.md) | `web-qa` | Playwright E2E, Vitest unit/integration, test pyramid strategy, flake triage, CI test pipeline |
-| [accessibility.md](accessibility.md) | `quality-accessibility` | WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring, focus management |
-| [performance.md](performance.md) | `quality-performance` | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy, edge caching |
+| [quality-accessibility.md](quality-accessibility.md) | `quality-accessibility` | WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring, focus management |
+| [quality-performance.md](quality-performance.md) | `quality-performance` | Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy, edge caching |
 | [game-qa.md](game-qa.md) | `game-qa` | Game playtesting protocols, functional QA, regression suites, platform testing, certification |
 
 ---
@@ -81,10 +81,10 @@ Dependency order: `user-research → usability-testing → focus-group → exper
 
 | File | Agent | Responsibility |
 |------|-------|----------------|
-| [user-research.md](user-research.md) | `research-user-research` | User interviews, surveys, personas, JTBD, affinity mapping, research planning |
-| [usability-testing.md](usability-testing.md) | `research-usability-testing` | Think-aloud protocols, moderated/unmoderated studies, task analysis, session recording |
-| [focus-group.md](focus-group.md) | `research-focus-group` | Focus group design, facilitation, concept testing, synthesis, insight reporting |
-| [expert-review.md](expert-review.md) | `research-expert-review` | Heuristic evaluation (Nielsen, Mayer, PLAY), design critique, structured walkthroughs |
+| [research-user-research.md](research-user-research.md) | `research-user-research` | User interviews, surveys, personas, JTBD, affinity mapping, research planning |
+| [research-usability-testing.md](research-usability-testing.md) | `research-usability-testing` | Think-aloud protocols, moderated/unmoderated studies, task analysis, session recording |
+| [research-focus-group.md](research-focus-group.md) | `research-focus-group` | Focus group design, facilitation, concept testing, synthesis, insight reporting |
+| [research-expert-review.md](research-expert-review.md) | `research-expert-review` | Heuristic evaluation (Nielsen, Mayer, PLAY), design critique, structured walkthroughs |
 
 ---
 
@@ -92,8 +92,8 @@ Dependency order: `user-research → usability-testing → focus-group → exper
 
 | File | Agent | Responsibility |
 |------|-------|----------------|
-| [product.md](product.md) | `product-product` | PRDs, user stories, RICE/MoSCoW prioritization, OKRs, success metrics, roadmap framing |
-| [analytics.md](analytics.md) | `product-analytics` | PostHog event schemas, funnel design, A/B test design, retention analysis, feature flags |
+| [product-product.md](product-product.md) | `product-product` | PRDs, user stories, RICE/MoSCoW prioritization, OKRs, success metrics, roadmap framing |
+| [product-analytics.md](product-analytics.md) | `product-analytics` | PostHog event schemas, funnel design, A/B test design, retention analysis, feature flags |
 
 ---
 
@@ -101,8 +101,8 @@ Dependency order: `user-research → usability-testing → focus-group → exper
 
 | File | Agent | Responsibility |
 |------|-------|----------------|
-| [i18n.md](i18n.md) | `cross-i18n` | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
-| [finops.md](finops.md) | `cross-finops` | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
+| [cross-i18n.md](cross-i18n.md) | `cross-i18n` | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
+| [cross-finops.md](cross-finops.md) | `cross-finops` | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
 
 ---
 

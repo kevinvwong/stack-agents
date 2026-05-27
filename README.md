@@ -1,5 +1,5 @@
 [![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
-[![Marketplace](https://img.shields.io/badge/marketplace-1.7.7-blue)](./CHANGELOG.md)
+[![Marketplace](https://img.shields.io/badge/marketplace-1.9.0-blue)](./CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 # stack-agents
