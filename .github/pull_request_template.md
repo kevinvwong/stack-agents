@@ -11,8 +11,10 @@
 - [ ] New agent
 - [ ] Agent update (which agent? which sections changed?)
 - [ ] New command
+- [ ] New skill
 - [ ] Dashboard feature / fix
 - [ ] Docs
+- [ ] CI / tooling
 
 ## Checklist
 

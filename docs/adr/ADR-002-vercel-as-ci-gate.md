@@ -1,10 +1,10 @@
 # ADR-002: Vercel deploy check as the CI gate
 
-**Status:** Accepted — manual branch-protection step not yet executed
+**Status:** Superseded — GH Actions retained as merge gate (2026-05-27)
 **Date:** 2026-05-27
 **Author:** Kevin Wong
 
-> **Note (2026-05-27):** The decision is accepted, but the "Manual step required" section below has not been performed. Branch protection on `main` still requires `Dashboard — lint + build` (GitHub Actions), not a Vercel check. Vercel has not been confirmed as connected to this repo (#29 open). Until issue #29 is resolved and the branch protection rule is updated, GH Actions remains the actual merge gate.
+> **Update (2026-05-27):** This ADR's proposed migration to Vercel as the required status check has been deferred indefinitely. Issue #29 (Vercel connection verification) remains open. Branch protection on `main` was restored on 2026-05-27 requiring all three GH Actions checks (`Agent + command reference linter`, `PRD structural linter`, `Dashboard — lint + build`). Until #29 is resolved and Vercel is confirmed as a connected check provider, GH Actions **is** the actual merge gate and this is the intentional state — not a temporary fallback.
 
 ---
 
