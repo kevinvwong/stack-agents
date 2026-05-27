@@ -15,6 +15,7 @@ interface ProjectLinks {
 interface GitInfo {
   branch: string
   recentCommits: string[]    // format: "abc1234 commit message (2d ago)"
+  lastCommitDate?: string    // ISO 8601 — used for sort-by-recency
   ahead: number
   behind: number
   dirty: number
@@ -72,9 +73,13 @@ function getGitInfo(projectPath: string): GitInfo {
     projectPath,
   )
 
+  // Separate ISO-date call for sort — %cI gives full ISO 8601 (e.g. 2026-05-27T14:30:00+00:00)
+  const lastCommitDate = runGit(['log', '-1', '--format=%cI', '--no-merges'], projectPath) || undefined
+
   return {
     branch,
     recentCommits: logOut.split('\n').filter(Boolean),
+    lastCommitDate,
     ahead,
     behind,
     dirty,
@@ -231,17 +236,18 @@ async function scanAllProjects(paths: string[]): Promise<ProjectData[]> {
   return results
 }
 
-function getGitHubIssues(projectPath: string) {
+function getGitHubIssues(projectPath: string): unknown[] | null {
   const result = spawnSync(
     'gh',
     ['issue', 'list', '--state', 'open', '--limit', '5', '--json', 'number,title,labels'],
     { cwd: projectPath, timeout: 6000, encoding: 'utf-8' },
   )
-  if (result.error || result.status !== 0) return []
+  // Return null on spawn error or non-zero exit (gh not installed, no repo, no auth, etc.)
+  if (result.error || result.status !== 0) return null
   try {
     return JSON.parse(result.stdout ?? '[]')
   } catch {
-    return []
+    return null
   }
 }
 
@@ -277,7 +283,9 @@ export function apiPlugin(): Plugin {
         const projectPath = url.searchParams.get('path') ?? ''
         const issues = getGitHubIssues(projectPath)
         res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(issues))
+        // null means fetch failed (gh not installed / no auth / no GitHub remote)
+        // [] means successfully fetched, zero open issues
+        res.end(issues === null ? JSON.stringify({ error: 'fetch_failed' }) : JSON.stringify(issues))
       })
 
       server.middlewares.use('/__api/vercel-status', async (req, res) => {

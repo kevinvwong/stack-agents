@@ -9,6 +9,7 @@ interface ProjectLinks {
 interface GitInfo {
   branch: string
   recentCommits: string[]
+  lastCommitDate?: string   // ISO 8601 — used for sort-by-recency
   ahead: number
   behind: number
   dirty: number
@@ -31,7 +32,7 @@ interface Issue {
   labels: { name: string }[]
 }
 
-type SortKey = 'name' | 'commit' | 'issues'
+type SortKey = 'name' | 'commit'
 
 const STACK_COLORS: Record<string, string> = {
   'Next.js': '#000',
@@ -143,13 +144,39 @@ const VERCEL_STATE_COLORS: Record<string, string> = {
 
 function VercelBadge({ projectId }: { projectId: string }) {
   const [status, setStatus] = useState<{ state: string; url?: string } | null>(null)
+  const [fetchError, setFetchError] = useState(false)
 
   useEffect(() => {
     fetch(`/__api/vercel-status?projectId=${encodeURIComponent(projectId)}`)
       .then((r) => r.json())
-      .then((d) => { if (!d.error) setStatus(d) })
-      .catch(() => {})
+      .then((d) => {
+        if (d.error === 'no_token') return  // no VERCEL_TOKEN — silently skip
+        if (d.error) { setFetchError(true); return }
+        setStatus(d)
+      })
+      .catch(() => setFetchError(true))
   }, [projectId])
+
+  if (fetchError) {
+    return (
+      <span
+        title="Vercel status unavailable"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          fontSize: 11,
+          color: '#64748b',
+          background: '#64748b18',
+          border: '1px solid #64748b55',
+          borderRadius: 4,
+          padding: '1px 7px',
+          flexShrink: 0,
+        }}
+      >
+        ▲ ?
+      </span>
+    )
+  }
 
   if (!status) return null
   const color = VERCEL_STATE_COLORS[status.state] ?? '#64748b'
@@ -200,14 +227,19 @@ function savePinned(set: Set<string>) {
 
 function ProjectCard({ project, pinned, onTogglePin }: { project: Project; pinned: boolean; onTogglePin: () => void }) {
   const [issues, setIssues] = useState<Issue[] | null>(null)
+  const [issuesError, setIssuesError] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
   const loadIssues = () => {
-    if (issues !== null) { setExpanded(!expanded); return }
+    if (issues !== null || issuesError) { setExpanded(!expanded); return }
     fetch(`/__api/issues?path=${encodeURIComponent(project.path)}`)
       .then((r) => r.json())
-      .then((data) => { setIssues(data); setExpanded(true) })
-      .catch(() => { setIssues([]); setExpanded(true) })
+      .then((data) => {
+        if (data?.error) { setIssuesError(true); setExpanded(true); return }
+        setIssues(data)
+        setExpanded(true)
+      })
+      .catch(() => { setIssuesError(true); setExpanded(true) })
   }
 
   const latestCommit = project.git.recentCommits[0] ?? null
@@ -356,21 +388,32 @@ function ProjectCard({ project, pinned, onTogglePin }: { project: Project; pinne
             gap: 4,
             background: '#0f172a',
             border: '1px solid #1e3a5f',
-            color: issues !== null ? (issues.length > 0 ? '#f87171' : '#475569') : '#64748b',
+            color: issuesError ? '#f59e0b'
+              : issues !== null ? (issues.length > 0 ? '#f87171' : '#475569')
+              : '#64748b',
             borderRadius: 4,
             padding: '2px 7px',
             fontSize: 11,
             cursor: 'pointer',
             fontVariantNumeric: 'tabular-nums',
           }}
-          title={issues === null ? 'Load open GitHub issues' : expanded ? 'Hide issues' : 'Show issues'}
+          title={
+            issuesError ? 'Could not load issues (gh not installed or no GitHub remote)'
+              : issues === null ? 'Load open GitHub issues'
+              : expanded ? 'Hide issues' : 'Show issues'
+          }
         >
-          📋 {issues === null ? '…' : issues.length}
+          📋 {issuesError ? '!' : issues === null ? '…' : issues.length}
         </button>
       </div>
 
       {/* Issues list */}
-      {expanded && issues && issues.length > 0 && (
+      {expanded && issuesError && (
+        <div style={{ fontSize: 11, color: '#f59e0b' }}>
+          ⚠ Could not load issues — check <code>gh auth status</code>
+        </div>
+      )}
+      {expanded && !issuesError && issues && issues.length > 0 && (
         <ul style={{ margin: 0, padding: '0 0 0 16px', fontSize: 12, color: '#cbd5e1', lineHeight: 1.8 }}>
           {issues.map((i) => (
             <li key={i.number}>
@@ -379,7 +422,7 @@ function ProjectCard({ project, pinned, onTogglePin }: { project: Project; pinne
           ))}
         </ul>
       )}
-      {expanded && issues && issues.length === 0 && (
+      {expanded && !issuesError && issues && issues.length === 0 && (
         <div style={{ fontSize: 11, color: '#475569' }}>No open issues</div>
       )}
     </div>
@@ -443,12 +486,13 @@ export function ProjectDashboard() {
   const sorted = [...chipFiltered].sort((a, b) => {
     if (sortKey === 'name') return a.name.localeCompare(b.name)
     if (sortKey === 'commit') {
-      // Extract relative age from first commit string — fallback to name
-      const ageA = a.git.recentCommits[0] ?? ''
-      const ageB = b.git.recentCommits[0] ?? ''
-      return ageA.localeCompare(ageB)
+      // Sort by ISO date descending (most recent first) — fall back to name for repos with no commits
+      const dateA = a.git.lastCommitDate ?? ''
+      const dateB = b.git.lastCommitDate ?? ''
+      if (dateA === dateB) return a.name.localeCompare(b.name)
+      return dateB.localeCompare(dateA)  // reverse: newer date = higher rank
     }
-    return 0  // 'issues' sort handled after issue counts load — name fallback for now
+    return 0
   })
 
   // Pinned float to top
