@@ -151,7 +151,7 @@ templates before open-sourcing.
 
 **Why panels matter:** single-agent audits give you depth; panels surface the *seams* between domains — the kinds of issues that exist because two systems disagree about a contract neither of them owns. The `branch-protection-name-mismatch` finding above never shows up in any single agent's audit. That's the panel's job.
 
-Other panels follow the same pattern: `/panel:quality`, `/panel:research`, `/panel:game`, `/panel:notion`, `/panel:knowledge`, `/panel:publish`.
+Other family panels follow the same pattern — `/panel:quality`, `/panel:research`, `/panel:game`, `/panel:notion`, `/panel:stack`. Cross-cutting panels target specific gates: `/panel:security`, `/panel:design`, `/panel:ai-feature`, `/panel:launch`, `/panel:knowledge`, `/panel:publish`. GTLI-specific panels: `/panel:gtli-ux`, `/panel:gtli-jgcc`, `/panel:gtli-sim`. Full catalog in `commands/README.md`.
 
 ---
 
