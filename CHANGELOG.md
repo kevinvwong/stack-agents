@@ -2,6 +2,38 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.8.0] — 2026-05-27
+
+### Added — Panel sweep: GitHub health + CI hardening + docs
+
+Full `/panel:github` sweep (PRs #65–#71). All six GitHub agents ran; findings triaged to quick wins and follow-ups.
+
+**CI hardening:**
+- `.github/workflows/ci.yml` (#65) — job timeout limits (5 min references/PRDs, 15 min dashboard); all actions SHA-pinned.
+- `.github/workflows/release.yml` (#65) — automated release workflow triggered on `v*` tags; creates GitHub Release with auto-generated notes.
+- `.github/workflows/dependabot-auto-merge.yml` (#69) — auto-merges Dependabot patch/minor PRs after CI passes.
+- `.github/workflows/stale.yml` (#71) — marks PRs stale after 30 days; label-only (never auto-closes); `actions/stale@v9.1.0` SHA-pinned.
+
+**Agent renames + roster hygiene (#66, #67):**
+- All unprefixed agents given family prefixes (`web-`, `game-`, `research-`, `product-`, `quality-`, `cross-`, `notion-`, `meta-`).
+- Plugin mirror (`plugins/kwong-stack-agents/agents/`) synced to prefixed names.
+- `install.ps1` canonical source corrected to `agents/` (not the plugin mirror).
+
+**install.ps1 hardening (#68):**
+- CLAUDE.md sync: root `CLAUDE.md` now deployed to `~/.claude/CLAUDE.md` on every install.
+- Manifest-based stale cleanup: `~/.claude/kwong-stack-agents.manifest` tracks installed filenames; only removes manifest entries absent from source; foreign agents untouched.
+
+**Docs (#65, #69, #70):**
+- `docs/runbooks/release-process.md` — full release runbook.
+- `scripts/README.md` — documents all three linter scripts.
+- `docs/SETUP.md` — updated to reflect CLAUDE.md sync step and manifest-based stale cleanup; split Windows/macOS install paths.
+
+**Label hygiene (#65):** `bug`, `enhancement`, `documentation` labels normalized; `stale` label added.
+
+**CLAUDE.md + agents/README.md (#69):** ASCII tree and roster tables updated to prefixed agent names.
+
+---
+
 ## [1.7.7] — 2026-05-27
 
 ### Added — Phase 6 Claude Code feature leverage + Phase 9a sync-content fix
