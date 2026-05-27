@@ -38,7 +38,8 @@ Root causes (in rough order of frequency):
 
 4. **If branch protection rule itself is the problem** (e.g. requires a check that no longer exists):
    - Settings → Branches → branch protection rule for `main` → Edit
-   - Either drop the obsolete required check, or replace with the current one (e.g. `Vercel` instead of `Dashboard — lint + build` per ADR-002)
+   - Either drop the obsolete required check, or replace with the current required check name
+   - Current required check: **`Dashboard — lint + build`** (GitHub Actions, not Vercel — ADR-002 describes the intended future state but the manual branch-protection step has not been executed; GH Actions remains the actual gate)
    - Merge the PR
    - Re-tighten the rule after
 
@@ -58,7 +59,7 @@ git push origin main
 This bypasses GitHub's PR merge flow entirely. The PR auto-closes when it detects the commits landed on `main`.
 
 **Caveats:**
-- If `main` blocks direct admin push (typical), this fails with 403. No harm done.
+- If `main` blocks direct admin push (confirmed on this repo — `enforce_admins: true` was set in Phase 2), this fails with 403. Temporarily disable `enforce_admins` via the API before pushing, then re-enable immediately after. See Phase 2 notes for the exact `gh api` call.
 - Squashed commits won't have GitHub's PR metadata in the message body — paste the PR description into the commit body manually.
 - The branch isn't auto-deleted; delete it via UI afterwards (or wait for issue #30 to land auto-delete-on-merge).
 
@@ -75,6 +76,6 @@ This bypasses GitHub's PR merge flow entirely. The PR auto-closes when it detect
 
 ## See also
 
-- `docs/adr/ADR-002-vercel-as-ci-gate.md` — replacing the GH-Actions-dependent required check
-- Issue [#28](https://github.com/kevinvwong/stack-agents/issues/28) — re-tighten branch protection
-- Issue [#29](https://github.com/kevinvwong/stack-agents/issues/29) — verify Vercel as the CI gate
+- `docs/adr/ADR-002-vercel-as-ci-gate.md` — describes the intended future state (Vercel as CI gate); the manual branch-protection step from that ADR has not been executed
+- Issue [#28](https://github.com/kevinvwong/stack-agents/issues/28) — ✅ closed: branch protection re-tightened (Phase 6 CI fix)
+- Issue [#29](https://github.com/kevinvwong/stack-agents/issues/29) — open: Vercel deployment not confirmed; current required check remains `Dashboard — lint + build` (GH Actions)

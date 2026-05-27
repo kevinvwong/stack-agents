@@ -1,10 +1,10 @@
 [![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
-[![Marketplace](https://img.shields.io/badge/marketplace-1.7.5-blue)](./CHANGELOG.md)
+[![Marketplace](https://img.shields.io/badge/marketplace-1.7.7-blue)](./CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 # stack-agents
 
-37 specialist Claude Code agents + a master orchestrator + a Notion-integrated dashboard for solo and small-team multi-agent workflows.
+38 specialist Claude Code agents + a master orchestrator + a Notion-integrated dashboard for solo and small-team multi-agent workflows.
 
 ## Why this exists
 
@@ -67,7 +67,7 @@ data → security → ai-llm → application → infrastructure → observabilit
 | Frontend | Next.js 15 App Router + Tailwind CSS 4 |
 | Backend | Vercel Edge Functions (TypeScript strict) |
 | Database | Neon (Postgres) + Drizzle ORM |
-| Auth | Clerk |
+| Auth | Neon Auth (`@neondatabase/auth`) |
 | Cache | Upstash Redis |
 | AI | Anthropic Claude API + ElevenLabs TTS + Deepgram STT |
 | Analytics | PostHog + Sentry |
@@ -75,7 +75,7 @@ data → security → ai-llm → application → infrastructure → observabilit
 ### Structure
 
 ```
-agents/              — 33 specialist agent .md files (see agents/README.md)
+agents/              — 38 specialist agent .md files (see agents/README.md)
 commands/
   web/               — /stack:* commands
   game/              — /panel:game command
@@ -120,7 +120,7 @@ npm run dev
 # → http://localhost:5173
 ```
 
-- **Agent Graph tab** — 33 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
+- **Agent Graph tab** — 38 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
 - **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, git status (ahead/behind/dirty), GitHub/production/local links, and open issues.
 
 ### Commands
@@ -189,6 +189,28 @@ For the full command reference see `CLAUDE.md`.
 /setup:hooks --add format-on-write
 ```
 
+#### Lifecycle hooks (Phase 6)
+
+This repo ships a set of Claude Code lifecycle hooks in `.claude/hooks/`:
+
+| Hook | Event | What it does |
+|------|-------|--------------|
+| `bash-guard.sh` | `PreToolUse / Bash` | Blocks destructive shell patterns (`rm -rf` unscoped, `git reset --hard`, `DROP TABLE`, etc.) |
+| `format-on-write.sh` | `PostToolUse / Edit+Write` | Runs Prettier after every file write (async, silent no-op if Prettier absent) |
+| `session-stop.sh` | `Stop` | Writes `.claude/session-state.json` with branch, SHA, clean/dirty status |
+| `notify.sh` | `Notification` | Routes Claude notifications to Slack (if `SLACK_BOT_TOKEN` set), BurntToast, or terminal bell |
+
+Hooks are pre-configured in `.claude/settings.json`. To install user-scope hooks (apply to every project on this machine) run `/setup:hooks --add lint-references,notion-url-sanitize --scope user`.
+
+#### Scheduled agents
+
+Two cron-style health checks ship in `.claude/scheduled/`:
+
+| Script | Cadence | Output |
+|--------|---------|--------|
+| `daily-ci-audit.sh` | Daily 08:00 | CI run status + Dependabot PR triage → `.claude/debug/ci-audit-YYYY-MM-DD.md` |
+| `weekly-pr-health.sh` | Monday 09:00 | PRs open > 7d, no reviewer, or stale review → `.claude/debug/pr-health-YYYY-MM-DD.md` |
+
 ---
 
 ## Marketplace
@@ -230,7 +252,7 @@ cp CLAUDE.md your-project/.claude/CLAUDE.md
 4. Run `.\install.ps1` to sync to `~/.claude/` (no manual copy needed)
 5. Run `cd dashboard && npm run dev` — the agent appears in the graph automatically
 
-See `agents/README.md` for the full agent index and `CONTRIBUTING.md` for the full workflow.
+See `agents/README.md` for the full agent index and [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full workflow.
 
 ---
 

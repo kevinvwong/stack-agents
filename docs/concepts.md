@@ -212,7 +212,11 @@ Every recipe lives in `templates/hooks/<name>.json` with these metadata fields a
 - **`user`** — installed into `~/.claude/settings.json`. Applies to every project on this machine. Best for cross-cutting guardrails (`lint-references`, `notion-url-sanitize`).
 - **`project`** — installed into `<repo>/.claude/settings.json`. Applies only when Claude Code runs in that repo. Best for repo-specific formatting (`format-on-write`) or observability (`log-bash`, `sprint-banner`).
 
-Install with `/setup:hooks --add <recipe>` or merge the `hooks` block manually.
+**Pre-deployed vs installable recipes**
+
+Hooks come in two flavors. **Installable recipes** live in `templates/hooks/` — they're portable and you install them with `/setup:hooks --add <recipe>` into any project. **Pre-deployed hooks** are already committed to a specific repo's `.claude/hooks/` and wired into that repo's `.claude/settings.json` — they activate automatically when you open that repo in Claude Code and require no install step. The `stack-agents` repo ships a pre-deployed set (`bash-guard`, `format-on-write`, `session-stop`, `notify`, `session-start`) as a live example of the pattern.
+
+Install installable recipes with `/setup:hooks --add <recipe>` or merge the `hooks` block manually.
 
 **The watcher caveat**
 
