@@ -303,16 +303,16 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 |---------|-------|-----------------|
 | `/panel:github` | `/panel:github [focus]` | All 6 GitHub agents + cross-domain synthesis |
 | `/panel:game` | `/panel:game [artifact]` | All 6 Game Design agents + cross-discipline synthesis |
-| `/panel:stack` | `/panel:stack` | _(planned)_ All 7 Web agents + cross-layer synthesis |
-| `/panel:quality` | `/panel:quality [scope]` | _(planned)_ web-qa + accessibility + performance |
-| `/panel:research` | `/panel:research [question]` | _(planned)_ user-research + usability-testing + focus-group + expert-review |
-| `/panel:design` | `/panel:design [scope]` | _(planned)_ visual-designer + interaction-designer + information-architect |
-| `/panel:psych` | `/panel:psych [scope]` | _(planned)_ cognitive-psychologist + behavioral-psychologist |
-| `/panel:security` | `/panel:security` | _(planned)_ security + env-debugger + static analysis |
-| `/panel:website` | `/panel:website TARGET_SITE: <url>` | _(planned)_ website-audit + student-lens + UX |
-| `/panel:content` | `/panel:content [module spec]` | _(planned)_ video-script + lesson + assessment + QA |
-| `/panel:ai-feature` | `/panel:ai-feature [feature]` | _(planned)_ ai-llm + prompt-engineer + application |
-| `/panel:launch` | `/panel:launch` | _(planned)_ Full pre-launch sweep → Ship / No-Ship verdict |
+| `/panel:stack` | `/panel:stack` | All 7 Web agents + cross-layer synthesis |
+| `/panel:quality` | `/panel:quality [scope]` | web-qa + accessibility + performance |
+| `/panel:research` | `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review |
+| `/panel:design` | `/panel:design [scope]` | visual-designer + interaction-designer + information-architect |
+| `/panel:psych` | `/panel:psych [scope]` | cognitive-psychologist + behavioral-psychologist |
+| `/panel:security` | `/panel:security` | security + env-debugger + static analysis |
+| `/panel:website` | `/panel:website TARGET_SITE: <url>` | website-audit + student-lens + UX |
+| `/panel:content` | `/panel:content [module spec]` | video-script + lesson + assessment + QA |
+| `/panel:ai-feature` | `/panel:ai-feature [feature]` | ai-llm + prompt-engineer + application |
+| `/panel:launch` | `/panel:launch` | Full pre-launch sweep → Ship / No-Ship verdict |
 | `/panel:gtli-ux` | `/panel:gtli-ux` | _(planned)_ All 5 GTLI UX persona agents + synthesis |
 | `/panel:gtli-jgcc` | `/panel:gtli-jgcc` | _(planned)_ All 11 JGCC learning quality agents + synthesis |
 | `/panel:gtli-sim` | `/panel:gtli-sim [feature]` | _(planned)_ Simulated user panel across GTLI archetypes |
