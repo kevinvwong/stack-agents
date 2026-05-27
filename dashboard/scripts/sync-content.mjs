@@ -13,8 +13,9 @@
 
 import { cpSync, rmSync, mkdirSync, statSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const DASHBOARD = resolve(new URL("..", import.meta.url).pathname);
+const DASHBOARD = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const REPO = resolve(DASHBOARD, "..");
 const TARGET = resolve(DASHBOARD, "src", "content");
 
