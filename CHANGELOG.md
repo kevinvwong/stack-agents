@@ -2,6 +2,54 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.5] — 2026-05-27
+
+### Added — Projects database; per-project subpages with linked views
+
+Workspace restructured from "flat databases under Claude Code" to a true portfolio/project shape:
+
+```
+Claude Code (workspace root → portfolio view of all canonical DBs)
+├── Projects (new database — every project that publishes here)
+├── Agents
+├── Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design, Runbooks
+└── stack-agents (project subpage with linked-database views)
+```
+
+**New canonical database — `Projects`:**
+- Properties: Name, Repo (URL), Stack (multi_select with the bootstrap presets), Status (Active/Paused/Archived), Owner, Description, Started
+- One row per project that publishes to the workspace
+- Relation target for the new `Project` property on every cross-project database
+
+**Schema migration on 7 databases:**
+- `Sprints.Project` was a rich_text → now a relation to Projects (DROP + ADD)
+- `PRDs`, `Research`, `Analytics specs`, `Quality audits`, `Game design docs`, `Runbooks` each got a new `Project` relation column
+
+**Backfill (11 rows):**
+- 8 Sprint rows (Phases 1–8) → Project = stack-agents
+- 3 Runbook rows (Notion integration runbook, ADR-001, ADR-002) → Project = stack-agents
+
+**stack-agents project subpage:**
+- Created under Claude Code (live at `https://www.notion.so/36dc266f7d7c81dfb3f4c0b9ff1f7a89`)
+- Hosts 7 linked-database views: Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design, Runbooks
+- GitHub audits view is filtered by `Repo contains stack-agents` (text filter works in DSL)
+- Relation-based filters (`Project contains stack-agents`) dropped silently from the view DSL — only one project for now, so views show correct data anyway. To re-add proper filters when project #2 lands, add them in the Notion UI or via direct API.
+
+### Why
+
+Single source of truth for each artifact type, but every project gets its own dashboard. Portfolio queries are just the unfiltered canonical view; project dashboards are linked views with the Project filter. New projects = create a row in Projects + a new subpage + paste linked views. No schema duplication.
+
+### Repo updates
+- `.notion/config.json` adds `projects` entry; `last_verified` bumped.
+- `agents/notion-architect.md` Canonical Workspace Layout updated; `Projects` schema added to `/scaffold`; `Sprints.Project` changed from rich_text to relation.
+- `commands/notion/notion-bootstrap.md` + `notion-setup.md` `--databases` lists include `projects`.
+- Plugin mirrors. Marketplace 1.7.5.
+
+### Known limitations
+- The view DSL doesn't accept relation-based filters (`FILTER "Project" CONTAINS …` parses to empty). Linked views on project pages currently show all data. Workaround: filter in Notion UI per view; or use a text property for project name instead of relation if filter automation matters. Tracked as Phase 9 candidate.
+
+---
+
 ## [1.7.4] — 2026-05-27
 
 ### Added — Agents database; Sprints.Agents is now a relation

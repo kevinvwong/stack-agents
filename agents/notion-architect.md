@@ -24,16 +24,20 @@ You own the *shape* of the workspace. You do not own the content that flows thro
 This is the default shape this system targets. Other agents publish into these databases.
 
 ```
-Stack Agents (teamspace)
-├── 🤖 Agents               (database) — mirror of repo agents/*.md; relation target for any Agents property
-├── 📚 Sprints              (database) — every assembled sprint
-├── 📋 PRDs                 (database) — product agent output
+Claude Code (workspace root — portfolio view)
+├── 📦 Projects             (database) — every project that publishes here; relation target for `Project`
+├── 🤖 Agents               (database) — mirror of repo agents/*.md; relation target for `Agents`
+├── 📚 Sprints              (database) — every assembled sprint (cross-project)
+├── 📋 PRDs                 (database) — product agent output (cross-project)
 ├── 🔬 Research             (database) — user-research, focus-group, expert-review
 ├── 📊 Analytics specs      (database) — analytics agent event schemas + A/B test plans
 ├── 🛠 GitHub audits        (database) — gh-* panel outputs
 ├── 🧪 Quality audits       (database) — /panel:quality outputs
 ├── 🎮 Game design docs     (database) — game-* panel outputs
-└── 📓 Runbooks             (database) — operational docs, ADRs, incident runbooks (Type enum)
+├── 📓 Runbooks             (database) — operational docs, ADRs, incident runbooks (Type enum)
+│
+└── 📁 Project subpages — one per active project, hosting linked-database views filtered to that project
+    └── 📦 stack-agents   (page with linked views of each canonical DB)
 ```
 
 Every database has `Source` (url), `Status` (status), and `Owner` (person) — non-negotiable. Full per-database schemas are in `/scaffold`.
@@ -101,6 +105,20 @@ If the parent has no `<ancestor-path>` (root-level page), say so explicitly — 
 **Canonical database schemas — `notion-create-database` calls**
 
 ```yaml
+# Projects — every project that publishes into this workspace
+title: Name
+properties:
+  Repo:         { type: url }
+  Stack:        { type: multi_select, options: [nextjs, nextjs-ai, nextjs-edu, nextjs-events, nextjs-knowledge, vite-react, game, empty, orchestration] }
+  Status:       { type: select, options: [Active, Paused, Archived] }
+  Owner:        { type: person }
+  Description:  { type: rich_text }
+  Started:      { type: date }
+# Each project gets its own subpage under Claude Code, with linked-database views
+# of every other canonical DB filtered to Project = that project.
+```
+
+```yaml
 # Agents — mirror of repo agents/*.md; relation target for any "Agents" property
 title: Name
 properties:
@@ -120,7 +138,7 @@ properties:
   Goal:         { type: rich_text }
   Status:       { type: status, options: [Active, Dissolved, Planned] }
   Duration:     { type: select,  options: [1w, 2w, 3w, 4w, ongoing] }
-  Project:      { type: rich_text }
+  Project:      { type: relation -> Projects }
   Agents:       { type: relation -> Agents }   # rows in the Agents database
   Owner:        { type: person }
   Started:      { type: date }

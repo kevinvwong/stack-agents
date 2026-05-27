@@ -19,7 +19,7 @@ Convene the `notion-architect` agent to do the full first-time wire-up of Notion
 |----------|----------|-------------|
 | `--parent <page-url-or-id>` | Yes | Notion page (or teamspace) the integration has write access to. |
 | `--target <repo-path>` | No | Repo root where `.notion/config.json` is written. Defaults to the current working directory. |
-| `--databases <list>` | No | Subset to create (`agents,sprints,prds,research,analytics,github-audits,quality-audits,game-design,runbooks`). Default: all. |
+| `--databases <list>` | No | Subset to create (`projects,agents,sprints,prds,research,analytics,github-audits,quality-audits,game-design,runbooks`). Default: all. |
 | `--dry-run` | No | Resolve parent, build plan, show the config that *would* be written. No Notion writes, no file writes. |
 | `--force` | No | Overwrite an existing `.notion/config.json` (preserving any extra keys the user added). Without this flag, an existing config is read and merged into the plan. |
 
