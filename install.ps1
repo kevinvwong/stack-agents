@@ -8,11 +8,16 @@
     and identical; backs up any files it would overwrite.
 
     Source of truth for each artifact type:
-      Agents   — agents/  (canonical; plugins/kwong-stack-agents/ is a
-                           distribution mirror updated on publish, not used here)
-      Commands — plugins/kwong-commands/commands/  (flat namespace)
-      Skills   — plugins/kwong-skills/skills/
-      CLAUDE.md — CLAUDE.md (root orchestrator)
+      Agents    — agents/  (canonical; plugins/kwong-stack-agents/ is a
+                            distribution mirror updated on publish, not used here)
+      Commands  — plugins/kwong-commands/commands/  (flat namespace)
+      Skills    — plugins/kwong-skills/skills/
+      CLAUDE.md — CLAUDE.md (root orchestrator → ~/.claude/CLAUDE.md)
+
+    Stale-file cleanup:
+      After copying, any .md in ~/.claude/agents/ that has no matching source
+      file in agents/ or plugins/kwong-agents/agents/ is removed. This keeps
+      the installed roster in sync when agents are renamed or deleted.
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -27,12 +32,14 @@ $AgentsSrc1  = Join-Path $RepoRoot 'plugins\kwong-agents\agents'
 $AgentsSrc2  = Join-Path $RepoRoot 'agents'
 $CommandsSrc = Join-Path $RepoRoot 'plugins\kwong-commands\commands'
 $SkillsSrc   = Join-Path $RepoRoot 'plugins\kwong-skills\skills'
+$ClaudeMdSrc = Join-Path $RepoRoot 'CLAUDE.md'
 
 $AgentsDst   = Join-Path $ClaudeDir 'agents'
 $CommandsDst = Join-Path $ClaudeDir 'commands'
 $SkillsDst   = Join-Path $ClaudeDir 'skills'
+$ClaudeMdDst = Join-Path $ClaudeDir 'CLAUDE.md'
 
-$stats = @{ copied = 0; skipped = 0; backed_up = 0 }
+$stats = @{ copied = 0; skipped = 0; backed_up = 0; removed = 0 }
 
 function Ensure-Dir($path) {
     if (-not (Test-Path $path)) {
@@ -65,6 +72,11 @@ Write-Host ""
 Write-Host "kwong-claude-marketplace installer" -ForegroundColor Cyan
 Write-Host "Deploying to: $ClaudeDir" -ForegroundColor Cyan
 Write-Host ""
+
+# --- CLAUDE.md (root orchestrator) ---
+Write-Host "CLAUDE.md..." -NoNewline
+Copy-WithBackup $ClaudeMdSrc $ClaudeMdDst
+Write-Host " done"
 
 # --- kwong-agents ---
 Write-Host "kwong-agents..." -NoNewline
@@ -106,15 +118,67 @@ Get-ChildItem $SkillsSrc -Directory | ForEach-Object {
 }
 Write-Host " done"
 
+# --- Stale agent cleanup ---
+# Uses a manifest file (~/.claude/kwong-stack-agents.manifest) to track exactly
+# which agent filenames this installer has ever written. On each run:
+#   1. Read the manifest (list of basenames we own)
+#   2. Build the current valid set from source dirs
+#   3. Remove any manifest entry that is no longer valid
+#   4. Rewrite the manifest with the current valid set
+# Files in ~/.claude/agents/ not in the manifest are NEVER touched (foreign agents).
+Write-Host "Stale cleanup..." -NoNewline
+
+$ManifestPath = Join-Path $ClaudeDir 'kwong-stack-agents.manifest'
+
+# Build current valid set from sources
+$currentValid = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+if (Test-Path $AgentsSrc1) {
+    Get-ChildItem $AgentsSrc1 -Filter '*.md' | ForEach-Object { $null = $currentValid.Add($_.Name) }
+}
+Get-ChildItem $AgentsSrc2 -Filter '*.md' | Where-Object {
+    $_.Name -ne 'README.md' -and $_.FullName -notmatch '\\.deprecated\\'
+} | ForEach-Object { $null = $currentValid.Add($_.Name) }
+
+# Read previous manifest (empty set on first run)
+$previousOwned = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+if (Test-Path $ManifestPath) {
+    Get-Content $ManifestPath | Where-Object { $_ -ne '' } | ForEach-Object {
+        $null = $previousOwned.Add($_)
+    }
+}
+
+# Remove files we previously installed but are no longer in source
+if (Test-Path $AgentsDst) {
+    $previousOwned | Where-Object { -not $currentValid.Contains($_) } | ForEach-Object {
+        $target = Join-Path $AgentsDst $_
+        if (Test-Path $target) {
+            Ensure-Dir $BackupDir
+            $backupPath = Join-Path $BackupDir "agents\$_"
+            Ensure-Dir (Split-Path $backupPath -Parent)
+            Copy-Item $target $backupPath -Force
+            Remove-Item $target -Force
+            $stats.removed++
+            Write-Host "`n  removed stale: $_" -NoNewline
+        }
+    }
+}
+
+# Write updated manifest
+$currentValid | Sort-Object | Set-Content $ManifestPath -Encoding utf8
+Write-Host " done"
+
 Write-Host ""
 Write-Host "Results:" -ForegroundColor Green
 Write-Host "  Copied   : $($stats.copied)"
 Write-Host "  Skipped  : $($stats.skipped) (identical)"
 Write-Host "  Backed up: $($stats.backed_up) (originals in $BackupDir)"
+if ($stats.removed -gt 0) {
+    Write-Host "  Removed  : $($stats.removed) stale agents (backed up to $BackupDir)" -ForegroundColor Yellow
+}
 Write-Host ""
 
-if ($stats.copied -gt 0) {
-    Write-Host "Restart Claude Code (or open a new session) to pick up the new agents, commands, and skills." -ForegroundColor Yellow
+if ($stats.copied -gt 0 -or $stats.removed -gt 0) {
+    Write-Host "Restart Claude Code (or open a new session) to pick up the changes." -ForegroundColor Yellow
 } else {
     Write-Host "Everything already up to date." -ForegroundColor Green
 }
