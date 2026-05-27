@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { type AgentMeta, type Edge, FAMILY_COLORS, CHAINS } from '../data/agents'
+import { FAMILY_NAMES } from '../families'
 
 interface Props {
   agents: AgentMeta[]
@@ -30,8 +31,8 @@ function layoutNodes(agents: AgentMeta[]): Node[] {
     familyGroups[a.family].push(a)
   }
 
-  // Order families to match chain layout
-  const familyOrder = ['Web Stack', 'Quality', 'Research', 'Game Design', 'GitHub', 'Product', 'Cross-cutting', 'Meta']
+  // Order families to match chain layout — canonical list in families.ts
+  const familyOrder = FAMILY_NAMES
 
   const nodes: Node[] = []
   let yOffset = 0

@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react'
 import '@xyflow/react/dist/style.css'
 import { type AgentMeta, type AgentFamily, FAMILY_COLORS } from '../data/agents'
+import { FAMILY_NAMES } from '../families'
 
 interface Props {
   agents: AgentMeta[]
@@ -39,18 +40,6 @@ interface AgentData extends Record<string, unknown> {
   agent: AgentMeta
 }
 
-const FAMILY_ORDER: AgentFamily[] = [
-  'Web Stack',
-  'Game Design',
-  'GitHub',
-  'Quality',
-  'Research',
-  'Product',
-  'Cross-cutting',
-  'Workspace',
-  'Meta',
-]
-
 const ROOT_Y = 0
 const FAMILY_Y = 180
 const AGENT_Y_BASE = 360
@@ -69,7 +58,7 @@ function buildLayout(agents: AgentMeta[]): { nodes: Node[]; edges: FlowEdge[] } 
     groups.set(a.family, arr)
   }
 
-  const families = FAMILY_ORDER.filter((f) => (groups.get(f)?.length ?? 0) > 0)
+  const families = FAMILY_NAMES.filter((f) => (groups.get(f)?.length ?? 0) > 0)
 
   const totalFamilyWidth = families.length * FAMILY_X_GAP
   const familyXStart = -totalFamilyWidth / 2 + FAMILY_X_GAP / 2
