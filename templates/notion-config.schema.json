@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/kevinvwong/stack-agents/main/templates/notion-config.schema.json",
+  "title": ".notion/config.json",
+  "description": "Persistent Notion workspace map for a repo. Written by /notion:bootstrap; consumed by /notion:publish, /notion:import, /notion:audit. Contains no secrets — MCP integration token lives in the MCP server connection, not here.",
+  "type": "object",
+  "required": ["version", "parent", "databases", "schema_version"],
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Config-file schema version. Bump when this file's shape changes (not when canonical Notion databases change — that's schema_version)."
+    },
+    "parent": {
+      "type": "object",
+      "required": ["id", "url", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "Notion page ID (UUID, with or without dashes)." },
+        "url": { "type": "string", "format": "uri" },
+        "title": { "type": "string" },
+        "ancestor_path": {
+          "type": "string",
+          "description": "Human-readable workspace > team > page path. Recorded at bootstrap; used by /notion:audit to detect if the parent was moved."
+        }
+      }
+    },
+    "databases": {
+      "type": "object",
+      "description": "Canonical database map. Key is the canonical short name; value is the Notion identifiers needed for write/read calls.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["id", "url"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "data_source_id": {
+            "type": "string",
+            "description": "Required for databases. Absent for the runbooks page (which is a page, not a database)."
+          },
+          "url": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Version of the canonical-database schema from notion-architect.md. Used to detect drift between workspace state and architect's current spec."
+    },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_verified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of most recent successful notion-fetch verification of every database. Refreshed by /notion:audit."
+    }
+  }
+}

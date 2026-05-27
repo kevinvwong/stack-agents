@@ -1,5 +1,5 @@
 ---
-name: scaffold
+name: stack:scaffold
 description: Generate production-ready boilerplate for a target feature or layer. Routes to the appropriate agent(s), outputs files in dependency order, and lists required setup steps and environment variables.
 ---
 

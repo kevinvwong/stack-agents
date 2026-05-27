@@ -6,8 +6,10 @@
   "scripts": {
     "sync-agents": "node -e \"const {cpSync}=require('fs');cpSync('../agents',  'src/agent-content', {recursive:true, filter:(s)=>!s.includes('README')})\"",
     "dev": "npm run sync-agents && vite",
-    "build": "npm run sync-agents && tsc -b && vite build",
-    "lint": "eslint .",
+    "build": "npm run sync-agents && eslint \"src/**/*.{ts,tsx}\" && tsc -b && vite build",
+    "build:fast": "npm run sync-agents && tsc -b && vite build",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {

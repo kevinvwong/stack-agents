@@ -52,6 +52,37 @@ Setup Commands               /setup:*          Install Claude Code config into p
 
 ---
 
+## notion/ — Notion Workspace Commands
+
+Routes to the four Notion specialists: `notion-architect`, `notion-publisher`, `notion-importer`, `notion-governance`.
+
+| File | Command | Routes To | Description |
+|------|---------|-----------|-------------|
+| [notion/notion-bootstrap.md](notion/notion-bootstrap.md) | `/notion:bootstrap --parent <page-url-or-id>` | `notion-architect` | One-shot first-time setup: parent resolution + database scaffold + writes `.notion/config.json`. Idempotent. **Run this first.** |
+| [notion/notion-setup.md](notion/notion-setup.md) | `/notion:setup --parent <page-url-or-id>` | `notion-architect` | Lower-level: scaffold canonical Notion databases only (no config file). Use bootstrap unless you need this. |
+| [notion/notion-publish.md](notion/notion-publish.md) | `/notion:publish <type> <identifier>` | `notion-publisher` | Idempotent upsert by `Source` URL — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
+| [notion/notion-import.md](notion/notion-import.md) | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | `notion-importer` | Read a Notion page or database into session context for a downstream agent |
+| [notion/notion-audit.md](notion/notion-audit.md) | `/notion:audit [--scope <list>] [--auto-flag] [--propose-archives]` | `notion-governance` | Workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions |
+| [notion/notion-panel.md](notion/notion-panel.md) | `/panel:notion [focus]` | All 4 Notion specialists | Coordinated workspace review with cross-specialty synthesis |
+
+---
+
+## knowledge/ — Cross-surface Documentation Panel
+
+| File | Command | Description |
+|------|---------|-------------|
+| [knowledge/knowledge-panel.md](knowledge/knowledge-panel.md) | `/panel:knowledge [focus]` | notion-architect + notion-governance + gh-docs — audits docs across Notion and the repo |
+
+---
+
+## publish/ — Publish-readiness Gate
+
+| File | Command | Description |
+|------|---------|-------------|
+| [publish/publish-panel.md](publish/publish-panel.md) | `/panel:publish <artifact>` | product + analytics + notion-publisher — quality gate before publishing a PRD or analytics spec |
+
+---
+
 ## sprint/ — Sprint Commands
 
 | File | Command | Description |
@@ -109,3 +140,11 @@ These are the files Claude Code actually loads:
 | `sprint-dissolve.md` | `/sprint:dissolve` |
 | `setup-project.md` | `/setup:project` |
 | `setup-hooks.md` | `/setup:hooks` |
+| `notion-bootstrap.md` | `/notion:bootstrap` |
+| `notion-setup.md` | `/notion:setup` |
+| `notion-publish.md` | `/notion:publish` |
+| `notion-import.md` | `/notion:import` |
+| `notion-audit.md` | `/notion:audit` |
+| `panel-notion.md` | `/panel:notion` |
+| `panel-knowledge.md` | `/panel:knowledge` |
+| `panel-publish.md` | `/panel:publish` |

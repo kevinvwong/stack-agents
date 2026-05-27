@@ -1,5 +1,5 @@
 ---
-name: audit
+name: stack:audit
 description: Run a structured code review across one or more stack layers. Routes to the appropriate agent(s) based on scope. Output is grouped by severity with checkboxes, findings, explanations, and recommended fixes.
 ---
 

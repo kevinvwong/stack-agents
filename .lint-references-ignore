@@ -1,0 +1,47 @@
+# References that the linter should not flag as broken.
+#
+# Format: <kind>:<name>  where kind is "agent" or "command".
+# Lines starting with # are comments.
+#
+# Entries here are tracked debt, not approval — each should be either built
+# or removed from the source that references it. The linter's job is to
+# prevent *new* drift, not to silently accept old drift.
+
+# --- Documented in CLAUDE.md but not built in this repo ------------------
+# These panel commands are listed in CLAUDE.md's commands table but no
+# command file exists for them. Either build the panel (and remove from
+# this list) or drop the row from CLAUDE.md.
+command:panel:stack
+command:panel:quality
+command:panel:research
+command:panel:design
+command:panel:psych
+command:panel:security
+command:panel:website
+command:panel:content
+command:panel:ai-feature
+command:panel:launch
+command:panel:gtli-ux
+command:panel:gtli-jgcc
+command:panel:gtli-sim
+
+# These review commands are documented but not implemented as files.
+command:review:code
+command:review:data-model
+command:review:artifact
+
+# Debug / AI / Auth / Docs / Security / GTLI namespaces — documented but
+# the command files live in other plugins or haven't been built yet.
+command:debug:env
+command:ai:prompt-test
+command:ai:prompt-design
+command:auth:clerk
+command:auth:nextauth
+command:docs:audit
+command:docs:write
+command:security:baseline
+command:gtli:student-audit
+
+# --- Sprint subcommands referenced by sprint-assembler -------------------
+# sprint:daily is referenced by sprint-assembler but no command file exists.
+command:sprint:daily
