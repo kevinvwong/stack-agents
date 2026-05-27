@@ -6,13 +6,13 @@ By the end of this walkthrough you'll have run an audit, convened a panel, assem
 
 ## Prereqs
 
-Full install lives in [`docs/SETUP.md`](./SETUP.md). The essentials:
+Full install lives in [`docs/SETUP.md`](https://github.com/kevinvwong/stack-agents/blob/main/docs/SETUP.md). The essentials:
 
 - **Claude Code installed** and the master orchestrator on your path (clone the repo and symlink `CLAUDE.md` to `~/.claude/CLAUDE.md`, or install via the `kwong-stack-agents` marketplace).
 - **Notion MCP server configured** with an integration token (only needed for Step 4 — the first three steps work without Notion).
 - **A repo to point at** — any Next.js or game project will do; the examples below assume `../my-app`.
 
-If any of those aren't in place, finish [`docs/SETUP.md`](./SETUP.md) first and come back.
+If any of those aren't in place, finish [`docs/SETUP.md`](https://github.com/kevinvwong/stack-agents/blob/main/docs/SETUP.md) first and come back.
 
 ---
 
