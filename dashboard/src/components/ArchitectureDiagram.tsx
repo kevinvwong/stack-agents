@@ -47,6 +47,7 @@ const FAMILY_ORDER: AgentFamily[] = [
   'Research',
   'Product',
   'Cross-cutting',
+  'Workspace',
   'Meta',
 ]
 
