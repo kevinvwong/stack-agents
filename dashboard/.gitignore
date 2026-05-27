@@ -14,6 +14,8 @@ dist-ssr
 
 # Agent content is copied at dev time from agents/ — not committed
 src/content/
+# Legacy path before sync-content migration (Phase 9a) — no longer used
+src/agent-content/
 
 # Editor directories and files
 .vscode/*

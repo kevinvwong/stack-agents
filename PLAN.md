@@ -77,7 +77,7 @@ All 7 open issues resolved.
 
 ---
 
-## 🔲 Phase 6 — Claude Code feature leverage
+## ✅ Phase 6 — Claude Code feature leverage
 
 Unlock the remaining Claude Code primitives that are available but not yet wired up.
 
@@ -118,7 +118,7 @@ Unlock the remaining Claude Code primitives that are available but not yet wired
 
 ---
 
-## 🔲 Phase 7 — Harden + close the Notion integration loop
+## ✅ Phase 7 — Harden + close the Notion integration loop
 
 Post-merge debt and gaps surfaced by running the Notion integration end-to-end. Grouped by impact, not effort.
 
@@ -148,7 +148,7 @@ Post-merge debt and gaps surfaced by running the Notion integration end-to-end. 
 
 ---
 
-## 🔲 Phase 8 — Agent lifecycle management (workforce pattern)
+## ✅ Phase 8 — Agent lifecycle management (workforce pattern)
 
 Treat the agent roster like staff: hire, train, upskill, combine, fire, eliminate. The Agents database (added in 1.7.4) is the substrate; this phase adds lifecycle fields, commands, sync, and governance.
 
@@ -179,7 +179,7 @@ Treat the agent roster like staff: hire, train, upskill, combine, fire, eliminat
 
 ---
 
-## 🔲 Phase 9 — Docs surface (dashboard as docs UX)
+## ✅ Phase 9 — Docs surface (dashboard as docs UX)
 
 Extend the existing `dashboard/` Vite app into the docs UX for stack-agents. The repo stays canonical; the dashboard becomes the rendered/visual docs surface. No separate docs site (vitepress/astro) — single source via the existing `sync-agents` pattern.
 
