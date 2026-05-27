@@ -1,0 +1,34 @@
+name: Stale PR bot
+
+on:
+  schedule:
+    - cron: '0 9 * * *'  # daily at 09:00 UTC
+  workflow_dispatch:      # allow manual trigger for testing
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: stale-${{ github.ref }}
+  cancel-in-progress: false  # never cancel an in-progress stale run
+
+jobs:
+  stale:
+    name: Mark stale PRs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        with:
+          # --- Issues: disabled ---
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+
+          # --- PRs ---
+          days-before-pr-stale: 30
+          days-before-pr-close: -1   # label only; never auto-close
+
+          stale-pr-label: stale
+          stale-pr-message: >
+            This PR has been open for 30 days with no activity. If it's still
+            relevant, please rebase and push a commit to refresh it.
