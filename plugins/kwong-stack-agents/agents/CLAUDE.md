@@ -302,19 +302,19 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 |---------|-------|-----------------|
 | `/panel:github` | `/panel:github [focus]` | All 6 GitHub agents + cross-domain synthesis |
 | `/panel:game` | `/panel:game [artifact]` | All 6 Game Design agents + cross-discipline synthesis |
-| `/panel:stack` | `/panel:stack` | All 7 Web agents + cross-layer synthesis |
-| `/panel:quality` | `/panel:quality [scope]` | web-qa + accessibility + performance |
-| `/panel:research` | `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review |
-| `/panel:design` | `/panel:design [scope]` | visual-designer + interaction-designer + information-architect |
-| `/panel:psych` | `/panel:psych [scope]` | cognitive-psychologist + behavioral-psychologist |
-| `/panel:security` | `/panel:security` | security + env-debugger + static analysis |
-| `/panel:website` | `/panel:website TARGET_SITE: <url>` | website-audit + student-lens + UX |
-| `/panel:content` | `/panel:content [module spec]` | video-script + lesson + assessment + QA |
-| `/panel:ai-feature` | `/panel:ai-feature [feature]` | ai-llm + prompt-engineer + application |
-| `/panel:launch` | `/panel:launch` | Full pre-launch sweep → Ship / No-Ship verdict |
-| `/panel:gtli-ux` | `/panel:gtli-ux` | All 5 GTLI UX persona agents + synthesis |
-| `/panel:gtli-jgcc` | `/panel:gtli-jgcc` | All 11 JGCC learning quality agents + synthesis |
-| `/panel:gtli-sim` | `/panel:gtli-sim [feature]` | Simulated user panel across GTLI archetypes |
+| `/panel:stack` | `/panel:stack` | _(planned)_ All 7 Web agents + cross-layer synthesis |
+| `/panel:quality` | `/panel:quality [scope]` | _(planned)_ web-qa + accessibility + performance |
+| `/panel:research` | `/panel:research [question]` | _(planned)_ user-research + usability-testing + focus-group + expert-review |
+| `/panel:design` | `/panel:design [scope]` | _(planned)_ visual-designer + interaction-designer + information-architect |
+| `/panel:psych` | `/panel:psych [scope]` | _(planned)_ cognitive-psychologist + behavioral-psychologist |
+| `/panel:security` | `/panel:security` | _(planned)_ security + env-debugger + static analysis |
+| `/panel:website` | `/panel:website TARGET_SITE: <url>` | _(planned)_ website-audit + student-lens + UX |
+| `/panel:content` | `/panel:content [module spec]` | _(planned)_ video-script + lesson + assessment + QA |
+| `/panel:ai-feature` | `/panel:ai-feature [feature]` | _(planned)_ ai-llm + prompt-engineer + application |
+| `/panel:launch` | `/panel:launch` | _(planned)_ Full pre-launch sweep → Ship / No-Ship verdict |
+| `/panel:gtli-ux` | `/panel:gtli-ux` | _(planned)_ All 5 GTLI UX persona agents + synthesis |
+| `/panel:gtli-jgcc` | `/panel:gtli-jgcc` | _(planned)_ All 11 JGCC learning quality agents + synthesis |
+| `/panel:gtli-sim` | `/panel:gtli-sim [feature]` | _(planned)_ Simulated user panel across GTLI archetypes |
 | `/panel:notion` | `/panel:notion [focus]` | All 4 Notion specialists + cross-specialty synthesis |
 | `/panel:knowledge` | `/panel:knowledge [focus]` | notion-architect + notion-governance + gh-docs — docs across Notion and the repo |
 | `/panel:publish` | `/panel:publish <artifact>` | product + analytics + notion-publisher — publish-readiness gate for PRDs / analytics specs |
@@ -335,42 +335,42 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/review:code` | `/review:code [file or dir]` | Code quality — correctness, complexity, naming, dead code |
-| `/review:data-model` | `/review:data-model [schema]` | Schema — entities, relationships, normalization, domain fitness |
-| `/review:artifact` | `/review:artifact [file]` | Agent/skill/command quality gate before publishing |
+| `/review:code` | `/review:code [file or dir]` | _(planned)_ Code quality — correctness, complexity, naming, dead code |
+| `/review:data-model` | `/review:data-model [schema]` | _(planned)_ Schema — entities, relationships, normalization, domain fitness |
+| `/review:artifact` | `/review:artifact [file]` | _(planned)_ Agent/skill/command quality gate before publishing |
 
 ### — Debugging —
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/debug:env` | `/debug:env [scope]` | Trace env vars, find missing vars, NEXT_PUBLIC_ violations |
+| `/debug:env` | `/debug:env [scope]` | _(planned)_ Trace env vars, find missing vars, NEXT_PUBLIC_ violations |
 
 ### — AI / Prompts —
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/ai:prompt-test` | `/ai:prompt-test [prompt]` | Regression test suite for a prompt or AI feature |
-| `/ai:prompt-design` | `/ai:prompt-design [feature]` | Design or review a system prompt |
+| `/ai:prompt-test` | `/ai:prompt-test [prompt]` | _(planned)_ Regression test suite for a prompt or AI feature |
+| `/ai:prompt-design` | `/ai:prompt-design [feature]` | _(planned)_ Design or review a system prompt |
 
 ### — Auth —
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/auth:clerk` | `/auth:clerk [scope]` | Clerk authentication security audit |
-| `/auth:nextauth` | `/auth:nextauth [scope]` | NextAuth.js security audit |
+| `/auth:clerk` | `/auth:clerk [scope]` | _(planned)_ Clerk authentication security audit |
+| `/auth:nextauth` | `/auth:nextauth [scope]` | _(planned)_ NextAuth.js security audit |
 
 ### — Docs —
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/docs:audit` | `/docs:audit` | Audit documentation for completeness and accuracy |
-| `/docs:write` | `/docs:write [file]` | Rewrite documentation in the correct voice for its audience |
+| `/docs:audit` | `/docs:audit` | _(planned)_ Audit documentation for completeness and accuracy |
+| `/docs:write` | `/docs:write [file]` | _(planned)_ Rewrite documentation in the correct voice for its audience |
 
 ### — Security —
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/security:baseline` | `/security:baseline` | First-pass security sweep (semgrep, insecure defaults, supply chain) |
+| `/security:baseline` | `/security:baseline` | _(planned)_ First-pass security sweep (semgrep, insecure defaults, supply chain) |
 
 ### — Agents (workforce) —
 
@@ -412,7 +412,7 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 
 | Command | Usage | Description |
 |---------|-------|-------------|
-| `/gtli:student-audit` | `/gtli:student-audit TARGET_SITE: <url>` | Prospective student enrollment funnel audit |
+| `/gtli:student-audit` | `/gtli:student-audit TARGET_SITE: <url>` | _(planned)_ Prospective student enrollment funnel audit |
 
 ---
 
