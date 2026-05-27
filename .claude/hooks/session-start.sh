@@ -156,6 +156,12 @@ if [ -f "$MEMORY_FILE" ]; then
   fi
 fi
 
+# --- Notion workspace status (silent no-op if .notion/config.json absent or NOTION_API_KEY unset) ---
+NOTION_LINES=$(bash "$PROJECT_DIR/.claude/hooks/notion-status.sh" open 2>/dev/null) || NOTION_LINES=""
+if [ -n "$NOTION_LINES" ]; then
+  while IFS= read -r line; do [ -n "$line" ] && LINES+=("$line"); done <<< "$NOTION_LINES"
+fi
+
 # --- Open PRs ---
 MY_PRS=$(gh pr list \
   --author "@me" \
