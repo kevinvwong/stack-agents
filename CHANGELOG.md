@@ -2,6 +2,34 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.0] — 2026-05-27
+
+### Added — user-scope hooks for every project
+
+Two new hook recipes installable into `~/.claude/settings.json` so they apply to every project automatically (existing and future):
+
+**`lint-references`** (PreToolUse / Bash):
+- Blocks `git commit` if any `[AGENT: X]` or `/cmd:y` reference is broken.
+- Silent no-op in any repo that doesn't have `agents/` and `commands/` — safe for projects that aren't orchestration repos.
+- Carries the linter script with it: installs `lint-references.mjs` to `~/.claude/scripts/` and `lint-references-on-commit.sh` to `~/.claude/hooks/`.
+
+**`notion-url-sanitize`** (PreToolUse / Notion MCP):
+- Blocks `notion-create-pages` and `notion-update-page` calls whose payload contains a URL with credential query params (`token`, `access_token`, `api_key`, `secret`, `password`, `signature`, `auth`, `x-amz-signature`).
+- Belt-and-suspenders for `notion-publisher`'s `sanitizeSourceUrl` spec — catches the case where an agent doesn't follow its own spec, or where someone publishes via the MCP tool directly.
+- Redacts the credential value before echoing the blocked param name so the secret isn't logged.
+
+### Changed
+
+- **`/setup:hooks`** now supports `--scope user|project`. User scope writes to `~/.claude/settings.json` and `~/.claude/{hooks,scripts}/`; project scope writes to `./.claude/...`. Recipes declare a `_scope_default`. The two new recipes default to user scope.
+- **Recipe format** extended with `_files` (script files to copy alongside the hook config) and `$CLAUDE_HOOK_DIR` substitution (resolves to the scope-appropriate hooks dir).
+- **`/setup:project`** bootstrap mode now surfaces a recommendation to install `lint-references` and `notion-url-sanitize` at user scope if they're not already installed.
+- **Linter** (`scripts/lint-references.mjs`) is now cwd-aware: accepts `--root <path>`, auto-detects when not invoked from a stack-agents-style repo, and exits 0 silently if there are no `agents/` and `commands/` to lint. Also strips inline code spans before scanning so illustrative `` `[AGENT: X]` `` examples don't false-positive.
+
+### kwong (marketplace)
+- Bumped to 1.7.0.
+
+---
+
 ## [1.6.0] — 2026-05-27
 
 ### Added — Notion integration reliability + security pass
