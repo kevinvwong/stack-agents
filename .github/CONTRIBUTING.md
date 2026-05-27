@@ -13,16 +13,30 @@
    - `## /scaffold` — at least one concrete template with real code
    - `## /advise` — list of questions this agent can answer
    - `## Handoffs` — explicit `→ HANDOFF TO [AGENT: x]` lines
-3. Add the agent to the correct family table in `CLAUDE.md` (root) and `~/.claude/CLAUDE.md` (global)
-4. Add it to the dependency chain if it belongs in one
-5. Run `cd dashboard && npm run dev` — the new node appears in the graph automatically
+3. Add the agent to the correct family table in `CLAUDE.md` (root) and to `agents/README.md`
+4. Add it to the dependency chain in `CLAUDE.md` if it belongs in one
+5. Run `.\install.ps1` — syncs `CLAUDE.md` and all agents to `~/.claude/` automatically (no manual copy of `~/.claude/CLAUDE.md` needed)
+6. Run `cd dashboard && npm run dev` — the new node appears in the graph automatically
 
 ## Adding a command
 
 1. Add the `.md` file to the appropriate `commands/<family>/` subdirectory
-2. Copy it to `~/.claude/commands/` for global availability
-3. Commands use `**$ARGUMENTS**` as the placeholder for slash command arguments
-4. Register the command in the Commands table in `CLAUDE.md`
+2. Register the command in the Commands table in `CLAUDE.md`
+3. `install.ps1` copies it to `~/.claude/commands/` — no manual copy needed
+4. Commands use `**$ARGUMENTS**` as the placeholder for slash command arguments
+
+## Testing your changes globally
+
+After adding or modifying agents, commands, or skills:
+
+```powershell
+# From the repo root — installs everything to ~/.claude/
+.\install.ps1
+```
+
+The installer copies `agents/`, `commands/`, and `skills/` into `~/.claude/` with deduplication and backup. It also syncs `CLAUDE.md` to `~/.claude/CLAUDE.md`. You do not need to manually copy `~/.claude/CLAUDE.md` — the installer handles it.
+
+Restart Claude Code after running `install.ps1` for changes to take effect.
 
 ## Dashboard changes
 
@@ -31,7 +45,7 @@ cd dashboard
 npm install
 npm run dev       # starts on http://localhost:5173
 npm run build     # production build check
-npx eslint "src/**/*.{ts,tsx}"   # lint check
+./node_modules/.bin/eslint "src/**/*.{ts,tsx}"   # lint check
 ```
 
 All three must pass before committing.
@@ -46,6 +60,20 @@ chore: bump @xyflow/react to 12.11.0
 
 ## Pull requests
 
-- One agent or feature per PR
-- Include a screenshot if changing dashboard UI
-- Run `npm run build` in `dashboard/` and confirm it succeeds before opening the PR
+- One agent or feature per PR — if a PR spans multiple agents, note the dependency chain in the description
+- Squash merge is preferred — keeps `git log` linear and conventional-commit-friendly
+- Name branches descriptively: `feat/finops-agent`, `fix/dashboard-card-links`, `chore/pin-actions-sha`
+- Draft PRs are welcome for early feedback — mark ready when all checklist items pass
+- After addressing review comments, re-request review from the reviewer (don't just push silently)
+- PR author owns rebase/conflict resolution before merge
+
+## Marketplace sync (agents, commands, skills)
+
+If your PR adds or modifies anything that gets installed via `install.ps1`:
+
+1. Add a `CHANGELOG.md` entry under the correct package (`kwong-agents`, `kwong-commands`, or `kwong-skills`)
+2. Bump the patch version for fixes, minor for new additions, major for breaking changes to existing agent interfaces
+3. Run `.\install.ps1` locally and confirm the file lands correctly in `~/.claude/`
+4. Check the three-line checklist in the PR template under "marketplace"
+
+See `install.ps1` for the full mapping of source paths → `~/.claude/` destinations.

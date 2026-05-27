@@ -1,0 +1,77 @@
+name: Bug report
+description: Something broken in the dashboard or agent system
+labels: [bug, status:triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Fill in as much as you can — the more detail, the faster it gets fixed.
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What's broken
+      description: One sentence summary of the problem.
+      placeholder: "The /stack:audit command routes to the wrong agent when..."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: where
+    attributes:
+      label: Where
+      options:
+        - label: Dashboard — Agent Graph tab
+        - label: Dashboard — Projects tab
+        - label: Agent content (wrong checklist item, broken scaffold template)
+        - label: Slash command (routing, output format)
+        - label: Orchestrator (wrong agent selected, synthesis missing)
+        - label: install.ps1 / marketplace installer
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual
+      placeholder: |
+        Expected: ...
+        Actual: ...
+    validations:
+      required: true
+
+  - type: input
+    id: agent
+    attributes:
+      label: Agent / command affected
+      description: e.g. `[AGENT: data]`, `/stack:audit`, `/orchestrate`
+      placeholder: "[AGENT: ...]"
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "Windows 11 / macOS 15 / Ubuntu 24.04"
+    validations:
+      required: true
+
+  - type: input
+    id: node
+    attributes:
+      label: Node version
+      placeholder: "22.x"
+
+  - type: input
+    id: browser
+    attributes:
+      label: Browser (if dashboard bug)
+      placeholder: "Chrome 124 / Firefox 126 / Safari 17"

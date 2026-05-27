@@ -1,0 +1,7 @@
+# All files — Kevin Wong is the default reviewer
+* @kevinvwong
+
+# Agent definitions and command specs — require explicit review
+agents/ @kevinvwong
+commands/ @kevinvwong
+.github/workflows/ @kevinvwong

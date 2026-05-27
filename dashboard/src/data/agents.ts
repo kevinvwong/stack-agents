@@ -137,22 +137,25 @@ function parseHandoffs(raw: string): string[] {
   return targets
 }
 
-// Load all agent .md files bundled by Vite
+// Load all agent .md files — lazy glob so they split into a separate chunk
 const agentModules = import.meta.glob('/src/agent-content/*.md', {
-  eager: true,
   query: '?raw',
   import: 'default',
-}) as Record<string, string>
+}) as Record<string, () => Promise<string>>
 
-export function loadAgents(): AgentMeta[] {
-  return Object.entries(agentModules)
-    .filter(([path]) => !path.includes('README'))
-    .map(([path, raw]) => {
-      const stem = path.split('/').pop()!.replace(/\.md$/, '')
-      const { name, description } = parseFrontmatter(raw)
-      const family: AgentFamily = FAMILY_MAP[stem] ?? 'Meta'
-      return { id: stem, name: name || stem, description, family, raw }
-    })
+export async function loadAgents(): Promise<AgentMeta[]> {
+  const entries = await Promise.all(
+    Object.entries(agentModules)
+      .filter(([path]) => !path.includes('README'))
+      .map(async ([path, load]) => {
+        const raw = await load()
+        const stem = path.split('/').pop()!.replace(/\.md$/, '')
+        const { name, description } = parseFrontmatter(raw)
+        const family: AgentFamily = FAMILY_MAP[stem] ?? 'Meta'
+        return { id: stem, name: name || stem, description, family, raw }
+      }),
+  )
+  return entries
 }
 
 export function buildEdges(agents: AgentMeta[]): Edge[] {
