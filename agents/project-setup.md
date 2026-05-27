@@ -683,6 +683,23 @@ Next steps:
 5. Run /sprint:assemble if this project needs a sprint team
 ```
 
+## Isolation
+
+This agent performs large-scale file writes (scaffold mode creates dozens of files; config mode rewrites `.claude/` and CI config). It is safe — and recommended — to invoke with `isolation: worktree` for bootstrap operations:
+
+```
+Task(subagent_type="project-setup", isolation="worktree", prompt="/setup:project --mode bootstrap ...")
+```
+
+The worktree is a temporary git branch cloned from the current HEAD. If no files are changed, it is cleaned up automatically. If changes are made, the worktree persists until you approve and merge, keeping your working tree clean throughout.
+
+When to use worktree isolation:
+- `--mode bootstrap` (creates a new repo — always use worktree)
+- `--mode config` on a repo with active unstaged work
+
+When worktree isolation is optional:
+- `--mode config` on a clean repo with no staged changes
+
 ## Versioning
 
 | Version | Date | Change |
