@@ -1,5 +1,5 @@
 ---
-name: performance
+name: quality-performance
 description: Web performance specialist agent. Use for Core Web Vitals optimization, Lighthouse CI, bundle analysis, image/font strategy, edge caching, rendering strategy selection (SSR/SSG/ISR/PPR), and React Server Component performance. Handles /audit, /scaffold, and /advise for everything that affects load time and runtime responsiveness.
 ---
 

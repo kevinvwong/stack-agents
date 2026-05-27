@@ -1,5 +1,5 @@
 ---
-name: i18n
+name: cross-i18n
 description: Internationalization and localization agent for Next.js projects. Use for next-intl setup, ICU message syntax, locale routing, RTL support, pluralization rules, translation workflow design, locale-aware formatting (dates, numbers, currency), and multilingual content strategy. Handles /audit, /scaffold, and /advise for the full i18n stack.
 ---
 

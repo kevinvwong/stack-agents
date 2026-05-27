@@ -6,6 +6,13 @@
     Copies agents, commands, and skills from the marketplace repo directly into
     the Claude Code user directory (~/.claude/). Skips files already present
     and identical; backs up any files it would overwrite.
+
+    Source of truth for each artifact type:
+      Agents   — agents/  (canonical; plugins/kwong-stack-agents/ is a
+                           distribution mirror updated on publish, not used here)
+      Commands — plugins/kwong-commands/commands/  (flat namespace)
+      Skills   — plugins/kwong-skills/skills/
+      CLAUDE.md — CLAUDE.md (root orchestrator)
 #>
 
 $ErrorActionPreference = 'Stop'
@@ -14,8 +21,10 @@ $RepoRoot   = $PSScriptRoot
 $ClaudeDir  = "$env:USERPROFILE\.claude"
 $BackupDir  = "$ClaudeDir\backups\kwong-marketplace-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 
+# agents/ is the canonical source — not the plugins mirror.
+# This eliminates drift when agents are renamed or added.
 $AgentsSrc1  = Join-Path $RepoRoot 'plugins\kwong-agents\agents'
-$AgentsSrc2  = Join-Path $RepoRoot 'plugins\kwong-stack-agents\agents'
+$AgentsSrc2  = Join-Path $RepoRoot 'agents'
 $CommandsSrc = Join-Path $RepoRoot 'plugins\kwong-commands\commands'
 $SkillsSrc   = Join-Path $RepoRoot 'plugins\kwong-skills\skills'
 
@@ -65,10 +74,13 @@ Get-ChildItem $AgentsSrc1 -Filter '*.md' | ForEach-Object {
 }
 Write-Host " done"
 
-# --- kwong-stack-agents ---
-Write-Host "kwong-stack-agents..." -NoNewline
+# --- stack-agents (from agents/ — canonical source) ---
+Write-Host "stack-agents..." -NoNewline
 Ensure-Dir $AgentsDst
-Get-ChildItem $AgentsSrc2 -Filter '*.md' | ForEach-Object {
+# Exclude README.md and .deprecated/ subtree
+Get-ChildItem $AgentsSrc2 -Filter '*.md' | Where-Object {
+    $_.Name -ne 'README.md' -and $_.FullName -notmatch '\\.deprecated\\'
+} | ForEach-Object {
     Copy-WithBackup $_.FullName (Join-Path $AgentsDst $_.Name)
 }
 Write-Host " done"
