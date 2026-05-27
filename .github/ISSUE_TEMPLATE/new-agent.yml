@@ -28,6 +28,7 @@ body:
         - Research
         - Product
         - Cross-cutting
+        - Workspace
         - Meta
     validations:
       required: true
