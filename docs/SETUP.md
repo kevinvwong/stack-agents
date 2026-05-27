@@ -43,8 +43,21 @@ git clone https://github.com/kevinvwong/stack-agents.git ~/stack-agents
 cd ~/stack-agents
 ```
 
-If you cloned, copy the root `CLAUDE.md` to your user-scope so it loads in every session:
+**Windows** — run the installer (PowerShell 5.1+):
+```powershell
+.\install.ps1
 ```
+
+This deploys four artifact types to `~/.claude/`:
+- `CLAUDE.md` → `~/.claude/CLAUDE.md` (root orchestrator, loads in every session)
+- Agents from `agents/` (canonical source, excluding `README.md` and `.deprecated/`) and `plugins/kwong-agents/agents/`
+- Commands from `plugins/kwong-commands/commands/`
+- Skills from `plugins/kwong-skills/skills/`
+
+The installer is idempotent — it hash-checks every file and skips identical ones. Any file it would overwrite is backed up to `~/.claude/backups/<timestamp>/` first. Re-running it is safe: stale cleanup only removes agents the installer previously installed (tracked in `~/.claude/kwong-stack-agents.manifest`) that no longer exist in source. Foreign agents installed by other plugins or by hand are never touched.
+
+**macOS / Linux** — copy CLAUDE.md manually:
+```bash
 cp ~/stack-agents/CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
@@ -231,6 +244,7 @@ After completing this guide:
 ```
 ~/.claude/                                 # User scope — applies to every project
 ├── CLAUDE.md                              # Master orchestrator (from stack-agents)
+├── kwong-stack-agents.manifest            # Installer's record of agent files it owns — drives stale cleanup
 ├── settings.json                          # User-scope hooks + MCP server config
 │                                          #   mcpServers: notion, github, neon, sentry, slack
 │                                          #   hooks: lint-references-on-commit, notion-url-sanitize
@@ -269,7 +283,14 @@ To pull in marketplace updates:
 /plugin update kwong-stack-agents
 /plugin update kwong-commands
 
-# Source clone:
+# Source clone — Windows:
+cd ~/stack-agents && git pull
+.\install.ps1
+# install.ps1 handles CLAUDE.md, agents, commands, skills, and stale cleanup in one pass.
+# Then refresh user-scope hook scripts:
+/setup:hooks --add lint-references,notion-url-sanitize --scope user --force
+
+# Source clone — macOS / Linux:
 cd ~/stack-agents && git pull
 cp CLAUDE.md ~/.claude/CLAUDE.md   # if not symlinked
 /setup:hooks --add lint-references,notion-url-sanitize --scope user --force
