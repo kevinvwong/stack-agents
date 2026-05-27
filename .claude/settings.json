@@ -20,6 +20,12 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bash .claude/hooks/bash-guard.sh",
+            "timeout": 10,
+            "statusMessage": "Checking Bash command safety..."
+          },
+          {
+            "type": "command",
             "command": "bash .claude/hooks/lint-references-on-commit.sh",
             "timeout": 30,
             "statusMessage": "Linting [AGENT:] and /cmd: references..."
@@ -34,6 +40,48 @@
             "command": "bash .claude/hooks/notion-url-sanitize.sh",
             "timeout": 5,
             "statusMessage": "Scanning Notion payload for credentials..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/format-on-write.sh",
+            "timeout": 15,
+            "statusMessage": "Formatting file...",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-stop.sh",
+            "timeout": 10,
+            "statusMessage": "Writing session state...",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/notify.sh",
+            "timeout": 5,
+            "statusMessage": "Sending notification...",
+            "async": true
           }
         ]
       }
