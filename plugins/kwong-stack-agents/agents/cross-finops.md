@@ -1,5 +1,5 @@
 ---
-name: finops
+name: cross-finops
 description: Cloud and AI cost management agent. Use for AI API cost tracking (Claude, ElevenLabs, Deepgram), infrastructure cost monitoring (Vercel, Neon, Upstash), budget alerting, cost-per-session analysis, token optimization, and FinOps dashboards. Handles /audit, /scaffold, and /advise for the full cost observability stack.
 ---
 

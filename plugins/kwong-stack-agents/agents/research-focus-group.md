@@ -1,5 +1,5 @@
 ---
-name: focus-group
+name: research-focus-group
 description: Focus group specialist agent. Use for designing and facilitating focus groups, concept reaction sessions, messaging validation, participant recruitment, group dynamics management, synthesis, and insight reporting. Use when you need attitudinal response from multiple stakeholders simultaneously — not for evaluating task performance.
 ---
 

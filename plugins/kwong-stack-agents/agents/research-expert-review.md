@@ -1,5 +1,5 @@
 ---
-name: expert-review
+name: research-expert-review
 description: Expert review and heuristic evaluation agent. Use for structured heuristic evaluations (Nielsen's 10, WCAG, pedagogical, game UX), design critiques, red-team reviews, and domain expert walkthroughs. Use when you want a fast, budget-conscious alternative to user testing, or to complement user testing with expert analysis.
 ---
 

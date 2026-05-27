@@ -1,5 +1,5 @@
 ---
-name: project-setup
+name: meta-project-setup
 description: Meta-agent for installing Claude Code orchestration into an existing repository (--mode config) or bootstrapping a new repository from scratch with stack scaffolding and Claude Code config (--mode bootstrap). Knows how to wire GitHub, Vercel, and Neon as a base services layer. Non-destructive by default — use --force to overwrite.
 version: 1.2.0
 last_updated: 2026-05-24

@@ -1,5 +1,5 @@
 ---
-name: analytics
+name: product-analytics
 description: Product analytics agent. Use for PostHog event schema design, funnel analysis, A/B test design and interpretation, retention cohort analysis, feature flag strategy, and translating analytics data into product decisions. Handles /audit, /scaffold, and /advise for the full product analytics layer.
 ---
 

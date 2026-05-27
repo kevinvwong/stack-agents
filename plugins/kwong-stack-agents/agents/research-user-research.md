@@ -1,5 +1,5 @@
 ---
-name: user-research
+name: research-user-research
 description: User research specialist agent. Use for research planning, user interviews, survey design, persona development, Jobs-to-be-Done (JTBD) framing, affinity mapping, synthesis, and translating research into product requirements. Use at the problem definition and validation stages of any product cycle.
 ---
 

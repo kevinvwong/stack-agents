@@ -1,5 +1,5 @@
 ---
-name: sprint-assembler
+name: meta-sprint-assembler
 description: Sprint assembler — the master meta-agent. Assembles custom sprint teams from the agent pool, generates missing agents on the fly, installs a scoped orchestrator into the target project, and tracks all sprint usage in the registry. Use to spin up, inspect, or dissolve a sprint team for any project.
 ---
 

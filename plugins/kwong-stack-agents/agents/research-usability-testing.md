@@ -1,5 +1,5 @@
 ---
-name: usability-testing
+name: research-usability-testing
 description: Usability testing specialist agent. Use for designing and analyzing moderated/unmoderated usability studies, think-aloud protocols, task success metrics, session recording analysis, and translating test findings into design fixes. Use when evaluating specific UI flows, prototypes, or shipped features.
 ---
 

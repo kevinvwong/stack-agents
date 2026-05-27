@@ -1,5 +1,5 @@
 ---
-name: accessibility
+name: quality-accessibility
 description: Accessibility specialist agent for web products. Use for WCAG 2.1/2.2 AA/AAA audits, axe-core integration, screen-reader testing (NVDA, VoiceOver), keyboard navigation, ARIA authoring patterns, color contrast, focus management, and accessible component design. Handles /audit, /scaffold, and /advise for the full accessibility stack.
 ---
 

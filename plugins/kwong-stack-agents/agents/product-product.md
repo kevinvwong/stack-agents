@@ -1,5 +1,5 @@
 ---
-name: product
+name: product-product
 description: Product management agent. Use for writing PRDs, defining user stories and acceptance criteria, scope prioritization (RICE, MoSCoW, opportunity sizing), OKR definition, success metric frameworks, roadmap framing, and feature decision documentation. Routes to specialists for research, design, and engineering — focuses on the why and what, not the how.
 ---
 

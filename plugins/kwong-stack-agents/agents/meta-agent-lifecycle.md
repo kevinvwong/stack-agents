@@ -1,5 +1,5 @@
 ---
-name: agent-lifecycle
+name: meta-agent-lifecycle
 description: Agent workforce manager. Owns the /agents:* lifecycle commands — hire, fire, train, combine, review. Treats the agent roster like staff: every agent has a hired date, a deprecation reason, and a usage record. Sibling to sprint-assembler and project-setup in the Meta family. The only agent that mutates other agents' files as a normal operation.
 ---
 
