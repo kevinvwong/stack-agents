@@ -1,13 +1,18 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   "closed_at": "2026-05-27T21:47",
 =======
   "closed_at": "2026-05-27T21:48",
 >>>>>>> Stashed changes
   "branch": "main",
+=======
+  "closed_at": "2026-05-27T22:01",
+  "branch": "claude/issue-98-panel-onboarding",
+>>>>>>> Stashed changes
   "sha": "e2f5803af092bdfb0c325f408e86600180e4fb02",
   "clean": false,
   "ahead": 0,
-  "pushed": true,
+  "pushed": false,
   "note": "exited with uncommitted changes"
 }
