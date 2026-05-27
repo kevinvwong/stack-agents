@@ -33,6 +33,15 @@ TITLE="Claude Code"
 # Truncate long messages for toast display
 SHORT_MSG=$(echo "$MESSAGE" | head -c 200)
 
+# --- Try Slack (async, non-blocking) ---
+if [ -n "${SLACK_BOT_TOKEN:-}" ] && [ -n "${SLACK_CHANNEL:-#claude-code}" ]; then
+  curl -s -X POST https://slack.com/api/chat.postMessage \
+    -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+    -H "Content-Type: application/json" \
+    -d "{\"channel\":\"${SLACK_CHANNEL:-#claude-code}\",\"text\":\"*${TITLE}*\n${SHORT_MSG}\"}" \
+    &>/dev/null &
+fi
+
 # --- Try BurntToast (richest experience) ---
 if powershell.exe -NonInteractive -Command "Get-Module -ListAvailable -Name BurntToast" &>/dev/null 2>&1; then
   powershell.exe -NonInteractive -Command "
