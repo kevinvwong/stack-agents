@@ -230,6 +230,16 @@ Answer questions about:
 
 Output format: `[AGENT: sprint-assembler] [COMMAND: advise]` then Recommendation → Reasoning → Tradeoffs → Alternatives → Next step.
 
+## Isolation
+
+This agent generates new agent files and installs a sprint orchestrator into a target project. For large sprint assemblies (5+ agents generated) or when assembling into a project with active work, run with `isolation: worktree`:
+
+```
+Task(subagent_type="sprint-assembler", isolation="worktree", prompt='/sprint:assemble "goal" --project <path>')
+```
+
+The worktree is cleaned up automatically if no changes are committed. Generated agents and the sprint orchestrator land in the worktree branch; review and merge when satisfied.
+
 ## Handoffs
 
 - Target project's GitHub setup → `/panel:github`
