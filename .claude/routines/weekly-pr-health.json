@@ -1,0 +1,9 @@
+{
+  "name": "weekly-pr-health",
+  "description": "Weekly PR staleness check for stack-agents",
+  "schedule": "0 9 * * 1",
+  "command": "bash /c/Users/kwong318/GitHub/stack-agents/.claude/scheduled/weekly-pr-health.sh",
+  "enabled": true,
+  "created_at": "2026-05-27",
+  "project": "C:/Users/kwong318/GitHub/stack-agents"
+}

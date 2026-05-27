@@ -1,0 +1,9 @@
+{
+  "name": "daily-ci-audit",
+  "description": "Daily CI health + Dependabot PR count for stack-agents",
+  "schedule": "0 8 * * *",
+  "command": "bash /c/Users/kwong318/GitHub/stack-agents/.claude/scheduled/daily-ci-audit.sh",
+  "enabled": true,
+  "created_at": "2026-05-27",
+  "project": "C:/Users/kwong318/GitHub/stack-agents"
+}
