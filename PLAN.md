@@ -245,3 +245,46 @@ Surfaced by `/orchestrate how can this project be improved?` — product + gh-do
 |------|------|-------|
 | Sprint registry UI in dashboard | Surface `sprints/registry.jsonl` in Projects tab; show status, last active, resume button | #97 |
 | `/panel:onboarding` — project intake | 5-agent panel (product + data + security + infrastructure + gh-repo) → writes `BLUEPRINT.md` | #98 |
+
+---
+
+## Phase 11 — Dashboard design system + UX (from /design-panel audit)
+
+Surfaced by `/design-panel` — visual-designer + interaction-designer + information-architect + design-synthesis at v1.9.1. Grouped P0 → P1 → P2. **Recommended sprint order**: fix silent failures → install fonts → create theme.ts → fix view toggle → rebuild AgentDetail.
+
+### 11a — P0: Ship-blocking (silent failures + navigation)
+
+| Item | What | Issue |
+|------|------|-------|
+| Issues fetch silent failure | Network error shows as "No open issues" — `.catch()` sets empty array | #100 |
+| Commit sort broken | `localeCompare` on raw commit strings sorts by hash prefix, not recency | #101 |
+| Next.js badge `#000` unreadable | Pure black on dark card — ~1.2:1 contrast; entry point for `theme.ts` | #102 |
+| Implicit view-mode swap | Family filter silently replaces ArchitectureDiagram with AgentGraph; dependency chains unreachable | #103 |
+| Blank canvas on load | ReactFlow renders empty with no spinner/skeleton during agent data load | #104 |
+
+### 11b — P1: Significantly degrades experience
+
+| Item | What | Issue |
+|------|------|-------|
+| Create `theme.ts` design token file | Root cause of border drift, radius sprawl, contrast failures — unlocks all visual fixes | #105 |
+| Rebuild AgentDetail as structured panel | Routing ID → chain position → connections → spec body; strip frontmatter | #106 |
+| Install Inter + Fira Code fonts | Fonts declared but never loaded; every user sees OS system font; highest impact-to-effort fix | #107 |
+| Keyboard accessibility baseline | `:focus-visible`, ESC-to-close panel, ARIA tablist semantics, prefers-reduced-motion | #108 |
+| Vercel badge silent failure | Fetch error renders nothing; absence reads as "not deployed" | #109 |
+| Canonicalize FAMILY_COLORS | 4 overlapping purples; GitHub below WCAG AA; extract `families.ts` as single source | #110 |
+| Projects toolbar disappears on refresh | Toolbar replaced by "Scanning…" during load; keep mounted | #111 |
+| Search on Agents/Commands/Docs tabs | All data in memory; no search outside Projects | #112 |
+| Commands grouping vs agent families | 25 filesystem folder names conflict with 9 agent family taxonomy | #113 |
+
+### 11c — P2: Meaningful improvements (backlog)
+
+| Item | What | Issue |
+|------|------|-------|
+| Heading scale too compressed | H1=16px H2=14px H3=13px one-pixel ramp; expand with theme.ts type scale | #114 |
+| AgentDetail panel animation + silent close | No entry animation; filter change silently closes panel | #115 |
+| Node selection edge highlighting | Selected node shows no connected edge highlight | #116 |
+| Remove 'FAMILY' node label | Most prominent text, least informative — remove after #110 ships | #117 |
+| Replace mixed icon vocabulary with Lucide | Emoji bitmaps on Windows 11 + ASCII operators; unify with SVG + add hover states | #118 |
+| IA labeling pass | Rename tab 'Agent Graph' → 'Agents', fix 'gtli'/'docs' group names, 'All' → 'Clear', page title | #119 |
+| Docs sidebar sort — Getting Started first | ADR-001 appears before Getting Started alphabetically | #120 |
+| Dashboard housekeeping | Delete App.css, remove dead `SortKey 'issues'` type, fix `<title>` | #121 |
