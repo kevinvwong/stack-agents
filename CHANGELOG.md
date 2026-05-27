@@ -2,6 +2,40 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.7] — 2026-05-27
+
+### Added — Phase 6 Claude Code feature leverage + Phase 9a sync-content fix
+
+**Phase 6a — Hooks (PR #56)**
+- `.claude/hooks/bash-guard.sh` — `PreToolUse` blocks destructive Bash patterns (`rm -rf` unscoped, `git reset --hard`, `git push --force`, `git clean -f`, `DROP TABLE`, shutdown/reboot, fork bomb). Pass `--force` to bypass.
+- `.claude/hooks/format-on-write.sh` — `PostToolUse` auto-formats `.ts/.tsx/.js/.json/.md/.yaml` via Prettier after every `Edit`/`Write`. Async; silent no-op if Prettier not installed.
+- `.claude/hooks/session-stop.sh` — `Stop` hook writes `.claude/session-state.json` at end of every turn. Keeps session briefing accurate without manual `/session:close`.
+- `.claude/hooks/notify.sh` — `Notification` hook fires Windows toast (BurntToast → `Windows.UI.Notifications` → terminal bell). Posts to Slack via `chat.postMessage` if `SLACK_BOT_TOKEN` set.
+- `.claude/settings.json` — wired all four new hooks.
+
+**Phase 6c — Scheduled agents (PR #58)**
+- `.claude/scheduled/daily-ci-audit.sh` — daily CI health + Dependabot PR count. Writes dated log to `.claude/debug/`; prunes files older than 7 days.
+- `.claude/scheduled/weekly-pr-health.sh` — weekly PR staleness (open > 7d, no reviewer, stale CHANGES_REQUESTED).
+- `.claude/routines/` — cron descriptor JSON files (`0 8 * * *` daily, `0 9 * * 1` Monday).
+
+**Phase 6d — MCP servers (PR #58)**
+- `~/.claude/mcp.json` — added `sentry` (`@sentry/mcp-server@latest`) and `slack` (`@modelcontextprotocol/server-slack`). Token placeholders — fill in after install.
+- `agents/web-observability.md` — `## MCP Tools` section + `/audit` updated to call live Sentry data when configured.
+
+**Phase 6e — Worktree isolation (PR #57)**
+- `agents/project-setup.md`, `agents/sprint-assembler.md`, `dog-add.md`, `dog-remove.md` — `## Isolation` section added.
+- `agents/README.md` — step 7 in "Adding a New Agent" checklist for scaffold agents.
+
+**Phase 9a — sync-content fix (PR #59)**
+- `dashboard/scripts/sync-content.mjs` — fixed Windows path doubling via `fileURLToPath()`. Syncs 75 files: agents=38, commands=27, docs=10.
+- `dashboard/.gitignore` — added `src/agent-content/` (legacy pre-migration path).
+
+### Fixed
+- `main` CI unblocked — unquoted `[AGENT:]` in workflow step name caused YAML parse error + 0 jobs on every push. Quoted the step name.
+- Branch protection regression — `main` had no rule. Re-applied: required status check, `enforce_admins: true`, force-push/delete blocked.
+- Stale `feat/dog-agents` origin branch deleted.
+- All `ci.yml` actions pinned to SHA (was using floating `@v4` in `references`/`prds` jobs).
+
 ## [1.7.6] — 2026-05-27
 
 ### Added — Phase 8 lifecycle layer + Phase 9 content
