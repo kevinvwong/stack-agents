@@ -62,7 +62,7 @@ Convene the `notion-architect` agent to do the full first-time wire-up of Notion
     "github-audits":   { "id": "cd51f592-c1f4-4d4a-9c46-b499aeff665a", "data_source_id": "dd85a2db-bec2-4d71-9e65-1339e49d943f", "url": "https://www.notion.so/cd51f592c1f44d4a9c46b499aeff665a" },
     "quality-audits":  { "id": "c73197a3-04a4-4dca-b857-7f96caae5091", "data_source_id": "6fd8f530-fae4-4542-acde-e72f21f5bd7b", "url": "https://www.notion.so/c73197a304a44dcab8577f96caae5091" },
     "game-design":     { "id": "9b50ec47-c2ab-4209-bc92-e6f10ae25478", "data_source_id": "2225b62b-8266-4741-bf37-1fe2dd1f9c9e", "url": "https://www.notion.so/9b50ec47c2ab4209bc92e6f10ae25478" },
-    "runbooks":        { "id": "36dc266f-7d7c-8155-9810-d27c7075bffb",                                                      "url": "https://www.notion.so/36dc266f7d7c81559810d27c7075bffb" }
+    "runbooks":        { "id": "481518bc-4242-45b4-b9f8-e302a2954f94", "data_source_id": "7d7f9a11-91b4-45fa-8fe3-8c1ce5f450bb", "url": "https://www.notion.so/481518bc424245b4b9f8e302a2954f94" }
   },
   "schema_version": 1,
   "created": "2026-05-27T00:42:17Z",
@@ -74,7 +74,7 @@ Convene the `notion-architect` agent to do the full first-time wire-up of Notion
 - `version` — config schema version (this file). Bump when the *config* shape changes.
 - `schema_version` — the canonical-database schema version from `notion-architect.md`. Used by `/notion:audit` to detect drift between the workspace and the architect's current spec.
 - `last_verified` — timestamp of the most recent successful `notion-fetch` of each database. Refreshed by `/notion:audit`.
-- `runbooks` is a page, not a database, so no `data_source_id`.
+- All eight entries are databases with a `data_source_id`. (Runbooks was a page until v1.7.3 — historical configs may show it without `data_source_id`; rerun `/notion:bootstrap` to migrate.)
 
 ## What This Replaces
 

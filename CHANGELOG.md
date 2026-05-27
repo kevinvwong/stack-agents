@@ -2,6 +2,36 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.3] — 2026-05-27
+
+### Changed — Runbooks is now a database, not a page tree
+
+`notion-architect`'s canonical workspace layout previously had Runbooks as a single page with subpages as runbook documents. This made every runbook discoverable only by clicking into the page tree, not by querying — defeating the point of having a structured workspace. Now Runbooks is a database with the same schema discipline as the other 7 canonicals:
+
+```
+Title (TITLE)
+Type   (SELECT — Operational | ADR | Incident | Onboarding | Setup | Reference)
+Status (SELECT — Draft | Active | Archived)
+Owner  (PEOPLE)
+Source (URL — canonical repo file)
+Last verified (DATE)
+```
+
+Default views: `Active` (filtered, sorted by Last verified desc) and `By type` (board, grouped by Type).
+
+Migration on the live "Claude Code" workspace:
+- New Runbooks database created at `https://www.notion.so/481518bc424245b4b9f8e302a2954f94` (`data_source_id` `7d7f9a11-91b4-45fa-8fe3-8c1ce5f450bb`).
+- The existing two runbook subpages (`Notion integration runbook`, `ADR-002: Vercel deploy check as the CI gate`) were moved into the database via `notion-move-pages` and have their Type / Status / Owner / Source / Last verified set. Their URLs are unchanged.
+- The legacy Runbooks page (`36dc266f-7d7c-8155-9810-d27c7075bffb`) was renamed to "Runbooks (legacy index — see Runbooks database)" and its body replaced with a redirect callout. Kept as a legacy URL so old links don't break.
+
+Repo updates:
+- `.notion/config.json` — `runbooks` entry now has `data_source_id`.
+- `agents/notion-architect.md` — Canonical Workspace Layout table updated; new YAML schema in `/scaffold`.
+- `commands/notion/notion-bootstrap.md` + `notion-setup.md` — examples and notes updated.
+- `docs/SETUP.md` — verification section corrected.
+
+---
+
 ## [1.7.2] — 2026-05-27
 
 ### Changed

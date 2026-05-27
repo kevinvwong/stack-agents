@@ -32,7 +32,7 @@ Stack Agents (teamspace)
 ├── 🛠 GitHub audits        (database) — gh-* panel outputs
 ├── 🧪 Quality audits       (database) — /panel:quality outputs
 ├── 🎮 Game design docs     (database) — game-* panel outputs
-└── 📓 Runbooks             (page)     — operational docs, ADRs
+└── 📓 Runbooks             (database) — operational docs, ADRs, incident runbooks (Type enum)
 ```
 
 Every database has `Source` (url), `Status` (status), and `Owner` (person) — non-negotiable. Full per-database schemas are in `/scaffold`.
@@ -177,6 +177,20 @@ properties:
 views:
   - Failing:    filter Verdict = Fail
   - Recent:     sort Run date desc, limit 25
+```
+
+```yaml
+# Runbooks
+title: Title
+properties:
+  Type:         { type: select, options: [Operational, ADR, Incident, Onboarding, Setup, Reference] }
+  Status:       { type: select, options: [Draft, Active, Archived] }
+  Owner:        { type: person }
+  Source:       { type: url }
+  Last verified:{ type: date }
+views:
+  - Active:     filter Status != Archived, sort Last verified desc
+  - By type:    board, group by Type, sort Title asc
 ```
 
 **Page template — PRD**

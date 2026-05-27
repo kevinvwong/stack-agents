@@ -53,7 +53,7 @@ The scaffold writes the following from `agents/notion.md`:
 | GitHub audits | Panel + per-agent audit results | `/panel:github`, `gh-*` agents |
 | Quality audits | QA + a11y + perf audits | `/panel:quality`, `web-qa`, `accessibility`, `performance` |
 | Game design docs | Game panel outputs | `/panel:game`, `game-*` agents |
-| Runbooks | Operational docs, ADRs (page, not database) | All agents |
+| Runbooks | Operational docs, ADRs (database with Type enum) | All agents |
 
 Each database is created with: `Source` (url), `Status` (status), `Owner` (person), and at least one filtered view. Full schemas live in `agents/notion-architect.md`.
 

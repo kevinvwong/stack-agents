@@ -140,7 +140,7 @@ cd <repo>
 What this does:
 1. Verifies access to the parent page.
 2. Shows the ancestor path and asks you to confirm before any writes (guards against writing into the wrong workspace).
-3. Creates the 8 canonical databases under your parent (Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design docs, plus a Runbooks page). Skips any that already exist.
+3. Creates the 8 canonical databases under your parent (Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design docs, Runbooks). Skips any that already exist.
 4. Writes `.notion/config.json` to the repo — this is the map every later command reads.
 5. Verifies each database by re-fetching.
 
