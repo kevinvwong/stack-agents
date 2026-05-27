@@ -176,3 +176,31 @@ Treat the agent roster like staff: hire, train, upskill, combine, fire, eliminat
 | PostToolUse sync hook | Hook on `Write`/`Edit` to `agents/*.md` → `/notion:publish agent <name>` (upserts the row). On delete → `Status=Deprecated`. | #44 |
 | `agent-lifecycle` meta-agent | Owns the 5 `/agents:*` commands. Sibling to `sprint-assembler` and `project-setup` in the Meta family. | #45 |
 | ADR-003 — workforce pattern | Documents the lifecycle: definitions, when to hire vs train vs combine vs fire, the elimination ritual (90-day deprecation window). | #46 |
+
+---
+
+## 🔲 Phase 9 — Docs surface (dashboard as docs UX)
+
+Extend the existing `dashboard/` Vite app into the docs UX for stack-agents. The repo stays canonical; the dashboard becomes the rendered/visual docs surface. No separate docs site (vitepress/astro) — single source via the existing `sync-agents` pattern.
+
+### 9a — Foundation
+
+| Item | What | Issue |
+|------|------|-------|
+| Extend the sync script | `dashboard/package.json` `sync-agents` currently copies `agents/` only. Extend to also sync `docs/` and `commands/` into `dashboard/src/content/{docs,commands}/`. | #47 |
+| Add `/docs` route + nav | New route in dashboard that lists `docs/*.md` pages and renders them with markdown-it (already a dep) | #48 |
+
+### 9b — Content fill
+
+| Item | What | Issue |
+|------|------|-------|
+| `docs/concepts.md` | Single-page intro to Agent / Panel / Sprint / Command / Hook / Runbook. Diagrams. ~300 lines. | #49 |
+| `docs/getting-started.md` | Narrative walkthrough: install → first audit → first sprint → first Notion publish. ~200 lines. | #50 |
+| README polish | Tagline, why-this-exists paragraph, dashboard screenshot, one-line install, top 5 commands, link to dashboard URL for full docs. | #51 |
+
+### 9c — Reference + visuals
+
+| Item | What | Issue |
+|------|------|-------|
+| Per-command detail pages | Mirror of per-agent pages. Route: `/commands/<name>`. Renders frontmatter + body of `commands/**/*.md`. | #52 |
+| Architecture diagram component | React component rendering the orchestrator → families → agents tree (already partially in the agent graph; needs labels + entry point view). | #53 |
