@@ -2,6 +2,34 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.9.1] — 2026-05-27
+
+### Fixed — Post-rename cleanup: agent filenames, dashboard graph, panel catalog (PRs #78–#82)
+
+Complete cleanup pass following the v1.9.0 agent family-prefix rename (PR #66/#67). All downstream files now consistently use prefixed agent IDs.
+
+**Documentation (PR #78):**
+- `README.md` — badge updated to `marketplace-1.9.1-blue`
+- `agents/README.md` — fixed 13 stale pre-rename filename links across Meta, Quality, Research, Product, and Cross-cutting sections
+- `commands/README.md` — command catalog expanded: flat registry table updated from 20 → 54 entries covering all installed `.claude/commands/` files
+
+**Dashboard (PR #79):**
+- `dashboard/src/data/agents.ts` — fixed `CHAINS` (Quality + Research chains used short pre-rename IDs), `FAMILY_MAP` (all 38 entries updated to prefixed stems), and `STEM_TO_CHAIN_ID` mapping
+- Removed dead `dashboard/src/agent-content/` directory (34 pre-rename files, never git-tracked)
+
+**Architecture diagram + contributing guide (PR #80):**
+- `dashboard/src/components/ArchitectureDiagram.tsx` — added `'Workspace'` to `FAMILY_ORDER`; all 4 Notion agents now visible in the diagram
+- `.github/CONTRIBUTING.md` — updated agent naming examples to family-prefix convention
+
+**Panel catalog (PR #81):**
+- `docs/concepts.md` — corrected prefixed agent IDs in family-based panel table; expanded cross-family panel table from 2 → 12 rows covering all 18 panels
+- `docs/getting-started.md` — panel list updated to three categorized groups covering all 18 panels
+
+**Orchestrator command (PR #82):**
+- `commands/orchestrate.md` + `.claude/commands/orchestrate.md` — fixed Quality chain, Research chain, Product table, Cross-cutting table, panel shortcuts, inference rules, and synthesis pattern table (7 locations)
+
+---
+
 ## [1.9.0] — 2026-05-27
 
 ### Added — 25 planned commands + Notion session hooks + dashboard URL routing
