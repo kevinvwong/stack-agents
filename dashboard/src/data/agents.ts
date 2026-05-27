@@ -138,7 +138,7 @@ function parseHandoffs(raw: string): string[] {
 }
 
 // Load all agent .md files — lazy glob so they split into a separate chunk
-const agentModules = import.meta.glob('/src/agent-content/*.md', {
+const agentModules = import.meta.glob('/src/content/agents/*.md', {
   query: '?raw',
   import: 'default',
 }) as Record<string, () => Promise<string>>
