@@ -2,6 +2,56 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.6] — 2026-05-27
+
+### Added — Phase 8 lifecycle layer + Phase 9 content
+
+Massive session-driven build. Five parallel writing agents executed Phase 7-9 work; reference linter green throughout.
+
+**Phase 8 — Agent lifecycle (workforce pattern):**
+- `agents/agent-lifecycle.md` (#45) — new meta-agent, sibling to `sprint-assembler` and `project-setup`. Owns `/agents:*` commands; treats roster as staff.
+- `commands/agents/agents-hire.md` (#39) — atomic create: agent file + Notion row with rollback.
+- `commands/agents/agents-fire.md` (#40) — deprecate (Notion Status=Deprecated, file → `agents/.deprecated/`, surfaces stale `[AGENT:]` refs).
+- `commands/agents/agents-train.md` (#41) — self-audit + unified-diff spec improvements; bumps `Last upskilled` on apply.
+- `commands/agents/agents-combine.md` (#42) — merge two agents; surfaces conflicts; interactive reference rewrite.
+- `commands/agents/agents-review.md` (#43) — quarterly performance review across roster; advisory only.
+- `templates/hooks/agents-sync-to-notion.json` + `.sh` (#44) — PostToolUse hook on `Write|Edit` to `agents/*.md` → upsert Notion row.
+- `docs/adr/ADR-003-agent-lifecycle.md` (#46) — workforce pattern (hire/train/upskill/combine/fire/eliminate; 90-day deprecation window; Active/Deprecated/Eliminated states).
+
+**Phase 8 — schema + backfill (live workspace):**
+- Agents Notion database schema augmented (#37) — added `Hired` (date), `Last upskilled` (date), `Deprecation reason` (rich_text), `Replaced by` (self-relation with `Replaces` reverse), `Owner` (person), `Usage 30d` (number).
+- All 37 agent rows backfilled with `Hired` dates from git log (#38). Dates: 2026-05-19 → 2026-05-26.
+
+**Phase 9 — Docs surface content:**
+- `docs/concepts.md` (#49) — 298-line primitives intro (Agent / Panel / Sprint / Command / Hook / Runbook). ASCII diagrams.
+- `docs/getting-started.md` (#50) — 303-line narrative walkthrough (install → first audit → panel → sprint → publish).
+- `README.md` polished (#51) — tagline + why-this-exists + dashboard screenshot + one-line install + top 5 commands + status badges. Existing content reorganized, nothing deleted.
+
+**Phase 7 — workspace polish:**
+- Integration runbook Source URL flipped from PR #2 to `docs/SETUP.md` on main (#35).
+- Phase 8 + Phase 9 Sprint rows in Notion flipped Planned → Active.
+
+**Routing updates:**
+- `CLAUDE.md` — `agent-lifecycle` added to Meta roster; new `### — Agents (workforce) —` commands section; routing rules added.
+- `agents/README.md` — `agent-lifecycle` added to Meta family table.
+- `commands/README.md` — `agents/` folder section added before `notion/`.
+
+**Plugin mirrors:** All new files mirrored to `plugins/kwong-stack-agents/agents/` and `plugins/kwong-commands/commands/stack-agents/`. `.claude/commands/` flat copies registered.
+
+**Lint:** all references resolve (69 agents recognized via cross-plugin scan, 26 commands, 38 `[AGENT:]` refs, 29 `/cmd:` refs).
+
+### Still pending (user action or deferred)
+
+- #28, #29, #30 — branch protection, Vercel verification, auto-delete-on-merge (UI)
+- #31, #32, #33, #36 — decisions or new command implementations
+- #34 — telemetry needs PostHog account
+- Phase 9 dashboard work (#47, #48, #52, #53) — defer; touches the Vite app, best handled with testing
+
+### kwong (marketplace)
+- Bumped to 1.7.6.
+
+---
+
 ## [1.7.5] — 2026-05-27
 
 ### Added — Projects database; per-project subpages with linked views

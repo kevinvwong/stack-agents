@@ -1,0 +1,36 @@
+{
+  "_recipe": "agents-sync-to-notion",
+  "_description": "After every Write or Edit to agents/<name>.md (excluding agents/.deprecated/*), sync the agent to the Notion Agents database via /notion:publish agent <name>. Keeps the Agents database in sync with the repo without manual publish calls. Silent no-op for any other file path.",
+  "_requires": "jq",
+  "_scope_default": "user",
+  "_files": [
+    {
+      "src": "templates/hooks/scripts/agents-sync-to-notion.sh",
+      "dest_user": "$HOME/.claude/hooks/agents-sync-to-notion.sh",
+      "dest_project": ".claude/hooks/agents-sync-to-notion.sh",
+      "mode": "0755"
+    }
+  ],
+  "_test": "echo '{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"agents/web-data.md\"}}' | bash templates/hooks/scripts/agents-sync-to-notion.sh 2>/dev/null; test $? -eq 0",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_HOOK_DIR/agents-sync-to-notion.sh",
+            "timeout": 10,
+            "statusMessage": "Syncing agent to Notion..."
+          }
+        ]
+      }
+    ]
+  },
+  "_notes": [
+    "$CLAUDE_HOOK_DIR resolves to $HOME/.claude/hooks for user scope, .claude/hooks for project scope.",
+    "Matches only agents/<name>.md at the top level — agents/.deprecated/* is excluded (firing a file should not republish it as Active).",
+    "Owned by the agent-lifecycle meta-agent. Failures log to ~/.claude/notion-sync.log and never block the Write/Edit.",
+    "First-time gotcha: the hook fires on every save, including mid-edit drafts. Combine with debouncing or only-on-commit if mid-edit publishes are noisy."
+  ]
+}
