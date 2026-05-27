@@ -204,3 +204,44 @@ Extend the existing `dashboard/` Vite app into the docs UX for stack-agents. The
 |------|------|-------|
 | Per-command detail pages | Mirror of per-agent pages. Route: `/commands/<name>`. Renders frontmatter + body of `commands/**/*.md`. | #52 |
 | Architecture diagram component | React component rendering the orchestrator → families → agents tree (already partially in the agent graph; needs labels + entry point view). | #53 |
+
+---
+
+## Phase 10 — Product improvements + discoverability (v2.0 roadmap)
+
+Surfaced by `/orchestrate how can this project be improved?` — product + gh-docs panel run at v1.9.1. Grouped by priority.
+
+### 10a — Quick wins (this week)
+
+| Item | What | Issue |
+|------|------|-------|
+| Fix broken README screenshot | Create `docs/screenshots/`, commit dashboard graph screenshot, add live dashboard badge | #84 |
+| Complete getting-started.md placeholders | Replace `... (similar shape)` artifacts; fix `PLAN.md` link → `CHANGELOG.md` | #85 |
+| Description column in agents/README.md | Pull `description:` frontmatter into a 4th column on all agent tables | #86 |
+| Verify + complete SECURITY.md | Confirm `.github/SECURITY.md` is substantive; link from README | #87 |
+| ADR-004 — family-prefix naming | Document the PRs #66–#83 architectural decision for future contributors | #88 |
+
+### 10b — Feature additions (next sprint)
+
+| Item | What | Issue |
+|------|------|-------|
+| `/agents:find` skill | Natural language agent roster search — "which agent handles cost tracking?" → top 3 matches | #89 |
+| Agent output auto-capture | Extend session-close to write `[AGENT:]` outputs to `.claude/history/YYYY-MM-DD-<agent>.md` | #90 |
+| Dashboard Cmd+K command palette | Search 53 commands + 38 agents; Enter copies invocation to clipboard | #91 |
+| `/sprint:standup` command | Daily check-in with installed sprint team — git + PR + issue context routed to each agent | #92 |
+| `cross-design-system` agent | New Cross-cutting agent owning Tailwind config, shadcn/ui governance, design tokens, theming | #93 |
+| `/stack:diff` migration advisor | Given `from=Clerk to=NextAuth`, run relevant stack agents against both configs, surface delta | #94 |
+
+### 10c — Infrastructure + observability
+
+| Item | What | Issue |
+|------|------|-------|
+| Agent usage analytics | `PreToolUse` hook → `.claude/usage.jsonl`; optional PostHog; feeds `/agents:review` | #95 |
+| `install.sh` for macOS/Linux | Port `install.ps1` to bash; closes non-functional macOS install path in SETUP.md | #96 |
+
+### 10d — Strategic / larger scope
+
+| Item | What | Issue |
+|------|------|-------|
+| Sprint registry UI in dashboard | Surface `sprints/registry.jsonl` in Projects tab; show status, last active, resume button | #97 |
+| `/panel:onboarding` — project intake | 5-agent panel (product + data + security + infrastructure + gh-repo) → writes `BLUEPRINT.md` | #98 |
