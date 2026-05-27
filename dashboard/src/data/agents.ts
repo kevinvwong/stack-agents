@@ -4,6 +4,7 @@ export type AgentFamily =
   | 'Research'
   | 'Product'
   | 'Cross-cutting'
+  | 'Workspace'
   | 'Game Design'
   | 'GitHub'
   | 'Meta'
@@ -45,6 +46,10 @@ export const CHAINS: { family: AgentFamily; chain: string[] }[] = [
     family: 'GitHub',
     chain: ['gh-repo', 'gh-actions', 'gh-issues', 'gh-prs', 'gh-releases', 'gh-docs'],
   },
+  {
+    family: 'Workspace',
+    chain: ['notion-architect', 'notion-publisher', 'notion-importer', 'notion-governance'],
+  },
 ]
 
 export const FAMILY_COLORS: Record<AgentFamily, string> = {
@@ -53,6 +58,7 @@ export const FAMILY_COLORS: Record<AgentFamily, string> = {
   'Research': '#f59e0b',
   'Product': '#8b5cf6',
   'Cross-cutting': '#06b6d4',
+  'Workspace': '#a855f7',
   'Game Design': '#ef4444',
   'GitHub': '#6b7280',
   'Meta': '#ec4899',
@@ -91,8 +97,13 @@ const FAMILY_MAP: Record<string, AgentFamily> = {
   'gh-prs': 'GitHub',
   'gh-releases': 'GitHub',
   'gh-docs': 'GitHub',
+  'notion-architect': 'Workspace',
+  'notion-publisher': 'Workspace',
+  'notion-importer': 'Workspace',
+  'notion-governance': 'Workspace',
   'sprint-assembler': 'Meta',
   'project-setup': 'Meta',
+  'agent-lifecycle': 'Meta',
 }
 
 // Map file stem → chain id (some file names differ from chain ids)

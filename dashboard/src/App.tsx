@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { AgentGraph } from './components/AgentGraph'
+import { ArchitectureDiagram } from './components/ArchitectureDiagram'
 import { AgentDetail } from './components/AgentDetail'
 import { ProjectDashboard } from './components/ProjectDashboard'
 import { DocsViewer } from './components/DocsViewer'
@@ -17,7 +18,7 @@ const TAB_LABELS: Record<Tab, string> = {
 }
 
 const ALL_FAMILIES: AgentFamily[] = [
-  'Web Stack', 'Quality', 'Research', 'Product', 'Cross-cutting', 'Game Design', 'GitHub', 'Meta',
+  'Web Stack', 'Quality', 'Research', 'Product', 'Cross-cutting', 'Workspace', 'Game Design', 'GitHub', 'Meta',
 ]
 
 export default function App() {
@@ -138,13 +139,33 @@ export default function App() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {tab === 'graph' && (
           <>
-            <div style={{ flex: selected ? '1 1 60%' : '1 1 100%', minWidth: 0, transition: 'flex 0.2s' }}>
-              <AgentGraph
-                agents={agents}
-                edges={edges}
-                selectedAgent={selectedAgent}
-                onSelectAgent={setSelectedAgent}
-              />
+            <div
+              style={{
+                flex: selected ? '1 1 60%' : '1 1 100%',
+                minWidth: 0,
+                transition: 'flex 0.2s',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {familyFilter === null ? (
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <ArchitectureDiagram
+                    agents={allAgents}
+                    onSelect={setSelectedAgent}
+                    onFilterFamily={setFamilyFilter}
+                  />
+                </div>
+              ) : (
+                <div style={{ flex: 1, minHeight: 0 }}>
+                  <AgentGraph
+                    agents={agents}
+                    edges={edges}
+                    selectedAgent={selectedAgent}
+                    onSelectAgent={setSelectedAgent}
+                  />
+                </div>
+              )}
             </div>
             {selected && (
               <div style={{ flex: '0 0 420px', overflow: 'hidden' }}>
