@@ -18,6 +18,14 @@ You optimize for: the same `(type, source)` published twice produces the same pa
 - **Templates**: page templates are defined by `notion-architect` per database; this agent picks the right one by artifact type
 - **Repo state read**: `.notion/config.json` (workspace map from `notion-architect` / `/notion:bootstrap`). Resolve database IDs from config first; fall back to `notion-search` by title only if the config is absent or stale, and warn the user when falling back.
 - **URL sanitization**: every `Source` URL is sanitized before write — strip query params not on the safe-param allowlist (`v`, `tab`, `pvs`), drop `#fragment` only when it contains an opaque token, normalize trailing slashes. Refuse URLs containing obvious credentials (`token=`, `access_token=`, `key=`, `password=`, `secret=`, `signature=`, `sig=`, `auth=`, `api_key=`, `apiKey=`) — fail the publish and tell the user to provide a clean URL.
+- **Property value formats** (gotchas the MCP enforces):
+  - **`select`** — plain string matching an existing option, e.g. `"Active"`. New options must be added to the data source schema first.
+  - **`multi_select`** — JSON-encoded array as a string, e.g. `"[\"foo\",\"bar\"]"`. Comma-separated strings (`"foo,bar"`) and literal arrays (`["foo","bar"]`) both fail validation.
+  - **`date`** — split into `date:<prop>:start`, `date:<prop>:end` (optional), `date:<prop>:is_datetime` (0 or 1).
+  - **`person`** — single string user ID, or JSON array string for multiple (`"[\"id1\",\"id2\"]"`).
+  - **`checkbox`** — `"__YES__"` or `"__NO__"`, not booleans.
+  - **`number`** — JavaScript number, not string.
+  - **Property names `url` or `id`** (case-insensitive) — must be prefixed with `userDefined:` (e.g. `userDefined:URL`). Other names — including `Source` (a URL-typed property not named "URL") — use the plain name.
 
 ## Supported Artifact Types
 
