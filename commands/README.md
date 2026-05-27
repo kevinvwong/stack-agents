@@ -117,6 +117,107 @@ Routes to the four Notion specialists: `notion-architect`, `notion-publisher`, `
 
 ---
 
+## web/ — Additional Panel Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [web/stack-panel.md](web/stack-panel.md) | `/panel:stack` | All 7 web stack agents in dependency order + cross-layer synthesis |
+| [web/website-panel.md](web/website-panel.md) | `/panel:website TARGET_SITE: <url>` | website-audit + student-lens + UX persona review |
+| [web/ai-feature-panel.md](web/ai-feature-panel.md) | `/panel:ai-feature [feature]` | ai-llm + prompt-engineer + application — AI feature review |
+| [web/launch-panel.md](web/launch-panel.md) | `/panel:launch` | Full pre-launch sweep across all layers → Ship / No-Ship verdict |
+
+---
+
+## quality/ — Quality Panel
+
+| File | Command | Description |
+|------|---------|-------------|
+| [quality/quality-panel.md](quality/quality-panel.md) | `/panel:quality [scope]` | web-qa + accessibility + performance — full quality sweep |
+
+---
+
+## research/ — Research Panel
+
+| File | Command | Description |
+|------|---------|-------------|
+| [research/research-panel.md](research/research-panel.md) | `/panel:research [question]` | user-research + usability-testing + focus-group + expert-review — full research pass |
+
+---
+
+## design/ — Design Panels
+
+| File | Command | Description |
+|------|---------|-------------|
+| [design/design-panel.md](design/design-panel.md) | `/panel:design [scope]` | visual-designer + interaction-designer + information-architect |
+| [design/psych-panel.md](design/psych-panel.md) | `/panel:psych [scope]` | cognitive-psychologist + behavioral-psychologist |
+
+---
+
+## security/ — Security Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [security/security-panel.md](security/security-panel.md) | `/panel:security` | security + env-debugger + static analysis — security sweep |
+| [security/security-baseline.md](security/security-baseline.md) | `/security:baseline` | First-pass security sweep (semgrep, insecure defaults, supply chain) |
+
+---
+
+## review/ — Code Review Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [review/review-code.md](review/review-code.md) | `/review:code [file or dir]` | Code quality — correctness, complexity, naming, dead code |
+| [review/review-data-model.md](review/review-data-model.md) | `/review:data-model [schema]` | Schema — entities, relationships, normalization, domain fitness |
+| [review/review-artifact.md](review/review-artifact.md) | `/review:artifact [file]` | Agent/skill/command quality gate before publishing |
+
+---
+
+## debug/ — Debugging Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [debug/debug-env.md](debug/debug-env.md) | `/debug:env [scope]` | Trace env vars, find missing vars, NEXT_PUBLIC_ violations |
+
+---
+
+## ai/ — AI & Prompt Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [ai/ai-prompt-test.md](ai/ai-prompt-test.md) | `/ai:prompt-test [prompt]` | Regression test suite for a prompt or AI feature |
+| [ai/ai-prompt-design.md](ai/ai-prompt-design.md) | `/ai:prompt-design [feature]` | Design or review a system prompt |
+
+---
+
+## auth/ — Auth Audit Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [auth/auth-clerk.md](auth/auth-clerk.md) | `/auth:clerk [scope]` | Clerk authentication security audit |
+| [auth/auth-nextauth.md](auth/auth-nextauth.md) | `/auth:nextauth [scope]` | NextAuth.js security audit |
+
+---
+
+## docs/ — Documentation Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [docs/docs-audit.md](docs/docs-audit.md) | `/docs:audit` | Audit documentation for completeness and accuracy |
+| [docs/docs-write.md](docs/docs-write.md) | `/docs:write [file]` | Rewrite documentation in the correct voice for its audience |
+
+---
+
+## gtli/ — GTLI Commands
+
+| File | Command | Description |
+|------|---------|-------------|
+| [gtli/gtli-student-audit.md](gtli/gtli-student-audit.md) | `/gtli:student-audit TARGET_SITE: <url>` | Prospective student enrollment funnel audit |
+| [gtli/gtli-ux-panel.md](gtli/gtli-ux-panel.md) | `/panel:gtli-ux` | All 5 GTLI UX persona agents + synthesis |
+| [gtli/gtli-jgcc-panel.md](gtli/gtli-jgcc-panel.md) | `/panel:gtli-jgcc` | All 11 JGCC learning quality agents + synthesis |
+| [gtli/gtli-sim-panel.md](gtli/gtli-sim-panel.md) | `/panel:gtli-sim [feature]` | Simulated user panel across GTLI archetypes |
+
+---
+
 ## Naming Convention
 
 Files: `namespace-verb.md`
@@ -146,8 +247,24 @@ These are the files Claude Code actually loads:
 | `stack-scaffold.md` | `/stack:scaffold` |
 | `stack-advise.md` | `/stack:advise` |
 | `stack-fullstack.md` | `/stack:fullstack` |
+| `panel-stack.md` | `/panel:stack` |
 | `panel-game.md` | `/panel:game` |
 | `panel-github.md` | `/panel:github` |
+| `panel-quality.md` | `/panel:quality` |
+| `panel-research.md` | `/panel:research` |
+| `panel-design.md` | `/panel:design` |
+| `panel-psych.md` | `/panel:psych` |
+| `panel-security.md` | `/panel:security` |
+| `panel-website.md` | `/panel:website` |
+| `panel-ai-feature.md` | `/panel:ai-feature` |
+| `panel-content.md` | `/panel:content` |
+| `panel-launch.md` | `/panel:launch` |
+| `panel-notion.md` | `/panel:notion` |
+| `panel-knowledge.md` | `/panel:knowledge` |
+| `panel-publish.md` | `/panel:publish` |
+| `panel-gtli-ux.md` | `/panel:gtli-ux` |
+| `panel-gtli-jgcc.md` | `/panel:gtli-jgcc` |
+| `panel-gtli-sim.md` | `/panel:gtli-sim` |
 | `sprint-assemble.md` | `/sprint:assemble` |
 | `sprint-list.md` | `/sprint:list` |
 | `sprint-status.md` | `/sprint:status` |
@@ -159,6 +276,22 @@ These are the files Claude Code actually loads:
 | `notion-publish.md` | `/notion:publish` |
 | `notion-import.md` | `/notion:import` |
 | `notion-audit.md` | `/notion:audit` |
-| `panel-notion.md` | `/panel:notion` |
-| `panel-knowledge.md` | `/panel:knowledge` |
-| `panel-publish.md` | `/panel:publish` |
+| `agents-hire.md` | `/agents:hire` |
+| `agents-fire.md` | `/agents:fire` |
+| `agents-train.md` | `/agents:train` |
+| `agents-combine.md` | `/agents:combine` |
+| `agents-review.md` | `/agents:review` |
+| `review-code.md` | `/review:code` |
+| `review-data-model.md` | `/review:data-model` |
+| `review-artifact.md` | `/review:artifact` |
+| `debug-env.md` | `/debug:env` |
+| `ai-prompt-test.md` | `/ai:prompt-test` |
+| `ai-prompt-design.md` | `/ai:prompt-design` |
+| `auth-clerk.md` | `/auth:clerk` |
+| `auth-nextauth.md` | `/auth:nextauth` |
+| `docs-audit.md` | `/docs:audit` |
+| `docs-write.md` | `/docs:write` |
+| `security-baseline.md` | `/security:baseline` |
+| `gtli-student-audit.md` | `/gtli:student-audit` |
+| `session-open.md` | `/session:open` |
+| `session-close.md` | `/session:close` |
