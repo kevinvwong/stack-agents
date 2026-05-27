@@ -74,16 +74,26 @@ A **panel** convenes multiple agents around one artifact and produces a cross-do
 | `/panel:github` | gh-repo · gh-actions · gh-issues · gh-prs · gh-releases · gh-docs |
 | `/panel:game` | game-design · narrative · level-design · game-ux · game-tech · production |
 | `/panel:stack` | data · security · ai-llm · application · infrastructure · observability · presentation |
-| `/panel:quality` | web-qa · accessibility · performance |
-| `/panel:research` | user-research · usability-testing · focus-group · expert-review |
+| `/panel:quality` | web-qa · quality-accessibility · quality-performance |
+| `/panel:research` | research-user-research · research-usability-testing · research-focus-group · research-expert-review |
 | `/panel:notion` | notion-architect · notion-publisher · notion-importer · notion-governance |
 
 **Cross-family panels** assemble a curated set across families for a specific gate:
 
 | Panel | Members | Purpose |
 |-------|---------|---------|
-| `/panel:publish` | product + analytics + notion-publisher | Is this PRD ready to publish? |
-| `/panel:knowledge` | notion-architect + notion-governance + gh-docs | Docs coherence across Notion and the repo |
+| `/panel:design` | visual-designer · interaction-designer · information-architect | Visual and interaction design review |
+| `/panel:psych` | cognitive-psychologist · behavioral-psychologist | Cognitive load and behavior change audit |
+| `/panel:security` | security · env-debugger · static analysis | Security sweep |
+| `/panel:website TARGET_SITE: <url>` | website-audit · student-lens · UX | Conversion and trust audit |
+| `/panel:ai-feature [feature]` | ai-llm · prompt-engineer · application | AI feature review |
+| `/panel:content [module spec]` | video-script · lesson · assessment · QA | Content pipeline review |
+| `/panel:launch` | All stack layers | Pre-launch Ship / No-Ship verdict |
+| `/panel:publish` | product-product · product-analytics · notion-publisher | Is this PRD ready to publish? |
+| `/panel:knowledge` | notion-architect · notion-governance · gh-docs | Docs coherence across Notion and the repo |
+| `/panel:gtli-ux` | All 5 GTLI UX persona agents | GTLI persona review + synthesis |
+| `/panel:gtli-jgcc` | All 11 JGCC learning quality agents | Learning quality audit |
+| `/panel:gtli-sim [feature]` | Simulated GTLI user archetypes | Simulated user panel |
 
 **Dependency order is not optional.** Each family has a chain (e.g. Web: `data → security → ai-llm → application → infrastructure → observability → presentation`). Panel output emits each agent's section in chain order, then a **Cross-domain synthesis** section that surfaces conflicts (gh-actions wants `pull_request_target`; gh-repo wants no third-party fork access — these collide). The synthesis is the value-add; without it, a panel is just six audits stapled together.
 
