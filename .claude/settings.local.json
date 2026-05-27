@@ -21,7 +21,28 @@
       "Bash(gh release *)",
       "Bash(gh label *)",
       "Bash(gh issue *)",
-      "Bash(awk -F'\\\\t' '$2==\"\"')"
+      "Bash(awk -F'\\\\t' '$2==\"\"')",
+      "Bash(powershell.exe *)",
+      "Bash(grep -E \"^\\(accessibility|performance|user-research|usability-testing|focus-group|expert-review|product|analytics|i18n|finops|agent-lifecycle|sprint-assembler|project-setup\\)\\\\.md$\")",
+      "PowerShell(cd C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents; Start-Sleep -Seconds 60; gh run list --limit 3 --json status,name,headBranch,conclusion | ConvertFrom-Json | Where-Object { $_.headBranch -eq 'chore/parallel-panel-followups' } | Format-Table name, status, conclusion)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(xargs grep -l \"panel:stack\\\\|panel:quality\\\\|panel:research\")",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\research\")",
+      "Bash(Out-Null)",
+      "Bash(New-Item -ItemType Directory -Force \"C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\commands\\\\design\")",
+      "Bash(Write-Output \"Directories created\")",
+      "Bash(echo \"---exit: $?\")",
+      "Bash(grep \"\\\\.md$\")",
+      "Bash(grep '\\\\.md$')",
+      "Bash(xargs -I{} basename {})",
+      "Bash(xargs -I{} basename {} .md)",
+      "Bash(echo \"Open issues: $\\(gh issue list --state open --json number)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(grep -v \"\\\\`agents/\\\\|cross-\\\\|quality-\\\\|research-\\\\|product-\\\\|meta-\\\\|web-\\\\|game-\")",
+      "Bash(grep *)",
+      "Bash(npm *)",
+      "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"Set-Location 'C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\dashboard'; npm run dev\" -WindowStyle Normal)",
+      "Bash(gh milestone *)"
     ]
   }
 }
