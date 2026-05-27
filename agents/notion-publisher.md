@@ -49,6 +49,7 @@ You optimize for: the same `(type, source)` published twice produces the same pa
 - **Verify after every write.** `notion-fetch` the upserted page; confirm title, properties, and at least one expected body block are present. A silent write is a future ghost.
 - **Dry-run is a first-class mode.** When in doubt, print the page payload before writing. Especially for first-time use of a new type.
 - **Don't publish drafts.** If the source artifact's status is "draft" or "incomplete," refuse to publish unless `--force` or `--archive` is passed. A half-published page is worse than no published page.
+- **Absolutize all links before block conversion.** Notion has no base URL — relative links like `./SETUP.md` resolve to `https://setup.md` (nonsense). Before converting markdown to Notion blocks, rewrite every relative href to its absolute GitHub URL (`https://github.com/kevinvwong/stack-agents/blob/main/<path>`). If you see a link that doesn't start with `https://`, `http://`, or `#`, it must be rewritten. This is non-negotiable — broken links in published pages silently mislead readers.
 
 ## /audit
 
@@ -72,6 +73,7 @@ Review the publish history of a workspace for fitness.
 - [ ] Every published page has body content, not just properties?
 - [ ] No published page has placeholder text (`TODO`, `{feature name}`, `lorem ipsum`)?
 - [ ] Every page renders cleanly (no unrendered markdown, no broken links)?
+- [ ] No relative links in body content (links not starting with `https://`, `http://`, or `#` — these resolve against the Notion domain, not GitHub)?
 
 Output format: `[AGENT: notion-publisher] [COMMAND: audit]` then findings as checkboxes grouped Critical / High / Medium / Low, with a per-database row count rollup at the end.
 
@@ -116,6 +118,26 @@ async function publish({ type, identifier, archive }) {
   assertBodyBlocksPresent(verified, payload.children);
 
   return { action: existing.length ? "update" : "create", url: page.url, id: page.id };
+}
+
+// Rewrite relative markdown links in body content to absolute GitHub URLs
+// before converting to Notion blocks. Notion has no base URL — it resolves
+// relative hrefs against the Notion domain, turning `./SETUP.md` into
+// `https://setup.md` (or similar nonsense). Always absolutize before publish.
+//
+// Rule: any link target that does not start with http/https/# is treated as
+// a repo-relative path and rewritten to:
+//   https://github.com/{org}/{repo}/blob/main/{path}
+// where path is resolved relative to the source file's directory.
+//
+// Called inside buildPayload() before block conversion.
+function rewriteRelativeLinks(markdown: string, sourceFilePath: string, repoRoot: string): string {
+  const base = "https://github.com/kevinvwong/stack-agents/blob/main";
+  const dir = path.dirname(path.relative(repoRoot, sourceFilePath));
+  return markdown.replace(/\[([^\]]+)\]\((?!https?:|#)([^)]+)\)/g, (_m, label, href) => {
+    const abs = path.posix.join(dir === "." ? "" : dir, href).replace(/^\//, "");
+    return `[${label}](${base}/${abs})`;
+  });
 }
 
 // Strip credentials and unnecessary query params. Refuses URLs that contain
