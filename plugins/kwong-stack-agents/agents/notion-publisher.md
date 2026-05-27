@@ -16,6 +16,8 @@ You optimize for: the same `(type, source)` published twice produces the same pa
 - **Block types**: heading_1/2/3, paragraph, bulleted_list_item, numbered_list_item, to_do, toggle, code, quote, callout, divider, table, link_to_page, child_page
 - **Idempotency key**: the `Source` URL property on every published page
 - **Templates**: page templates are defined by `notion-architect` per database; this agent picks the right one by artifact type
+- **Repo state read**: `.notion/config.json` (workspace map from `notion-architect` / `/notion:bootstrap`). Resolve database IDs from config first; fall back to `notion-search` by title only if the config is absent or stale, and warn the user when falling back.
+- **URL sanitization**: every `Source` URL is sanitized before write — strip query params not on the safe-param allowlist (`v`, `tab`, `pvs`), drop `#fragment` only when it contains an opaque token, normalize trailing slashes. Refuse URLs containing obvious credentials (`token=`, `access_token=`, `key=`, `password=`, `secret=`, `signature=`, `sig=`, `auth=`, `api_key=`, `apiKey=`) — fail the publish and tell the user to provide a clean URL.
 
 ## Supported Artifact Types
 
@@ -72,30 +74,68 @@ Generate the page payload for a publish call, or the publish flow itself.
 **Publish flow — pseudocode**
 
 ```ts
-async function publish({ type, identifier, parentPageId, archive }) {
-  const dbTitle = canonicalDatabase(type);                    // e.g. "PRDs"
-  const db = await notionSearch({ query: dbTitle, parent: parentPageId, filter: "data_source" });
-  if (!db) throw new Error(`Run /notion:setup first — ${dbTitle} not found.`);
+async function publish({ type, identifier, archive }) {
+  // 1. Resolve destination from .notion/config.json (single source of truth).
+  //    Fall back to title-based notion-search ONLY if no config — and warn.
+  const config = readNotionConfig();                          // .notion/config.json
+  const db = config
+    ? config.databases[type]
+    : await resolveBySearchAndWarn(canonicalDatabase(type));
+  if (!db) throw new Error(`Run /notion:bootstrap first — ${type} not in config and not found by search.`);
 
-  const source = await loadSourceArtifact(type, identifier);  // file or session reference
-  const sourceUrl = source.url;                               // PR URL, file path, or registry entry
+  // 2. Load and sanitize the source artifact's URL.
+  const source = await loadSourceArtifact(type, identifier);
+  const sourceUrl = sanitizeSourceUrl(source.url);            // see below
+  if (!sourceUrl) throw new Error(`Refusing to publish: source URL contains credentials.`);
 
+  // 3. Upsert by Source.
   const existing = await notionSearch({
-    parent: db.id,
+    parent: db.data_source_id,
     filter: { property: "Source", url: { equals: sourceUrl } }
   });
+  const payload = buildPayload(type, { ...source, url: sourceUrl }, { archive });
 
-  const payload = buildPayload(type, source, { archive });    // properties + body blocks
+  // 4. Retry on 409 (concurrent edit) / 429 (rate limit) with jitter, 3 attempts.
+  const page = await withRetry(() =>
+    existing.length
+      ? notionUpdatePage({ pageId: existing[0].id, ...payload })
+      : notionCreatePages({ parent: db.data_source_id, ...payload })
+  );
 
-  const page = existing.length
-    ? await notionUpdatePage({ pageId: existing[0].id, ...payload })
-    : await notionCreatePages({ parent: db.id, ...payload });
-
+  // 5. Verify by re-fetch.
   const verified = await notionFetch(page.id);
   assertPropertiesMatch(verified, payload.properties);
   assertBodyBlocksPresent(verified, payload.children);
 
   return { action: existing.length ? "update" : "create", url: page.url, id: page.id };
+}
+
+// Strip credentials and unnecessary query params. Refuses URLs that contain
+// known credential params — the publisher would otherwise persist them.
+function sanitizeSourceUrl(raw: string): string | null {
+  const CRED_PARAMS = /^(token|access[_-]?token|api[_-]?key|key|password|secret|signature|sig|auth)$/i;
+  const SAFE_PARAMS = new Set(["v", "tab", "pvs"]);
+  const u = new URL(raw);
+  for (const k of [...u.searchParams.keys()]) {
+    if (CRED_PARAMS.test(k)) return null;          // refuse — caller must clean
+    if (!SAFE_PARAMS.has(k)) u.searchParams.delete(k);
+  }
+  // Drop opaque fragment tokens; keep normal anchors.
+  if (/^[A-Za-z0-9_\-]{16,}$/.test(u.hash.slice(1))) u.hash = "";
+  // Normalize trailing slash.
+  u.pathname = u.pathname.replace(/\/+$/, "") || "/";
+  return u.toString();
+}
+
+async function withRetry<T>(fn: () => Promise<T>, max = 3): Promise<T> {
+  for (let i = 0; ; i++) {
+    try { return await fn(); }
+    catch (e) {
+      const transient = e.status === 409 || e.status === 429 || e.status >= 500;
+      if (!transient || i >= max - 1) throw e;
+      await sleep(250 * Math.pow(2, i) + Math.random() * 100);  // 250-1100ms backoff
+    }
+  }
 }
 ```
 

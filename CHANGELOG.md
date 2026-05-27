@@ -2,6 +2,48 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.6.0] — 2026-05-27
+
+### Added — Notion integration reliability + security pass
+
+**`/notion:bootstrap` (kwong-commands):**
+- New one-shot first-time setup command. Resolves parent, scaffolds canonical databases (via `notion-architect`), and writes `.notion/config.json` so future `/notion:publish` / `/notion:audit` calls don't re-resolve databases by title every run.
+- Schema for `.notion/config.json` published at `templates/notion-config.schema.json` (versioned, JSON Schema draft-07).
+- Idempotent. Re-running merges with existing config. `--force` overwrites managed keys; `--dry-run` prints the plan without writing.
+
+**Ancestor-path confirmation (`notion-architect`):**
+- Mandatory pre-flight before any database creation: surface the parent's full workspace > team > page path and require user confirmation. Guards against writing canonical databases into a personal scratch page when the MCP token is workspace-wide.
+
+**Source URL sanitization (`notion-publisher`):**
+- Sanitize every `Source` URL before write — strip query params not on a safe-param allowlist (`v`, `tab`, `pvs`), drop opaque fragment tokens, normalize trailing slashes.
+- Refuse to publish when the URL contains credential params (`token`, `access_token`, `api_key`, `password`, `secret`, `signature`, etc.) — fail with a clear message rather than silently persisting credentials as a property.
+- Retry contract added: 409 / 429 / 5xx retried 3x with jittered backoff (250-1100ms).
+
+**`--json` output mode on panels:**
+- `/panel:publish`, `/panel:notion`, `/panel:knowledge` now support a `--json` flag that emits a single JSON block matching a documented schema. Exit-code semantics defined per panel.
+- Designed for CI gating — wire `/panel:publish --json` into PRD review to auto-block NOT_READY artifacts.
+
+### Added — reference linter + CI job
+
+**`scripts/lint-references.mjs`:**
+- Node script (no dependencies, ESM, Node 18+) that validates every `[AGENT: X]` and `/namespace:verb` reference across `agents/`, `commands/`, `CLAUDE.md`, and README files.
+- Scans `plugins/kwong-agents/agents/` to recognize cross-plugin agent names.
+- Supports `.lint-references-ignore` for documented-but-unbuilt commands (tracked debt).
+- Flags: `--json` (CI consumption), `--quiet` (errors only).
+
+**CI integration:**
+- New `references` job in `.github/workflows/ci.yml` runs the linter on every push/PR. Fails on any unresolved reference. ~2-second job, no install step required.
+
+### Fixed — drift surfaced by the new linter
+
+- `stack-*` command frontmatter was `name: audit` / `scaffold` / `advise` / `fullstack` (registered as `/audit` not `/stack:audit`). Fixed to canonical `name: stack:audit` etc. Their descriptions also now show up correctly in the Claude Code skills registry.
+- Handoff lines in `i18n.md` and `finops.md` referenced `[AGENT: web-ai-llm]`; the agent's name is `ai-llm`. Fixed.
+
+### kwong (marketplace)
+- Bumped to 1.6.0.
+
+---
+
 ## [1.5.0] — 2026-05-25
 
 ### kwong-stack-agents (1.2.0)

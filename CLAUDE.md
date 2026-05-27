@@ -41,7 +41,8 @@ Master Orchestrator (you — CLAUDE.md)
 │   └── /sprint:dissolve      Remove sprint from target project
 │
 └── Notion                    commands/notion/*.md  (workspace publishing + import + audit)
-    ├── /notion:setup         Scaffold canonical databases into a teamspace
+    ├── /notion:bootstrap     One-shot: setup + .notion/config.json (run first)
+    ├── /notion:setup         Lower-level: scaffold canonical databases
     ├── /notion:publish       Publish a sprint/PRD/research/audit (idempotent)
     ├── /notion:import        Read a Notion page/database into the session
     ├── /notion:audit         Workspace health check (governance)
@@ -119,7 +120,8 @@ Cross-cutting: "track AI API costs" → `[AGENT: finops]`
 Cross-cutting: "optimize Claude token usage" → `[AGENT: finops]`  
 
 Workspace: "design our Notion databases" → `[AGENT: notion-architect]`  
-Workspace: "set up Notion for this project" → `[AGENT: notion-architect]` via `/notion:setup`  
+Workspace: "wire up Notion for this repo" / "first-time Notion setup" → `[AGENT: notion-architect]` via `/notion:bootstrap`  
+Workspace: "set up Notion for this project" (databases only, no config) → `[AGENT: notion-architect]` via `/notion:setup`  
 Workspace: "publish this PRD / sprint / audit to Notion" → `[AGENT: notion-publisher]` via `/notion:publish`  
 Workspace: "pull the PRD from Notion" → `[AGENT: notion-importer]` via `/notion:import`  
 Workspace: "audit our Notion workspace" → `[AGENT: notion-governance]` via `/notion:audit`  
@@ -365,11 +367,12 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 
 ### — Notion —
 
-> Notion commands route through the four Notion specialists. `/notion:setup` is non-destructive; `/notion:publish` is idempotent (upserts by `Source` URL); `/notion:audit` proposes archives but never archives without confirmation.
+> Notion commands route through the four Notion specialists. `/notion:bootstrap` is the recommended first-time entry (combines setup + persistent config). `/notion:setup` is the lower-level primitive. `/notion:publish` is idempotent (upserts by `Source` URL); `/notion:audit` proposes archives but never archives without confirmation.
 
 | Command | Usage | Routes To | Description |
 |---------|-------|-----------|-------------|
-| `/notion:setup` | `/notion:setup --parent <page-url-or-id> [--databases <list>]` | `notion-architect` | Bootstrap canonical Notion databases (Sprints, PRDs, Research, Analytics, GitHub audits, Quality audits, Game design docs) |
+| `/notion:bootstrap` | `/notion:bootstrap --parent <page-url-or-id> [--target <repo-path>]` | `notion-architect` | One-shot wire-up: resolve parent, scaffold canonical databases, write `.notion/config.json`. **Run this first.** Idempotent. |
+| `/notion:setup` | `/notion:setup --parent <page-url-or-id> [--databases <list>]` | `notion-architect` | Lower-level — scaffold canonical databases only (no config file). Use bootstrap unless you need this. |
 | `/notion:publish` | `/notion:publish <type> <identifier>` | `notion-publisher` | Publish a sprint, PRD, research report, analytics spec, panel audit, or runbook — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
 | `/notion:import` | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | `notion-importer` | Read a Notion page or database into the session for a downstream agent |
 | `/notion:audit` | `/notion:audit [--parent <page-url-or-id>] [--scope <list>] [--auto-flag] [--propose-archives]` | `notion-governance` | Workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions |

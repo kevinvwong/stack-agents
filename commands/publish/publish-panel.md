@@ -14,7 +14,40 @@ Convene the publishing-readiness panel. Before a PRD or analytics spec goes into
 /panel:publish <artifact> --type <type>    # disambiguate type when not inferrable
 /panel:publish <artifact> --gate-only      # report only — do not publish even if green
 /panel:publish <artifact> --auto-publish   # publish automatically if all three agents pass
+/panel:publish <artifact> --json           # emit a single JSON block (see schema below) — for CI scripting
 ```
+
+## `--json` Output Schema
+
+When `--json` is set, emit **only** a single fenced JSON block matching this shape — no preamble, no trailing prose. Designed for `gh pr review` and CI gating.
+
+```json
+{
+  "command": "panel:publish",
+  "artifact": "<path or slug>",
+  "type": "prd | analytics",
+  "verdict": "READY | READY_WITH_FIXES | NOT_READY",
+  "agents": {
+    "product":          { "critical": 0, "high": 0, "medium": 1, "low": 2 },
+    "analytics":        { "critical": 0, "high": 0, "medium": 0, "low": 1 },
+    "notion-publisher": { "critical": 0, "high": 0, "medium": 0, "low": 0 }
+  },
+  "findings": [
+    { "agent": "product", "severity": "medium", "title": "Out-of-scope section missing", "fix": "Add a v1 scope block." }
+  ],
+  "blockers": [],
+  "auto_published": false,
+  "published_url": null,
+  "rationale": "One-paragraph reasoning..."
+}
+```
+
+Exit semantics for scripts:
+- `verdict == READY` → exit 0
+- `verdict == READY_WITH_FIXES` → exit 0 (advisory)
+- `verdict == NOT_READY` → exit 1
+
+When both `--auto-publish` and `--json` are set, the JSON includes `auto_published: true` and `published_url` on success.
 
 **Examples:**
 

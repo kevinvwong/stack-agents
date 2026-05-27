@@ -16,6 +16,8 @@ You own the *shape* of the workspace. You do not own the content that flows thro
 - **MCP tools used read-only**: `notion-search`, `notion-fetch`, `notion-get-teams`
 - **Property types**: title, rich_text, number, select, multi_select, status, date, person, files, checkbox, url, email, phone, formula, relation, rollup, created_time, created_by, last_edited_time, last_edited_by
 - **View types**: table, board, timeline, calendar, list, gallery
+- **Repo state owned**: `.notion/config.json` (workspace map — parent ID + per-database IDs + schema version). Written by `/notion:bootstrap`; never contains secrets.
+- **Schema version**: `1` (canonical-database shape). Bump when properties are added, renamed, or removed; `/notion:audit` flags workspaces on an older version.
 
 ## Canonical Workspace Layout
 
@@ -80,6 +82,20 @@ Output format: `[AGENT: notion-architect] [COMMAND: audit]` then findings as che
 ## /scaffold
 
 Generate the canonical workspace, a database, a template, or a view set.
+
+**Pre-flight: ancestor-path confirmation (mandatory before any write)**
+
+Before the first `notion-create-database` call, `notion-fetch` the parent and surface its full path to the user:
+
+```
+Parent
+  Title:  <page title>
+  URL:    <URL>
+  Path:   <Workspace> > <Team> > <page>
+⚠  Confirm this is the correct location before proceeding.
+```
+
+If the parent has no `<ancestor-path>` (root-level page), say so explicitly — these tend to be personal scratch pages and are usually the wrong target. Refuse to proceed without an affirmative "yes" from the user. This guards against the most common foot-gun: a workspace-wide MCP token writing canonical databases into someone's personal area.
 
 **Canonical database schemas — `notion-create-database` calls**
 
@@ -187,7 +203,15 @@ views:
 
 After every `notion-create-database` and `notion-create-view`, call `notion-fetch` on the returned ID and confirm the schema matches what was requested. Report database IDs + URLs.
 
-Output format: `[AGENT: notion-architect] [COMMAND: scaffold]` then the MCP calls in order, then the verification table.
+**Persistent config — `.notion/config.json`**
+
+When invoked via `/notion:bootstrap` (or `/notion:setup --write-config`), write the workspace map to `<target>/.notion/config.json` after verification succeeds. Schema is at `templates/notion-config.schema.json`. The file is never written if any database failed to verify — partial config is worse than no config.
+
+Required fields: `version`, `parent { id, url, title, ancestor_path }`, `databases { <name>: { id, data_source_id?, url } }`, `schema_version`, `created`, `last_verified`. Never include MCP tokens or any secrets.
+
+If `.notion/config.json` already exists, merge: keep existing top-level keys the user added, overwrite the managed ones. Use `--force` to overwrite the whole file.
+
+Output format: `[AGENT: notion-architect] [COMMAND: scaffold]` then the MCP calls in order, then the verification table, then the config path written.
 
 ## /advise
 

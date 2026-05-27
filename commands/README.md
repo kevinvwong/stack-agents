@@ -58,7 +58,8 @@ Routes to the four Notion specialists: `notion-architect`, `notion-publisher`, `
 
 | File | Command | Routes To | Description |
 |------|---------|-----------|-------------|
-| [notion/notion-setup.md](notion/notion-setup.md) | `/notion:setup --parent <page-url-or-id>` | `notion-architect` | Bootstrap canonical Notion databases (Sprints, PRDs, Research, Analytics, GitHub audits, etc.) with default views |
+| [notion/notion-bootstrap.md](notion/notion-bootstrap.md) | `/notion:bootstrap --parent <page-url-or-id>` | `notion-architect` | One-shot first-time setup: parent resolution + database scaffold + writes `.notion/config.json`. Idempotent. **Run this first.** |
+| [notion/notion-setup.md](notion/notion-setup.md) | `/notion:setup --parent <page-url-or-id>` | `notion-architect` | Lower-level: scaffold canonical Notion databases only (no config file). Use bootstrap unless you need this. |
 | [notion/notion-publish.md](notion/notion-publish.md) | `/notion:publish <type> <identifier>` | `notion-publisher` | Idempotent upsert by `Source` URL — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
 | [notion/notion-import.md](notion/notion-import.md) | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | `notion-importer` | Read a Notion page or database into session context for a downstream agent |
 | [notion/notion-audit.md](notion/notion-audit.md) | `/notion:audit [--scope <list>] [--auto-flag] [--propose-archives]` | `notion-governance` | Workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions |
@@ -139,6 +140,7 @@ These are the files Claude Code actually loads:
 | `sprint-dissolve.md` | `/sprint:dissolve` |
 | `setup-project.md` | `/setup:project` |
 | `setup-hooks.md` | `/setup:hooks` |
+| `notion-bootstrap.md` | `/notion:bootstrap` |
 | `notion-setup.md` | `/notion:setup` |
 | `notion-publish.md` | `/notion:publish` |
 | `notion-import.md` | `/notion:import` |

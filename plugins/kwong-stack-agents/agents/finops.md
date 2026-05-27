@@ -200,5 +200,5 @@ Output format: `[AGENT: finops] [COMMAND: advise]` then Recommendation → Estim
 
 - AI call logging infrastructure → `[AGENT: observability]`
 - Cost metrics in dashboards → `[AGENT: analytics]`
-- Prompt optimization to reduce token usage → `[AGENT: web-ai-llm]`
+- Prompt optimization to reduce token usage → `[AGENT: ai-llm]`
 - Vercel infrastructure cost configuration → `[AGENT: infrastructure]`

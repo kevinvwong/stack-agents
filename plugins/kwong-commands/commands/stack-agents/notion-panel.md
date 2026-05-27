@@ -13,7 +13,32 @@ Convene all 4 Notion specialists as a panel. Each reviews the workspace from the
 /panel:notion                         # full review of the workspace
 /panel:notion [focus]                 # focus the panel on a specific concern
 /panel:notion --parent <page-url>     # explicitly set the workspace parent
+/panel:notion --json                  # emit a single JSON block (see schema below)
 ```
+
+## `--json` Output Schema
+
+When `--json` is set, emit only a single fenced JSON block — no markdown prose.
+
+```json
+{
+  "command": "panel:notion",
+  "workspace": { "title": "<page title>", "url": "<URL>" },
+  "verdict_summary": "<one paragraph>",
+  "agents": {
+    "notion-architect":  { "critical": 0, "high": 1, "medium": 2, "low": 0 },
+    "notion-publisher":  { "critical": 0, "high": 0, "medium": 1, "low": 1 },
+    "notion-importer":   { "critical": 0, "high": 0, "medium": 0, "low": 0 },
+    "notion-governance": { "critical": 1, "high": 2, "medium": 3, "low": 5 }
+  },
+  "cross_specialty": [
+    { "title": "Schema drift in PRDs", "agents": ["notion-architect", "notion-publisher"], "fix": "..." }
+  ],
+  "top_actions": ["...", "...", "..."]
+}
+```
+
+Exit non-zero if any agent reports `critical > 0`.
 
 **Examples:**
 

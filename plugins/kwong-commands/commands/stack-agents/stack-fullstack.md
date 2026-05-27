@@ -1,5 +1,5 @@
 ---
-name: fullstack
+name: stack:fullstack
 description: Run all 7 stack agents in dependency order, then synthesize cross-cutting findings that no single agent would catch alone. Use for pre-launch audits, architectural health checks, and onboarding reviews of an unfamiliar codebase.
 ---
 

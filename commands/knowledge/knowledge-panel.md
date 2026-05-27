@@ -13,7 +13,32 @@ Convene the documentation-across-surfaces panel: Notion workspace (architect + g
 /panel:knowledge                          # full review of Notion + repo docs
 /panel:knowledge [focus]                  # focus the panel on a specific concern
 /panel:knowledge --parent <page-url>      # explicitly set the Notion workspace parent
+/panel:knowledge --json                   # emit a single JSON block (see schema below)
 ```
+
+## `--json` Output Schema
+
+When `--json` is set, emit only a single fenced JSON block — no markdown prose.
+
+```json
+{
+  "command": "panel:knowledge",
+  "notion": { "title": "<workspace>", "url": "<URL>" },
+  "repo": "<owner/repo>",
+  "agents": {
+    "notion-architect":  { "critical": 0, "high": 1, "medium": 2, "low": 0 },
+    "notion-governance": { "critical": 0, "high": 0, "medium": 3, "low": 1 },
+    "gh-docs":           { "critical": 1, "high": 1, "medium": 2, "low": 3 }
+  },
+  "cross_surface": [
+    { "title": "Runbook in wrong home", "surfaces": ["notion", "repo"], "fix": "Move to repo docs/runbooks/" }
+  ],
+  "top_actions": ["...", "...", "..."],
+  "verdict_summary": "<one paragraph>"
+}
+```
+
+Exit non-zero if any agent reports `critical > 0`.
 
 **Examples:**
 
