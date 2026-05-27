@@ -2,7 +2,7 @@
 
 ## Adding an agent
 
-1. Copy `templates/agent-template.md` → `agents/<name>.md`
+1. Copy `templates/agent-template.md` → `agents/<family>-<name>.md`
 2. Fill in all required sections — the dashboard will show a warning badge on any agent missing a section:
    - Frontmatter: `name`, `description`
    - `[AGENT: name]` header line
@@ -57,8 +57,8 @@ All three must pass before committing.
 ## Commit style
 
 ```
-feat: add finops agent with Claude/ElevenLabs cost tracking
-fix: correct handoff edge from game-qa to performance
+feat: add cross-finops agent with Claude/ElevenLabs cost tracking
+fix: correct handoff edge from game-qa to quality-performance
 chore: bump @xyflow/react to 12.11.0
 ```
 
