@@ -1,0 +1,41 @@
+{
+  "_recipe": "lint-references",
+  "_description": "Block `git commit` if any [AGENT: X] or /namespace:verb reference in agents/, commands/, or CLAUDE.md is broken. Silent no-op outside stack-agents-style repos.",
+  "_requires": "node 18+, jq",
+  "_scope_default": "user",
+  "_files": [
+    {
+      "src": "templates/hooks/scripts/lint-references-on-commit.sh",
+      "dest_user": "$HOME/.claude/hooks/lint-references-on-commit.sh",
+      "dest_project": ".claude/hooks/lint-references-on-commit.sh",
+      "mode": "0755"
+    },
+    {
+      "src": "templates/hooks/scripts/lint-references.mjs",
+      "dest_user": "$HOME/.claude/scripts/lint-references.mjs",
+      "dest_project": ".claude/scripts/lint-references.mjs",
+      "mode": "0644"
+    }
+  ],
+  "_test": "echo '{\"tool_name\":\"Bash\",\"tool_input\":{\"command\":\"ls\"}}' | bash templates/hooks/scripts/lint-references-on-commit.sh; test $? -eq 0",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_HOOK_DIR/lint-references-on-commit.sh",
+            "timeout": 30,
+            "statusMessage": "Linting [AGENT:] and /cmd: references..."
+          }
+        ]
+      }
+    ]
+  },
+  "_notes": [
+    "When installed at user scope, $CLAUDE_HOOK_DIR resolves to $HOME/.claude/hooks. The lint-references-on-commit.sh script auto-detects the linter location (env STACK_AGENTS_LINTER, then ~/.claude/scripts/, then ./scripts/).",
+    "When installed at project scope, the hook command path becomes bash .claude/hooks/lint-references-on-commit.sh and the linter is found at .claude/scripts/lint-references.mjs.",
+    "The linter exits 0 (no-op) in any repo that lacks both agents/ and commands/ — safe for projects that aren't orchestration repos."
+  ]
+}

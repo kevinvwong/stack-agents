@@ -2,6 +2,171 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.2] — 2026-05-27
+
+### Changed
+
+- **`dashboard/package.json`**: `build` script now chains `eslint "src/**/*.{ts,tsx}" && tsc -b && vite build` so a single `npm run build` is a complete CI gate. Added `build:fast` for tight local iteration (typecheck + vite only, no lint), plus standalone `lint` and `typecheck` aliases.
+- **Vercel's automatic deploy check** is now the intended branch-protection requirement for merging to `main` (replaces `Dashboard — lint + build` from GH Actions). The GH Actions workflow stays in place as a fallback; it's no longer the merge gate.
+- **`docs/adr/ADR-002-vercel-as-ci-gate.md`** documents the switch and the manual GitHub branch-protection update required on the repo settings page.
+
+### Why
+
+GH Actions billable minutes can be exhausted (it just was on PR #2), blocking PRs unless an admin bypass is used. Vercel already runs an equivalent build on every PR — single source of truth + no quota dependency.
+
+---
+
+## [1.7.1] — 2026-05-27
+
+### Added
+
+- **`docs/SETUP.md`** — comprehensive local-machine setup guide (prerequisites, MCP server config, user-scope hook install, per-repo bootstrap, verification, troubleshooting). Canonical install doc.
+- **`scripts/lint-prds.mjs`** — structural linter for PRD files (`docs/prds/*.md`). Checks: top-level heading, required sections (Problem, User segment, Success metrics, Solution overview), specific metric target (e.g. `from X to Y`, `+15%`, `by 2026-Q3`), Source URL in the first 30 lines. The cheap-and-fast parts of `/panel:publish`'s product lens — runs without a Claude API call.
+- **New CI job `prds`** in `.github/workflows/ci.yml` running the PRD linter on every push/PR.
+- **`.notion/config.json`** — committed workspace map for this repo (parent: "Claude Code" page; 7 databases + Runbooks page). Future `/notion:publish` calls in this repo resolve via config, not by title search.
+- **Notion runbook page published** — `Notion integration runbook` under the Runbooks page tree (`https://www.notion.so/36dc266f7d7c817d8f2cc9d0a2906e42`). Points to `docs/SETUP.md` as the canonical install guide.
+
+### Fixed
+
+- **`notion-url-sanitize` hook false positive**: previously scanned the entire `tool_input` payload as a string, which blocked publishes whose body content merely *described* credential patterns (e.g. `"don't pass ?token=..."` in a runbook). Now uses `jq` to extract only URL-shaped string values (`^https?://`) and scans those, leaving body markdown alone. Same pattern catches actual credentialed URLs; no longer trips on documentation.
+- **PRD metric-specificity regex** in `lint-prds.mjs` was multiline-anchored, causing `$` in a lookahead to match end-of-line and stop the section capture at the first newline. Replaced with explicit string slicing.
+
+### kwong (marketplace)
+- Bumped to 1.7.1.
+
+---
+
+## [1.7.0] — 2026-05-27
+
+### Added — user-scope hooks for every project
+
+Two new hook recipes installable into `~/.claude/settings.json` so they apply to every project automatically (existing and future):
+
+**`lint-references`** (PreToolUse / Bash):
+- Blocks `git commit` if any `[AGENT: X]` or `/cmd:y` reference is broken.
+- Silent no-op in any repo that doesn't have `agents/` and `commands/` — safe for projects that aren't orchestration repos.
+- Carries the linter script with it: installs `lint-references.mjs` to `~/.claude/scripts/` and `lint-references-on-commit.sh` to `~/.claude/hooks/`.
+
+**`notion-url-sanitize`** (PreToolUse / Notion MCP):
+- Blocks `notion-create-pages` and `notion-update-page` calls whose payload contains a URL with credential query params (`token`, `access_token`, `api_key`, `secret`, `password`, `signature`, `auth`, `x-amz-signature`).
+- Belt-and-suspenders for `notion-publisher`'s `sanitizeSourceUrl` spec — catches the case where an agent doesn't follow its own spec, or where someone publishes via the MCP tool directly.
+- Redacts the credential value before echoing the blocked param name so the secret isn't logged.
+
+### Changed
+
+- **`/setup:hooks`** now supports `--scope user|project`. User scope writes to `~/.claude/settings.json` and `~/.claude/{hooks,scripts}/`; project scope writes to `./.claude/...`. Recipes declare a `_scope_default`. The two new recipes default to user scope.
+- **Recipe format** extended with `_files` (script files to copy alongside the hook config) and `$CLAUDE_HOOK_DIR` substitution (resolves to the scope-appropriate hooks dir).
+- **`/setup:project`** bootstrap mode now surfaces a recommendation to install `lint-references` and `notion-url-sanitize` at user scope if they're not already installed.
+- **Linter** (`scripts/lint-references.mjs`) is now cwd-aware: accepts `--root <path>`, auto-detects when not invoked from a stack-agents-style repo, and exits 0 silently if there are no `agents/` and `commands/` to lint. Also strips inline code spans before scanning so illustrative `` `[AGENT: X]` `` examples don't false-positive.
+
+### kwong (marketplace)
+- Bumped to 1.7.0.
+
+---
+
+## [1.6.0] — 2026-05-27
+
+### Added — Notion integration reliability + security pass
+
+**`/notion:bootstrap` (kwong-commands):**
+- New one-shot first-time setup command. Resolves parent, scaffolds canonical databases (via `notion-architect`), and writes `.notion/config.json` so future `/notion:publish` / `/notion:audit` calls don't re-resolve databases by title every run.
+- Schema for `.notion/config.json` published at `templates/notion-config.schema.json` (versioned, JSON Schema draft-07).
+- Idempotent. Re-running merges with existing config. `--force` overwrites managed keys; `--dry-run` prints the plan without writing.
+
+**Ancestor-path confirmation (`notion-architect`):**
+- Mandatory pre-flight before any database creation: surface the parent's full workspace > team > page path and require user confirmation. Guards against writing canonical databases into a personal scratch page when the MCP token is workspace-wide.
+
+**Source URL sanitization (`notion-publisher`):**
+- Sanitize every `Source` URL before write — strip query params not on a safe-param allowlist (`v`, `tab`, `pvs`), drop opaque fragment tokens, normalize trailing slashes.
+- Refuse to publish when the URL contains credential params (`token`, `access_token`, `api_key`, `password`, `secret`, `signature`, etc.) — fail with a clear message rather than silently persisting credentials as a property.
+- Retry contract added: 409 / 429 / 5xx retried 3x with jittered backoff (250-1100ms).
+
+**`--json` output mode on panels:**
+- `/panel:publish`, `/panel:notion`, `/panel:knowledge` now support a `--json` flag that emits a single JSON block matching a documented schema. Exit-code semantics defined per panel.
+- Designed for CI gating — wire `/panel:publish --json` into PRD review to auto-block NOT_READY artifacts.
+
+### Added — reference linter + CI job
+
+**`scripts/lint-references.mjs`:**
+- Node script (no dependencies, ESM, Node 18+) that validates every `[AGENT: X]` and `/namespace:verb` reference across `agents/`, `commands/`, `CLAUDE.md`, and README files.
+- Scans `plugins/kwong-agents/agents/` to recognize cross-plugin agent names.
+- Supports `.lint-references-ignore` for documented-but-unbuilt commands (tracked debt).
+- Flags: `--json` (CI consumption), `--quiet` (errors only).
+
+**CI integration:**
+- New `references` job in `.github/workflows/ci.yml` runs the linter on every push/PR. Fails on any unresolved reference. ~2-second job, no install step required.
+
+### Fixed — drift surfaced by the new linter
+
+- `stack-*` command frontmatter was `name: audit` / `scaffold` / `advise` / `fullstack` (registered as `/audit` not `/stack:audit`). Fixed to canonical `name: stack:audit` etc. Their descriptions also now show up correctly in the Claude Code skills registry.
+- Handoff lines in `i18n.md` and `finops.md` referenced `[AGENT: web-ai-llm]`; the agent's name is `ai-llm`. Fixed.
+
+### kwong (marketplace)
+- Bumped to 1.6.0.
+
+---
+
+## [1.5.0] — 2026-05-25
+
+### kwong-stack-agents (1.2.0)
+
+**Changed — split the single `notion` agent into 4 Workspace specialists:**
+- `notion-architect` — workspace topology, database schemas, properties, relations, views, templates. Owns `/notion:setup`.
+- `notion-publisher` — outbound publishing, idempotent upserts by `Source`, body block rendering, property mapping. Owns `/notion:publish`.
+- `notion-importer` — inbound reading, ID resolution, page/database rendering to markdown, provenance stamping. Read-only. Owns `/notion:import`.
+- `notion-governance` — workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions. Owns `/notion:audit`.
+
+The pre-split `notion` agent has been removed. Existing handoff lines in `product`, `analytics`, `user-research`, `focus-group`, `expert-review`, `sprint-assembler`, `gh-docs`, and the `/panel:github` synthesis have been re-pointed to the correct specialist (publisher for `/notion:publish`, importer for `/notion:import`, etc.).
+
+Dependency chain: `notion-architect → notion-publisher → notion-importer → notion-governance`
+
+### kwong-commands
+
+**Added — `/notion:audit`:**
+- `/notion:audit [--scope <list>] [--auto-flag] [--propose-archives]` — runs by `notion-governance`. Surfaces ownerless pages, stale drafts, duplicates, broken `Source` URLs, schema drift, and permission risks. Read-only by default; archive proposals always require confirmation.
+
+**Added — 3 cross-agent panels:**
+- `/panel:notion` — all 4 Notion specialists in dependency order, with cross-specialty synthesis (where architect/publisher/importer/governance conflict).
+- `/panel:knowledge` — `notion-architect` + `notion-governance` + `gh-docs`. Cross-surface documentation audit between Notion and the repo. Surfaces docs in the wrong home, duplicated truth, and broken cross-links.
+- `/panel:publish` — `product` + `analytics` + `notion-publisher`. Quality gate before publishing a PRD or analytics spec. Verdict is binary: READY / READY WITH FIXES / NOT READY. Supports `--auto-publish` only when verdict is READY.
+
+**Updated — existing `/notion:*` commands re-pointed to specialists:**
+- `/notion:setup` → `notion-architect`
+- `/notion:publish` → `notion-publisher`
+- `/notion:import` → `notion-importer`
+
+### kwong (marketplace)
+- Bumped to 1.5.0.
+
+---
+
+## [1.4.0] — 2026-05-25
+
+### kwong-stack-agents (1.1.0)
+
+**Added — `notion` agent (new Workspace family):**
+- `notion` — Notion workspace + database design, page templates, views, canonical-database scaffolding, idempotent publishing of agent/panel/sprint outputs, and importing pages/databases as session context. Owns the Notion MCP surface (`notion-search`, `notion-fetch`, `notion-create-pages`, `notion-update-page`, `notion-create-database`, `notion-create-view`, comments).
+
+**Changed — Handoff edits across existing agents to route publishing to Notion:**
+- `product` — PRD → `/notion:publish prd`; import existing PRDs via `/notion:import --as prd --into product`
+- `analytics` — event schemas + A/B test plans → `/notion:publish analytics`
+- `user-research`, `focus-group`, `expert-review` — research reports → `/notion:publish research`
+- `sprint-assembler` — sprint roster + status → `/notion:publish sprint`
+- `gh-docs` — ADRs/runbooks → `/notion:publish runbook`; panel audit summaries → `/notion:publish github-audit`
+- `/panel:github` — synthesis now emits a handoff line to publish the audit
+
+**Updated — orchestrator routing:**
+- `CLAUDE.md` adds a Workspace family, routing rules for Notion requests, and a `/notion:*` command table.
+
+### kwong-commands (new)
+
+**Added — 3 `/notion:*` slash commands (source: `stack-agents/commands/notion/`):**
+- `/notion:setup --parent <page-url-or-id>` — bootstrap canonical databases (Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design docs, Runbooks) with default views. Non-destructive; `--force` is additive (never deletes).
+- `/notion:publish <type> <identifier>` — idempotent upsert by `Source` URL for: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook`.
+- `/notion:import <url-or-id> [--as <type>] [--into <agent>]` — read-only fetch of a page or database into session context, with optional handoff to a downstream agent.
+
+---
+
 ## [1.3.0] — 2026-05-25
 
 ### kwong-stack-agents (new — 1.0.0)

@@ -165,3 +165,6 @@ Output format: `[AGENT: product] [COMMAND: advise]` then Recommendation → Reas
 - Usability testing of proposed solution → `[AGENT: usability-testing]`
 - Engineering estimate for RICE effort score → ask engineering directly
 - GitHub issues and milestone structure → `/panel:github` or `[AGENT: gh-issues]`
+- Publish the PRD to Notion → `[AGENT: notion-publisher]` via `/notion:publish prd <path-or-slug>`
+- Pull an existing PRD from Notion as context → `[AGENT: notion-importer]` via `/notion:import <url> --as prd --into product`
+- Gate the PRD through publish-readiness panel → `/panel:publish <path>`

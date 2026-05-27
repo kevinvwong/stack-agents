@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash *)"
+      "Bash(bash *)",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-database",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-pages",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-view",
+      "Bash(cp /home/user/stack-agents/.claude/hooks/lint-references-on-commit.sh /home/user/stack-agents/templates/hooks/scripts/)",
+      "Bash(cp /home/user/stack-agents/.claude/hooks/notion-url-sanitize.sh /home/user/stack-agents/templates/hooks/scripts/)",
+      "Bash(chmod +x /home/user/stack-agents/templates/hooks/scripts/*.sh)",
+      "Bash(cp /home/user/stack-agents/.claude/hooks/notion-url-sanitize.sh /home/user/stack-agents/templates/hooks/scripts/notion-url-sanitize.sh && echo \"template updated\")",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-update-page",
+      "Bash(cp /home/user/stack-agents/scripts/lint-references.mjs /home/user/stack-agents/templates/hooks/scripts/lint-references.mjs && cp /home/user/stack-agents/.claude/hooks/notion-url-sanitize.sh /home/user/stack-agents/templates/hooks/scripts/notion-url-sanitize.sh && echo \"template mirrors refreshed\")"
     ]
   }
 }

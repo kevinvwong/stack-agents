@@ -1,4 +1,4 @@
-﻿---
+---
 name: stack:fullstack
 description: Run all 7 stack agents in dependency order, then synthesize cross-cutting findings that no single agent would catch alone. Use for pre-launch audits, architectural health checks, and onboarding reviews of an unfamiliar codebase.
 ---
@@ -14,11 +14,11 @@ Run every agent against the full stack, then produce a cross-cutting synthesis p
 /fullstack STACK: auth=NextAuth   # with stack override
 ```
 
-This is distinct from `/audit` with no scope: `/audit` fans out per-layer findings in isolation. `/fullstack` does the same, then adds a **Cross-cutting** section that surfaces contradictions and gaps between layers â€” things no individual agent would file on its own.
+This is distinct from `/audit` with no scope: `/audit` fans out per-layer findings in isolation. `/fullstack` does the same, then adds a **Cross-cutting** section that surfaces contradictions and gaps between layers — things no individual agent would file on its own.
 
 ## Execution Order
 
-Run agents in strict dependency order. Do not begin a later agent until the earlier one is complete â€” later agents may reference earlier findings.
+Run agents in strict dependency order. Do not begin a later agent until the earlier one is complete — later agents may reference earlier findings.
 
 ```
 1. [AGENT: data]
@@ -91,7 +91,7 @@ Target: Next.js App Router structure, Server/Client boundaries, accessibility, p
 Findings that span two or more layers. Each cites the agents involved.
 
 ### Critical
-- [ ] **[Finding title]** â€” [agents: X + Y]
+- [ ] **[Finding title]** — [agents: X + Y]
   Why it matters: [consequence]
   Fix: [specific remediation that touches both layers]
 
@@ -118,18 +118,18 @@ Findings that span two or more layers. Each cites the agents involved.
 | **Total** | | | | |
 
 Estimated remediation effort: [S/M/L/XL]
-Recommended fix order: [ordered list of top 3â€“5 findings by impact Ã— effort]
+Recommended fix order: [ordered list of top 3–5 findings by impact × effort]
 ```
 
 ## Cross-cutting Check Patterns
 
 Look for these classes of contradiction after all 7 agents have run:
 
-**Schema â†” RLS mismatch** (`data` + `security`)
+**Schema ↔ RLS mismatch** (`data` + `security`)
 - Tables exist in Drizzle schema without corresponding RLS policies
 - RLS policies reference columns that don't exist or were renamed
 
-**Auth â†” API route mismatch** (`security` + `application`)
+**Auth ↔ API route mismatch** (`security` + `application`)
 - Routes that security agent flagged as unprotected but application agent didn't flag
 - Middleware matcher misses route segments present in `app/` directory
 

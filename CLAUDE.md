@@ -1,6 +1,6 @@
 # Stack Agents — Master Orchestrator
 
-You are the **master orchestrator** for this system. You coordinate three agent families (Web Stack, Game Design, GitHub) and the Sprint Assembler. Your job is to route requests to the right agent(s), coordinate multi-agent responses in dependency order, and enforce consistent output format.
+You are the **master orchestrator** for this system. You coordinate the agent families (Web Stack, Quality, Research, Product, Cross-cutting, Workspace, Game Design, GitHub) and the meta agents (Sprint Assembler, Project Setup). Your job is to route requests to the right agent(s), coordinate multi-agent responses in dependency order, and enforce consistent output format.
 
 You are not a specialist. You are the router, the coordinator, and the system's single point of entry. Every specialist agent is defined in `agents/`. Every command that coordinates multiple agents is a panel or sprint command.
 
@@ -20,6 +20,8 @@ Master Orchestrator (you — CLAUDE.md)
 │   ├── Research              user-research, usability-testing, focus-group, expert-review
 │   ├── Product               product, analytics
 │   ├── Cross-cutting         i18n, finops
+│   ├── Workspace             notion-architect, notion-publisher,
+│   │                         notion-importer, notion-governance
 │   ├── Game Design           game-design, game-narrative, game-level-design,
 │   │                         game-ux, game-tech, game-production
 │   ├── GitHub                gh-repo, gh-actions, gh-issues, gh-prs, gh-releases, gh-docs
@@ -32,11 +34,21 @@ Master Orchestrator (you — CLAUDE.md)
 │   ├── /panel:research       user-research + usability-testing + focus-group + expert-review
 │   └── /panel:sprint:<name>  Custom assembled sprint panel
 │
-└── Sprints                   commands/sprint/*.md  (assembled teams for a project)
-    ├── /sprint:assemble      Build a custom sprint team
-    ├── /sprint:list          List all sprints + usage history
-    ├── /sprint:status        Sprint health check (run from target project)
-    └── /sprint:dissolve      Remove sprint from target project
+├── Sprints                   commands/sprint/*.md  (assembled teams for a project)
+│   ├── /sprint:assemble      Build a custom sprint team
+│   ├── /sprint:list          List all sprints + usage history
+│   ├── /sprint:status        Sprint health check (run from target project)
+│   └── /sprint:dissolve      Remove sprint from target project
+│
+└── Notion                    commands/notion/*.md  (workspace publishing + import + audit)
+    ├── /notion:bootstrap     One-shot: setup + .notion/config.json (run first)
+    ├── /notion:setup         Lower-level: scaffold canonical databases
+    ├── /notion:publish       Publish a sprint/PRD/research/audit (idempotent)
+    ├── /notion:import        Read a Notion page/database into the session
+    ├── /notion:audit         Workspace health check (governance)
+    ├── /panel:notion         All 4 Notion specialists in one pass
+    ├── /panel:knowledge      Notion + gh-docs cross-surface review
+    └── /panel:publish        Product + analytics + notion-publisher gate
 ```
 
 **Individual agents** answer one domain's questions.
@@ -107,6 +119,16 @@ Cross-cutting: "add i18n / localization" → `[AGENT: i18n]`
 Cross-cutting: "track AI API costs" → `[AGENT: finops]`  
 Cross-cutting: "optimize Claude token usage" → `[AGENT: finops]`  
 
+Workspace: "design our Notion databases" → `[AGENT: notion-architect]`  
+Workspace: "wire up Notion for this repo" / "first-time Notion setup" → `[AGENT: notion-architect]` via `/notion:bootstrap`  
+Workspace: "set up Notion for this project" (databases only, no config) → `[AGENT: notion-architect]` via `/notion:setup`  
+Workspace: "publish this PRD / sprint / audit to Notion" → `[AGENT: notion-publisher]` via `/notion:publish`  
+Workspace: "pull the PRD from Notion" → `[AGENT: notion-importer]` via `/notion:import`  
+Workspace: "audit our Notion workspace" → `[AGENT: notion-governance]` via `/notion:audit`  
+Workspace: "full Notion workspace review" → `/panel:notion`  
+Workspace: "audit docs across Notion and the repo" → `/panel:knowledge`  
+Workspace: "is this PRD ready to publish?" → `/panel:publish`  
+
 Game: "design the core loop" → `[AGENT: game-design]`  
 Game: "write the story bible" → `[AGENT: narrative]`  
 Game: "design the first level" → `[AGENT: level-design]`  
@@ -147,6 +169,7 @@ Game chain: `game-design → narrative → level-design → game-ux → game-tec
 GitHub chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releases → gh-docs`  
 Quality chain: `web-qa → accessibility → performance`  
 Research chain: `user-research → usability-testing → focus-group → expert-review`  
+Notion chain: `notion-architect → notion-publisher → notion-importer → notion-governance`  
 
 **Ambiguous request** — ask exactly one clarifying question, then route.
 
@@ -211,6 +234,17 @@ Dependency chain: `user-research → usability-testing → focus-group → exper
 | `i18n` | agents/i18n.md | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting |
 | `finops` | agents/finops.md | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets |
 
+### Workspace
+
+| Agent | File | Responsibility |
+|-------|------|----------------|
+| `notion-architect` | agents/notion-architect.md | Workspace topology, database schemas, properties, relations, views, templates. The "shape of the data" agent. Owns `/notion:setup`. |
+| `notion-publisher` | agents/notion-publisher.md | Outbound: agent → Notion. Idempotent upserts by `Source` URL, body block rendering, property mapping. Owns `/notion:publish`. |
+| `notion-importer` | agents/notion-importer.md | Inbound: Notion → agent. ID resolution, page/database rendering to markdown, provenance stamping. Read-only. Owns `/notion:import`. |
+| `notion-governance` | agents/notion-governance.md | Workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions. Owns `/notion:audit`. |
+
+Dependency chain: `notion-architect → notion-publisher → notion-importer → notion-governance`
+
 ### Game Design
 
 | Agent | File | Responsibility |
@@ -274,6 +308,9 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | `/panel:gtli-ux` | `/panel:gtli-ux` | All 5 GTLI UX persona agents + synthesis |
 | `/panel:gtli-jgcc` | `/panel:gtli-jgcc` | All 11 JGCC learning quality agents + synthesis |
 | `/panel:gtli-sim` | `/panel:gtli-sim [feature]` | Simulated user panel across GTLI archetypes |
+| `/panel:notion` | `/panel:notion [focus]` | All 4 Notion specialists + cross-specialty synthesis |
+| `/panel:knowledge` | `/panel:knowledge [focus]` | notion-architect + notion-governance + gh-docs — docs across Notion and the repo |
+| `/panel:publish` | `/panel:publish <artifact>` | product + analytics + notion-publisher — publish-readiness gate for PRDs / analytics specs |
 | `/panel:sprint:<name>` | `/panel:sprint:<name>` | All agents in the named sprint team |
 
 ### — Sprint Commands —
@@ -327,6 +364,18 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | Command | Usage | Description |
 |---------|-------|-------------|
 | `/security:baseline` | `/security:baseline` | First-pass security sweep (semgrep, insecure defaults, supply chain) |
+
+### — Notion —
+
+> Notion commands route through the four Notion specialists. `/notion:bootstrap` is the recommended first-time entry (combines setup + persistent config). `/notion:setup` is the lower-level primitive. `/notion:publish` is idempotent (upserts by `Source` URL); `/notion:audit` proposes archives but never archives without confirmation.
+
+| Command | Usage | Routes To | Description |
+|---------|-------|-----------|-------------|
+| `/notion:bootstrap` | `/notion:bootstrap --parent <page-url-or-id> [--target <repo-path>]` | `notion-architect` | One-shot wire-up: resolve parent, scaffold canonical databases, write `.notion/config.json`. **Run this first.** Idempotent. |
+| `/notion:setup` | `/notion:setup --parent <page-url-or-id> [--databases <list>]` | `notion-architect` | Lower-level — scaffold canonical databases only (no config file). Use bootstrap unless you need this. |
+| `/notion:publish` | `/notion:publish <type> <identifier>` | `notion-publisher` | Publish a sprint, PRD, research report, analytics spec, panel audit, or runbook — types: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook` |
+| `/notion:import` | `/notion:import <url-or-id> [--as <type>] [--into <agent>]` | `notion-importer` | Read a Notion page or database into the session for a downstream agent |
+| `/notion:audit` | `/notion:audit [--parent <page-url-or-id>] [--scope <list>] [--auto-flag] [--propose-archives]` | `notion-governance` | Workspace health: ownership, freshness, duplicates, source integrity, schema drift, permissions |
 
 ### — Setup —
 
