@@ -48,5 +48,5 @@ How to start a new phase or major feature of work.
 ## See also
 
 - `docs/SETUP.md` — local setup
-- `agents/sprint-assembler.md` — agent that automates this for project-level sprints
+- `agents/meta-sprint-assembler.md` — agent that automates this for project-level sprints
 - `PLAN.md` — the canonical plan

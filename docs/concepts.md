@@ -139,7 +139,7 @@ Every sprint publishes to the **Sprints** database via `/notion:publish sprint <
 
 A sprint's goal usually tracks one or more GitHub issues or a milestone. `sprint-assembler` reads `gh` issue/milestone context before proposing a roster. Sprint blockers surfaced by `/sprint:status` are mirrored as comments on the linked issue, not as new Notion comments — the issue is where engineering conversation happens.
 
-Catalog: `commands/sprint/` and `sprints/registry.json`. See `agents/sprint-assembler.md` for full lifecycle rules.
+Catalog: `commands/sprint/` and `sprints/registry.json`. See `agents/meta-sprint-assembler.md` for full lifecycle rules.
 
 ---
 
@@ -296,7 +296,7 @@ That's the whole system. Six primitives, one router, repeatable forever.
 - `CLAUDE.md` — master orchestrator (source of truth for routing).
 - `agents/README.md` — agent catalog.
 - `commands/README.md` — command catalog and flat-copy registry.
-- `agents/sprint-assembler.md` — sprint lifecycle.
+- `agents/meta-sprint-assembler.md` — sprint lifecycle.
 - `agents/notion-architect.md` — canonical workspace schemas.
 - `agents/notion-publisher.md` — Source URL contract + publish flow.
 - `templates/hooks/README.md` — hook recipes + authoring guide.

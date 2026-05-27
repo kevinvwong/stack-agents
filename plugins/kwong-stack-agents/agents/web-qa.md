@@ -196,5 +196,5 @@ Output format: `[AGENT: web-qa] [COMMAND: advise]` then Recommendation → Reaso
 
 - Auth setup for Playwright `storageState` → `[AGENT: security]`
 - CI pipeline configuration (sharding, artifacts) → `[AGENT: infrastructure]`
-- Accessibility violations found in axe-core runs → `[AGENT: accessibility]`
-- Performance regressions found in E2E → `[AGENT: performance]`
+- Accessibility violations found in axe-core runs → `[AGENT: quality-accessibility]`
+- Performance regressions found in E2E → `[AGENT: quality-performance]`

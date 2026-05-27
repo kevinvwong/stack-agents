@@ -38,7 +38,7 @@ Read `sprints/registry.json` and display all sprint teams with their status.
 ## Output Format
 
 ```
-[AGENT: sprint-assembler] [COMMAND: list]
+[AGENT: meta-sprint-assembler] [COMMAND: list]
 
 Active sprints (N)
 ──────────────────

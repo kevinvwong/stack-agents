@@ -166,7 +166,7 @@ A sprint is a custom agent team assembled for a specific goal in a specific proj
 Expected output (abridged):
 
 ```
-[AGENT: sprint-assembler] [COMMAND: scaffold]
+[AGENT: meta-sprint-assembler] [COMMAND: scaffold]
 Sprint: auth-flow
 Goal: build the auth flow
 Duration: 2w
