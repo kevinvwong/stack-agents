@@ -21,9 +21,13 @@
 ## Adding a command
 
 1. Add the `.md` file to the appropriate `commands/<family>/` subdirectory
-2. Register the command in the Commands table in `CLAUDE.md`
-3. `install.ps1` copies it to `~/.claude/commands/` — no manual copy needed
-4. Commands use `**$ARGUMENTS**` as the placeholder for slash command arguments
+2. Set the `name:` frontmatter to the exact slash command (e.g. `name: notion:publish`) — this is what Claude Code registers, not the filename
+3. Register the command in the Commands table in `CLAUDE.md`
+4. **Run `node scripts/sync-commands.mjs`** — this copies the command into `.claude/commands/` (the flat registry Claude Code actually loads). Without this step the command is invisible to Claude in this project.
+5. `install.ps1` copies it to `~/.claude/commands/` for user-scope access — no manual copy needed
+6. Commands use `**$ARGUMENTS**` as the placeholder for slash command arguments
+
+CI enforces the sync: the `references` job runs `sync-commands.mjs` and fails if `.claude/commands/` is out of sync with `commands/`.
 
 ## Testing your changes globally
 

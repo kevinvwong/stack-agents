@@ -179,7 +179,9 @@ The `name:` value must match `namespace:verb` exactly. Files use `namespace-verb
 
 **The flat-copy convention**
 
-This is the single most-missed rule. Every command authored in `commands/web/stack-audit.md` must also exist as `.claude/commands/stack-audit.md`. The subdirectories under `commands/` are for humans; the flat copy under `.claude/commands/` is what Claude Code loads. `./install.ps1` handles the copy; if you edit a command and the slash menu doesn't update, you forgot to sync.
+This is the single most-missed rule. Every command authored in `commands/web/stack-audit.md` must also exist as `.claude/commands/stack-audit.md`. The subdirectories under `commands/` are for humans; the flat copy under `.claude/commands/` is what Claude Code loads.
+
+**How to sync:** run `node scripts/sync-commands.mjs` from the repo root. It reads the `name:` frontmatter from every command file and derives the correct flat filename automatically — so `commands/notion/notion-panel.md` with `name: panel:notion` lands as `.claude/commands/panel-notion.md`. CI (the `references` job) runs this script and fails if `.claude/commands/` drifts from `commands/`. `./install.ps1` handles the user-scope copy to `~/.claude/commands/`; if you edit a command and the slash menu doesn't update in another project, you forgot to run `install.ps1`.
 
 Catalog: `commands/README.md`. New commands also need a row in the `## Commands` table in `CLAUDE.md`.
 

@@ -23,6 +23,10 @@ jobs:
           node-version: 22
       - name: "Lint [AGENT:] and /cmd: references"
         run: node scripts/lint-references.mjs
+      - name: Check commands/ → .claude/commands/ sync
+        run: |
+          node scripts/sync-commands.mjs
+          git diff --exit-code .claude/commands/ || (echo "ERROR: .claude/commands/ is out of sync with commands/ — run 'node scripts/sync-commands.mjs' and commit the result" && exit 1)
 
   prds:
     name: PRD structural linter
