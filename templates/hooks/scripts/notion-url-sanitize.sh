@@ -13,31 +13,31 @@ set -uo pipefail
 
 input=$(cat)
 
-# Flatten the entire tool_input to a string so we catch URLs anywhere in the
-# payload (Source property, body blocks, page references, etc.).
-payload=$(echo "$input" | jq -r '.tool_input | tostring' 2>/dev/null)
+# Extract only string values that look like URLs (start with http:// or
+# https://). This avoids false positives on markdown body content that
+# *describes* credential patterns (e.g. "don't pass `?token=...`").
+urls=$(echo "$input" | jq -r '.tool_input | .. | strings | select(test("^https?://"))' 2>/dev/null)
 
-if [ -z "$payload" ]; then
+if [ -z "$urls" ]; then
   exit 0
 fi
 
 # Pattern: URL query param with a credential-looking name and a non-empty
-# value. Anchored with ? or & to avoid matching JSON property names.
-CRED_RE='[?&](token|access[_-]?token|refresh[_-]?token|api[_-]?key|client[_-]?secret|password|secret|signature|sig|auth|x-amz-signature)=[^&"]+'
+# value. Anchored with ? or & so we only match query-string position.
+CRED_RE='[?&](token|access[_-]?token|refresh[_-]?token|api[_-]?key|client[_-]?secret|password|secret|signature|sig|auth|x-amz-signature)=[^&"#[:space:]]+'
 
-if echo "$payload" | grep -qiE "$CRED_RE"; then
-  matches=$(echo "$payload" | grep -oiE "$CRED_RE" | sort -u | head -3)
+if echo "$urls" | grep -qiE "$CRED_RE"; then
+  matches=$(echo "$urls" | grep -oiE "$CRED_RE" | sort -u | head -3)
   echo "" >&2
-  echo "Blocked: Notion publish payload contains a URL with credential params." >&2
+  echo "Blocked: Notion publish payload contains a URL property with credential params." >&2
   echo "" >&2
-  echo "Detected (showing up to 3):" >&2
+  echo "Detected (param names only — values redacted):" >&2
   while IFS= read -r m; do
-    # Mask the value half so the credential isn't echoed.
     key=$(echo "$m" | sed -E 's/=.*$//')
     echo "  $key=***REDACTED***" >&2
   done <<< "$matches"
   echo "" >&2
-  echo "Sanitize the Source URL (strip those query params) and retry." >&2
+  echo "Sanitize the offending URL (strip those query params) and retry." >&2
   echo "See agents/notion-publisher.md → sanitizeSourceUrl." >&2
   exit 2
 fi

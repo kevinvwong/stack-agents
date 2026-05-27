@@ -2,6 +2,26 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.1] — 2026-05-27
+
+### Added
+
+- **`docs/SETUP.md`** — comprehensive local-machine setup guide (prerequisites, MCP server config, user-scope hook install, per-repo bootstrap, verification, troubleshooting). Canonical install doc.
+- **`scripts/lint-prds.mjs`** — structural linter for PRD files (`docs/prds/*.md`). Checks: top-level heading, required sections (Problem, User segment, Success metrics, Solution overview), specific metric target (e.g. `from X to Y`, `+15%`, `by 2026-Q3`), Source URL in the first 30 lines. The cheap-and-fast parts of `/panel:publish`'s product lens — runs without a Claude API call.
+- **New CI job `prds`** in `.github/workflows/ci.yml` running the PRD linter on every push/PR.
+- **`.notion/config.json`** — committed workspace map for this repo (parent: "Claude Code" page; 7 databases + Runbooks page). Future `/notion:publish` calls in this repo resolve via config, not by title search.
+- **Notion runbook page published** — `Notion integration runbook` under the Runbooks page tree (`https://www.notion.so/36dc266f7d7c817d8f2cc9d0a2906e42`). Points to `docs/SETUP.md` as the canonical install guide.
+
+### Fixed
+
+- **`notion-url-sanitize` hook false positive**: previously scanned the entire `tool_input` payload as a string, which blocked publishes whose body content merely *described* credential patterns (e.g. `"don't pass ?token=..."` in a runbook). Now uses `jq` to extract only URL-shaped string values (`^https?://`) and scans those, leaving body markdown alone. Same pattern catches actual credentialed URLs; no longer trips on documentation.
+- **PRD metric-specificity regex** in `lint-prds.mjs` was multiline-anchored, causing `$` in a lookahead to match end-of-line and stop the section capture at the first newline. Replaced with explicit string slicing.
+
+### kwong (marketplace)
+- Bumped to 1.7.1.
+
+---
+
 ## [1.7.0] — 2026-05-27
 
 ### Added — user-scope hooks for every project
