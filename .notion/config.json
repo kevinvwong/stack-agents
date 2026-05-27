@@ -8,6 +8,11 @@
     "ancestor_path": "Workspace root"
   },
   "databases": {
+    "agents": {
+      "id": "5b8a5f4a-6283-4e3d-87eb-affe447fd5fe",
+      "data_source_id": "13f4dfbb-5746-477e-b7b0-41215c07dc22",
+      "url": "https://www.notion.so/5b8a5f4a62834e3d87ebaffe447fd5fe"
+    },
     "sprints": {
       "id": "98f9b840-ed8e-4157-b593-b68387cc16b2",
       "data_source_id": "16770389-a353-417b-b288-8d85adcf989d",
@@ -51,5 +56,5 @@
   },
   "schema_version": 1,
   "created": "2026-05-27T00:48:49Z",
-  "last_verified": "2026-05-27T02:15:00Z"
+  "last_verified": "2026-05-27T02:35:00Z"
 }

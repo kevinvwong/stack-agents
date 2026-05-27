@@ -2,6 +2,29 @@
 
 All notable changes to this marketplace are documented here.
 
+## [1.7.4] — 2026-05-27
+
+### Added — Agents database; Sprints.Agents is now a relation
+
+A new canonical database, `Agents`, mirrors the repo's `agents/*.md` roster. One row per agent with Name, Family, Status (Active / Deprecated), Description, Source URL. Live in the Claude Code workspace at `https://www.notion.so/5b8a5f4a62834e3d87ebaffe447fd5fe`.
+
+`Sprints.Agents` was a free-text multi_select — anyone could type a typo or a non-existent agent name. It's now a **relation** to the Agents database. Clicking an agent chip on a Sprint row navigates to the agent record, which links back to the repo file via Source.
+
+Migration:
+- New Agents database scaffolded under Claude Code parent.
+- 37 rows populated, one per current agent file.
+- `Sprints.Agents` column DROP + re-ADD as `RELATION('agents_data_source_id')`.
+- All 7 existing Sprint rows (Phases 1–7) had their Agents values rewritten as relation arrays (JSON array of agent page URLs).
+- `.notion/config.json` `databases` block gets an `agents` entry.
+- `agents/notion-architect.md` Canonical Workspace Layout updated; `Agents` schema added to `/scaffold`; `Sprints.Agents` schema changed from multi_select to relation.
+- `commands/notion/notion-bootstrap.md` and `notion-setup.md` `--databases` lists updated.
+
+### Why
+
+Agents will evolve over time — hired, fired, upskilled, combined. A multi_select couldn't carry that lifecycle. A real database row can carry Status, Description, lifecycle dates, and become the upsert target for `notion-publisher` whenever an agent file is created or updated. The full workforce-management pattern lives at [docs/adr/ADR-003-agent-lifecycle.md] (todo).
+
+---
+
 ## [1.7.3] — 2026-05-27
 
 ### Changed — Runbooks is now a database, not a page tree

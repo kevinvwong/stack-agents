@@ -18,7 +18,7 @@ Convene the `notion-architect` agent to scaffold the canonical workspace layout 
 | Argument | Required | Description |
 |----------|----------|-------------|
 | `--parent <page-url-or-id>` | Yes | Notion page or teamspace where the databases will be created. Either a Notion URL or a page ID. |
-| `--databases <list>` | No | Comma-separated subset to create. Default: all canonical databases. Valid values: `sprints,prds,research,analytics,github-audits,quality-audits,game-design,runbooks` |
+| `--databases <list>` | No | Comma-separated subset to create. Default: all canonical databases. Valid values: `agents,sprints,prds,research,analytics,github-audits,quality-audits,game-design,runbooks` |
 | `--dry-run` | No | Resolve the parent, list which databases would be created vs. skipped, and exit without writing. |
 | `--force` | No | If a database with the canonical title already exists under the parent, overwrite its schema (additive — never deletes existing properties). |
 

@@ -3,7 +3,7 @@
   "owner": { "name": "Kevin Wong" },
   "metadata": {
     "description": "Kevin Wong's Claude Code artifacts — agents, skills, and commands spanning web stack engineering, game design, GitHub workflow, Notion workspace publishing, GTLI content pipeline, UX persona review, JGCC educational quality auditing, and security/fuzzing tooling",
-    "version": "1.7.3"
+    "version": "1.7.4"
   },
   "plugins": [
     {

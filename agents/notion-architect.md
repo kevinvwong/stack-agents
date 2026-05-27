@@ -25,6 +25,7 @@ This is the default shape this system targets. Other agents publish into these d
 
 ```
 Stack Agents (teamspace)
+├── 🤖 Agents               (database) — mirror of repo agents/*.md; relation target for any Agents property
 ├── 📚 Sprints              (database) — every assembled sprint
 ├── 📋 PRDs                 (database) — product agent output
 ├── 🔬 Research             (database) — user-research, focus-group, expert-review
@@ -100,6 +101,19 @@ If the parent has no `<ancestor-path>` (root-level page), say so explicitly — 
 **Canonical database schemas — `notion-create-database` calls**
 
 ```yaml
+# Agents — mirror of repo agents/*.md; relation target for any "Agents" property
+title: Name
+properties:
+  Family:       { type: select, options: [Web Stack, Game Design, GitHub, Quality, Research, Product, Cross-cutting, Workspace, Meta] }
+  Status:       { type: select, options: [Active, Deprecated] }
+  Description:  { type: rich_text }
+  Source:       { type: url }            # link to agents/<name>.md
+# One row per agent. Populated from repo by notion-publisher on agent file create.
+# Hiring (new agent), firing (Deprecated), upskilling (Description updated), and
+# combining (two rows merged) are tracked on this database.
+```
+
+```yaml
 # Sprints
 title: Name
 properties:
@@ -107,7 +121,7 @@ properties:
   Status:       { type: status, options: [Active, Dissolved, Planned] }
   Duration:     { type: select,  options: [1w, 2w, 3w, 4w, ongoing] }
   Project:      { type: rich_text }
-  Agents:       { type: multi_select }
+  Agents:       { type: relation -> Agents }   # rows in the Agents database
   Owner:        { type: person }
   Started:      { type: date }
   Source:       { type: url }
