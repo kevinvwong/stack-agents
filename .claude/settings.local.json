@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(bash *)"
+      "Bash(bash *)",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-database",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-pages",
+      "mcp__00c3e225-facf-4b7b-8c65-04959c4c4c67__notion-create-view"
     ]
   }
 }
