@@ -156,10 +156,19 @@ if [ -f "$MEMORY_FILE" ]; then
   fi
 fi
 
-# --- Notion workspace status (silent no-op if .notion/config.json absent or NOTION_API_KEY unset) ---
+# --- Notion workspace status (silent no-op when .notion/config.json absent) ---
+NOTION_CONFIGURED=false
 NOTION_LINES=$(bash "$PROJECT_DIR/.claude/hooks/notion-status.sh" open 2>/dev/null) || NOTION_LINES=""
 if [ -n "$NOTION_LINES" ]; then
-  while IFS= read -r line; do [ -n "$line" ] && LINES+=("$line"); done <<< "$NOTION_LINES"
+  while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    # NOTION_CONFIGURED is a machine signal — set the flag, skip from visible box
+    if [[ "$line" == "OK:NOTION_CONFIGURED" ]]; then
+      NOTION_CONFIGURED=true
+      continue
+    fi
+    LINES+=("$line")
+  done <<< "$NOTION_LINES"
 fi
 
 # --- Open PRs ---
@@ -196,3 +205,7 @@ LINES+=("BOTTOM")
 echo ""
 printf '%s\n' "${LINES[@]}" | box
 echo ""
+# Emit machine signals after the box so session-open.md can detect them
+if [ "$NOTION_CONFIGURED" = "true" ]; then
+  echo "NOTION_CONFIGURED"
+fi
