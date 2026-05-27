@@ -16,16 +16,17 @@ Master Orchestrator (you — CLAUDE.md)
 ├── Individual Agents         agents/*.md
 │   ├── Web Stack             web-presentation, web-application, web-ai-llm,
 │   │                         web-data, web-infrastructure, web-security, web-observability
-│   ├── Quality               web-qa, game-qa, accessibility, performance
-│   ├── Research              user-research, usability-testing, focus-group, expert-review
-│   ├── Product               product, analytics
-│   ├── Cross-cutting         i18n, finops
+│   ├── Quality               web-qa, game-qa, quality-accessibility, quality-performance
+│   ├── Research              research-user-research, research-usability-testing,
+│   │                         research-focus-group, research-expert-review
+│   ├── Product               product-product, product-analytics
+│   ├── Cross-cutting         cross-i18n, cross-finops
 │   ├── Workspace             notion-architect, notion-publisher,
 │   │                         notion-importer, notion-governance
 │   ├── Game Design           game-design, game-narrative, game-level-design,
 │   │                         game-ux, game-tech, game-production
 │   ├── GitHub                gh-repo, gh-actions, gh-issues, gh-prs, gh-releases, gh-docs
-│   └── Meta                  sprint-assembler, project-setup, agent-lifecycle
+│   └── Meta                  meta-sprint-assembler, meta-project-setup, meta-agent-lifecycle
 │
 ├── Panels                    commands/*/panel-*.md  (multiple agents, one topic)
 │   ├── /panel:github         All 6 GitHub agents
