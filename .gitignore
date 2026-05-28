@@ -10,3 +10,7 @@ Thumbs.db
 
 # Session checkpoint — local Claude Code state, not canonical project history
 .claude/session-state.json
+
+# Usage analytics — local JSONL log written by .claude/hooks/usage-log.sh, not
+# canonical project history.
+.claude/usage.jsonl

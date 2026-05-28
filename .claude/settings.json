@@ -29,6 +29,25 @@
             "command": "bash .claude/hooks/lint-references-on-commit.sh",
             "timeout": 30,
             "statusMessage": "Linting [AGENT:] and /cmd: references..."
+          },
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/usage-log.sh",
+            "timeout": 5,
+            "statusMessage": "Logging usage...",
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/usage-log.sh",
+            "timeout": 5,
+            "statusMessage": "Logging usage...",
+            "async": true
           }
         ]
       },

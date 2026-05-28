@@ -152,6 +152,33 @@ These are project-scope (`.claude/settings.json`), not user-scope — they only 
 
 ---
 
+## 3c. Usage analytics (optional)
+
+`stack-agents` ships an optional usage logger at `.claude/hooks/usage-log.sh`. Wired as a `PreToolUse` hook in this repo's `.claude/settings.json`, it appends one JSON line per detected slash-command (`/stack:*`, `/panel:*`, `/sprint:*`, `/agents:*`, `/notion:*`, `/setup:*`, `/review:*`, `/auth:*`, `/docs:*`, `/security:*`, `/debug:*`, `/ai:*`, `/gtli:*`) or `[AGENT: <name>]` reference to:
+
+```
+.claude/usage.jsonl
+```
+
+Shape per line: `{"ts":"<ISO-8601>","command":"<slash-command>","agent":"<agent-name>","project":"<repo-basename>"}`.
+
+The file is **gitignored** — it's local telemetry, not canonical project history. `/agents:review` reads it to answer "which agents are actually used in the last 30 days."
+
+The hook is intentionally defensive: invalid JSON input, missing fields, missing `jq`, or any internal error all exit 0 silently. It will never block a tool call.
+
+**Optional PostHog forwarding.** Set the following environment variables to also POST each event to PostHog:
+
+| Variable          | Default                   | What it does                                                                           |
+| ----------------- | ------------------------- | -------------------------------------------------------------------------------------- |
+| `POSTHOG_API_KEY` | (unset → disabled)        | Project API key. When set, every logged event is POSTed to `${POSTHOG_HOST}/capture/`. |
+| `POSTHOG_HOST`    | `https://app.posthog.com` | Override for self-hosted or EU PostHog.                                                |
+
+Network failures, missing `curl`, and unreachable hosts are swallowed. The local JSONL is always written first; PostHog forwarding is a no-op fallback layer.
+
+To disable usage logging entirely, remove the `usage-log.sh` entries from `.claude/settings.json`.
+
+---
+
 ## 4. Set up the Notion workspace
 
 This is the one-time Notion-side setup.
