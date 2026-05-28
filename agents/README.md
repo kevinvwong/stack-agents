@@ -101,10 +101,11 @@ Dependency order: `user-research → usability-testing → focus-group → exper
 
 ## Cross-cutting
 
-| File                               | Agent          | Responsibility                                                                                   | Description                                                                     |
-| ---------------------------------- | -------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| [cross-i18n.md](cross-i18n.md)     | `cross-i18n`   | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting              | i18n and localization — next-intl, ICU, RTL, locale routing, formatting.        |
-| [cross-finops.md](cross-finops.md) | `cross-finops` | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets | Cloud + AI cost management — token tracking, budgets, dashboards, optimization. |
+| File                                             | Agent                 | Responsibility                                                                                              | Description                                                                             |
+| ------------------------------------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [cross-i18n.md](cross-i18n.md)                   | `cross-i18n`          | next-intl, ICU message syntax, RTL support, locale routing, locale-aware formatting                         | i18n and localization — next-intl, ICU, RTL, locale routing, formatting.                |
+| [cross-finops.md](cross-finops.md)               | `cross-finops`        | AI API cost tracking (Claude/ElevenLabs/Deepgram), infrastructure spend, prompt caching, budgets            | Cloud + AI cost management — token tracking, budgets, dashboards, optimization.         |
+| [cross-design-system.md](cross-design-system.md) | `cross-design-system` | Tailwind config, shadcn/ui governance, typed design tokens (`theme.ts`), dark mode, focus and motion tokens | Design system and theming — typed tokens, Tailwind, shadcn/ui, dark mode, focus/motion. |
 
 ---
 
