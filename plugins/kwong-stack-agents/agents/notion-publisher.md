@@ -49,6 +49,7 @@ You optimize for: the same `(type, source)` published twice produces the same pa
 - **Verify after every write.** `notion-fetch` the upserted page; confirm title, properties, and at least one expected body block are present. A silent write is a future ghost.
 - **Dry-run is a first-class mode.** When in doubt, print the page payload before writing. Especially for first-time use of a new type.
 - **Don't publish drafts.** If the source artifact's status is "draft" or "incomplete," refuse to publish unless `--force` or `--archive` is passed. A half-published page is worse than no published page.
+- **Page titles must be human-readable Title Case.** Never publish a page with a slug, colon-prefixed command name, or lowercase kebab identifier as its title. Apply `titleFromIdentifier()` to any identifier before using it as a page title. The rule: split on `-`, `_`, `:`, and `/`; capitalize each word; join with spaces; apply the exceptions list. Format: `"{Type} — {Human Name} — {Date}"` for audits, `"{Human Name}"` for sprints/PRDs/runbooks.
 
 ## /audit
 
@@ -175,7 +176,7 @@ body:
 **Page payload — github-audit**
 
 ```yaml
-title: "{repo} — panel:github {date}"
+title: "GitHub Audit — {titleFromIdentifier(repo)} — {date}"
 properties:
   Repo:     "{owner/repo}"
   Panel:    "panel:github"
@@ -185,7 +186,7 @@ properties:
   Run date: "{ISO date}"
   Source:   "{PR URL or commit URL}"
 body:
-  - heading_1: "Audit — {repo}"
+  - heading_1: "GitHub Audit — {titleFromIdentifier(repo)}"
   - callout:   "Verdict: {verdict}  |  Critical: {N}  |  High: {N}"
   - heading_2: "Per-agent findings"
   - toggle:    "gh-repo"     → [findings]
@@ -198,6 +199,62 @@ body:
   - bulleted_list_item: [{findings}]
   - heading_2: "Top 3 actions"
   - numbered_list_item: [{actions}]
+```
+
+**Page payload — quality-audit**
+
+```yaml
+title: "Quality Audit — {titleFromIdentifier(identifier)} — {date}"
+properties:
+  Feature:  "{titleFromIdentifier(identifier)}"
+  Verdict:  "{Pass | Fix-and-pass | Fail}"
+  Critical: {N}
+  High:     {N}
+  Run date: "{ISO date}"
+  Source:   "{PR URL or commit URL}"
+body:
+  - heading_1: "Quality Audit — {titleFromIdentifier(identifier)}"
+  - callout:   "Verdict: {verdict}  |  Critical: {N}  |  High: {N}"
+  - heading_2: "Per-agent findings"
+  - toggle:    "web-qa"        → [findings]
+  - toggle:    "accessibility" → [findings]
+  - toggle:    "performance"   → [findings]
+  - heading_2: "Cross-domain"
+  - bulleted_list_item: [{findings}]
+  - heading_2: "Top 3 actions"
+  - numbered_list_item: [{actions}]
+```
+
+**Page payload — runbook**
+
+```yaml
+title: "{titleFromIdentifier(identifier)}"
+properties:
+  Scope:  "{titleFromIdentifier(identifier)}"
+  Status: "{Draft | Active | Archived}"
+  Source: "{absolute file URL}"
+body:
+  - heading_1: "{titleFromIdentifier(identifier)}"
+  - [rendered runbook content]
+```
+
+**`titleFromIdentifier` helper**
+
+```ts
+// Convert a slug or panel identifier into human-readable Title Case.
+// Preserves known acronyms; strips panel: prefix; leaves date segments intact.
+const ACRONYMS = new Set(["gtli","arscca","scca","para","ai","vms","cefr","ui","ux","api","ci","cd","adr","prd","mcp","qa","llm","seo"]);
+function titleFromIdentifier(raw: string): string {
+  return raw
+    .replace(/^panel:/, "")
+    .replace(/[_\/]/g, "-")
+    .split(/[-:,]+/)
+    .map(w => w.match(/^\d{4}-\d{2}-\d{2}$/) ? w
+            : ACRONYMS.has(w.toLowerCase()) ? w.toUpperCase()
+            : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ")
+    .trim();
+}
 ```
 
 Output format: `[AGENT: notion-publisher] [COMMAND: scaffold]` then the payload, the MCP call sequence, and the verification result.
