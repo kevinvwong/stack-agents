@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { SprintRegistry } from "./SprintRegistry";
+import { loadSprints } from "../data/sprints";
+import { theme } from "../theme";
 
 interface ProjectLinks {
   github?: string;
@@ -723,6 +726,15 @@ export function ProjectDashboard() {
     ...sorted.filter((p) => !pinned.has(p.path)),
   ];
 
+  // Set of project paths known to this dashboard — used by SprintRegistry
+  // to render the project cell as a link when the sprint targets a project
+  // we already render above. Memoized to avoid handing a fresh Set down on
+  // every keystroke in the filter input.
+  const knownProjectPaths = useMemo(
+    () => new Set(projects.map((p) => p.path)),
+    [projects],
+  );
+
   return (
     <div
       style={{
@@ -837,59 +849,127 @@ export function ProjectDashboard() {
       </div>
 
       {/* Card grid area — #111: loading state lives here, NOT in the toolbar,
-          so the toolbar stays mounted and interactive between scans. */}
+          so the toolbar stays mounted and interactive between scans.
+          #97: the scroll container now holds both the project grid and the
+          Sprints section below it, so the Sprints region scrolls into view
+          rather than competing for vertical real estate. */}
       <div
         style={{
           flex: 1,
           overflow: "auto",
           padding: 16,
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
-          gap: 12,
-          alignContent: "start",
         }}
       >
-        {loading ? (
-          <div
-            style={{
-              color: "#64748b",
-              gridColumn: "1 / -1",
-              textAlign: "center",
-              paddingTop: 32,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
-            <span style={{ fontSize: 14 }}>⟳</span>
-            <span>Scanning projects…</span>
-          </div>
-        ) : (
-          <>
-            {displayed.map((p) => (
-              <ProjectCard
-                key={p.path}
-                project={p}
-                pinned={pinned.has(p.path)}
-                onTogglePin={() => togglePin(p.path)}
-              />
-            ))}
-            {displayed.length === 0 && (
-              <div
-                style={{
-                  color: "#64748b",
-                  gridColumn: "1 / -1",
-                  textAlign: "center",
-                  paddingTop: 32,
-                }}
-              >
-                No projects match the current filters
-              </div>
-            )}
-          </>
-        )}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+            gap: 12,
+            alignContent: "start",
+          }}
+        >
+          {loading ? (
+            <div
+              style={{
+                color: "#64748b",
+                gridColumn: "1 / -1",
+                textAlign: "center",
+                paddingTop: 32,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 14 }}>⟳</span>
+              <span>Scanning projects…</span>
+            </div>
+          ) : (
+            <>
+              {displayed.map((p) => (
+                <ProjectCard
+                  key={p.path}
+                  project={p}
+                  pinned={pinned.has(p.path)}
+                  onTogglePin={() => togglePin(p.path)}
+                />
+              ))}
+              {displayed.length === 0 && (
+                <div
+                  style={{
+                    color: "#64748b",
+                    gridColumn: "1 / -1",
+                    textAlign: "center",
+                    paddingTop: 32,
+                  }}
+                >
+                  No projects match the current filters
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* Sprints registry — #97. Loaded synchronously at build time
+            (Vite import.meta.glob with eager:true), so we always know up
+            front whether there are sprints. Collapsed by default when
+            present so the existing projects flow stays primary; opens by
+            default for the empty-state nudge. */}
+        <SprintsSection knownProjectPaths={knownProjectPaths} />
       </div>
     </div>
+  );
+}
+
+function SprintsSection({
+  knownProjectPaths,
+}: {
+  knownProjectPaths: ReadonlySet<string>;
+}) {
+  const sprints = useMemo(() => loadSprints(), []);
+  const hasSprints = sprints.length > 0;
+  return (
+    <details
+      open={!hasSprints}
+      style={{
+        marginTop: theme.spacing["6"],
+        background: "transparent",
+      }}
+    >
+      <summary
+        style={{
+          cursor: "pointer",
+          listStyle: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          padding: "8px 4px",
+          color: theme.text.secondary,
+          fontSize: theme.type.smHeading,
+          fontWeight: 600,
+          borderBottom: `1px solid ${theme.border.subtle}`,
+          marginBottom: theme.spacing["3"],
+          userSelect: "none",
+        }}
+      >
+        <span aria-hidden="true">🏃</span>
+        <span>Sprints</span>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 500,
+            color: theme.text.muted,
+            background: theme.surface.surface,
+            border: `1px solid ${theme.border.default}`,
+            borderRadius: theme.radius.sm,
+            padding: "1px 7px",
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
+          {sprints.length}
+        </span>
+      </summary>
+      <SprintRegistry knownProjectPaths={knownProjectPaths} />
+    </details>
   );
 }
