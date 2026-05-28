@@ -177,7 +177,6 @@ function FamilyNode({ data }: { data: FamilyData }) {
       }}
     >
       <Handle type="target" position={Position.Top} style={{ background: color }} />
-      <div style={{ fontWeight: 700, fontSize: 11, color, marginBottom: 2 }}>FAMILY</div>
       <div style={{ fontWeight: 700, fontSize: 13 }}>
         {data.family} <span style={{ color: '#94a3b8', fontWeight: 500 }}>· {data.count}</span>
       </div>
