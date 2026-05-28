@@ -6,11 +6,13 @@ import {
   groupForFolder,
   type CommandGroup,
 } from "../data/commandGroups";
+import { theme } from "../theme";
 
 export function CommandsViewer() {
   const [commands, setCommands] = useState<CommandPage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     loadCommands()
@@ -28,9 +30,21 @@ export function CommandsViewer() {
   // mental model: "Web Stack", "GitHub", "Workspace", etc. — not "web", "gh",
   // "notion". See data/commandGroups.ts for the folder → family mapping.
   // (Issue #113.)
+  //
+  // Search (#112) filters by name + description, case-insensitive, and hides
+  // entirely-empty groups.
   const grouped = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    const matches = (c: CommandPage) => {
+      if (!q) return true;
+      return (
+        c.title.toLowerCase().includes(q) ||
+        (c.description ?? "").toLowerCase().includes(q)
+      );
+    };
     const map = new Map<CommandGroup, CommandPage[]>();
     for (const c of commands) {
+      if (!matches(c)) continue;
       const group = groupForFolder(c.group);
       const list = map.get(group) ?? [];
       list.push(c);
@@ -39,13 +53,16 @@ export function CommandsViewer() {
     // Order groups by COMMAND_GROUP_ORDER (families first matching Agents tab,
     // then Panels / GTLI / Security / Docs / Other). Within each group, sort
     // commands alphabetically by title.
-    return COMMAND_GROUP_ORDER.filter((g) => map.has(g)).map((g) => {
+    return COMMAND_GROUP_ORDER.filter((g) => {
+      const pages = map.get(g);
+      return pages && pages.length > 0;
+    }).map((g) => {
       const pages = (map.get(g) ?? [])
         .slice()
         .sort((a, b) => a.title.localeCompare(b.title));
       return [g, pages] as const;
     });
-  }, [commands]);
+  }, [commands, search]);
 
   const selected = commands.find((c) => c.id === selectedId) ?? null;
 
@@ -59,9 +76,39 @@ export function CommandsViewer() {
           padding: "16px 0",
         }}
       >
+        <div style={{ padding: `0 20px ${theme.spacing["3"]}` }}>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search commands…"
+            aria-label="Search commands by name or description"
+            style={{
+              width: "100%",
+              background: theme.surface.surface,
+              border: `1px solid ${theme.border.default}`,
+              borderRadius: theme.radius.sm,
+              color: theme.text.primary,
+              padding: `4px ${theme.spacing["2"]}`,
+              fontSize: 12,
+              fontFamily: "inherit",
+            }}
+          />
+        </div>
         {loading && commands.length === 0 && (
           <div style={{ color: "#64748b", fontSize: 13, padding: "0 20px" }}>
             Loading…
+          </div>
+        )}
+        {!loading && grouped.length === 0 && search && (
+          <div
+            style={{
+              color: theme.text.muted,
+              fontSize: 12,
+              padding: "0 20px",
+            }}
+          >
+            No commands match “{search}”
           </div>
         )}
         {grouped.map(([group, pages]) => (

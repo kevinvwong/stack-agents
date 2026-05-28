@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { groupDocs, loadDocs, type DocPage } from "../data/docs";
+import { theme } from "../theme";
+
+interface DocPageWithDescription extends DocPage {
+  description?: string;
+}
 
 export function DocsViewer() {
   const [docs, setDocs] = useState<DocPage[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     loadDocs()
@@ -19,7 +25,19 @@ export function DocsViewer() {
       });
   }, []);
 
-  const grouped = useMemo(() => groupDocs(docs), [docs]);
+  // Filter by title (and `description` if present), then re-group. Hides
+  // entirely-empty groups. (Issue #112.)
+  const grouped = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return groupDocs(docs);
+    const filtered = docs.filter((d) => {
+      const desc = (d as DocPageWithDescription).description ?? "";
+      return (
+        d.title.toLowerCase().includes(q) || desc.toLowerCase().includes(q)
+      );
+    });
+    return groupDocs(filtered);
+  }, [docs, search]);
 
   const selected = docs.find((d) => d.id === selectedId) ?? null;
 
@@ -33,9 +51,39 @@ export function DocsViewer() {
           padding: "16px 0",
         }}
       >
+        <div style={{ padding: `0 20px ${theme.spacing["3"]}` }}>
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search docs…"
+            aria-label="Search docs by title"
+            style={{
+              width: "100%",
+              background: theme.surface.surface,
+              border: `1px solid ${theme.border.default}`,
+              borderRadius: theme.radius.sm,
+              color: theme.text.primary,
+              padding: `4px ${theme.spacing["2"]}`,
+              fontSize: 12,
+              fontFamily: "inherit",
+            }}
+          />
+        </div>
         {loading && docs.length === 0 && (
           <div style={{ color: "#64748b", fontSize: 13, padding: "0 20px" }}>
             Loading…
+          </div>
+        )}
+        {!loading && grouped.length === 0 && search && (
+          <div
+            style={{
+              color: theme.text.muted,
+              fontSize: 12,
+              padding: "0 20px",
+            }}
+          >
+            No docs match “{search}”
           </div>
         )}
         {grouped.map(([group, pages]) => (

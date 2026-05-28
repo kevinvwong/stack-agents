@@ -13,8 +13,10 @@ import {
   type AgentMeta,
   type Edge,
 } from "./data/agents";
+import { theme } from "./theme";
 
 type Tab = "graph" | "projects" | "docs" | "commands";
+type ViewMode = "architecture" | "dependency";
 
 function useHashTab(): [Tab, (t: Tab) => void] {
   const hashToTab = (h: string): Tab => {
@@ -44,7 +46,7 @@ function useHashTab(): [Tab, (t: Tab) => void] {
 }
 
 const TAB_LABELS: Record<Tab, string> = {
-  graph: "🗺 Agent Graph",
+  graph: "🗺 Agents",
   projects: "📁 Projects",
   docs: "📖 Docs",
   commands: "⌘ Commands",
@@ -69,6 +71,8 @@ export default function App() {
   const [allAgents, setAllAgents] = useState<AgentMeta[]>([]);
   const [allEdges, setAllEdges] = useState<Edge[]>([]);
   const [agentsLoading, setAgentsLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<ViewMode>("architecture");
+  const [agentSearch, setAgentSearch] = useState("");
 
   useEffect(() => {
     loadAgents()
@@ -81,26 +85,60 @@ export default function App() {
       });
   }, []);
 
-  const agents = useMemo(
+  // Family filter narrows the data within the active view. It never swaps
+  // views — that is owned by `viewMode` (issue #103).
+  const familyFilteredAgents = useMemo(
     () =>
       familyFilter
         ? allAgents.filter((a) => a.family === familyFilter)
         : allAgents,
     [allAgents, familyFilter],
   );
-  const edges = useMemo(
+  const familyFilteredEdges = useMemo(
     () =>
       familyFilter
         ? allEdges.filter(
             (e) =>
-              agents.some((a) => a.id === e.source) &&
-              agents.some((a) => a.id === e.target),
+              familyFilteredAgents.some((a) => a.id === e.source) &&
+              familyFilteredAgents.some((a) => a.id === e.target),
           )
         : allEdges,
-    [allEdges, agents, familyFilter],
+    [allEdges, familyFilteredAgents, familyFilter],
   );
 
-  const selected = agents.find((a) => a.id === selectedAgent) ?? null;
+  // Search match predicate — name + description, case-insensitive (issue #112).
+  const searchQuery = agentSearch.trim().toLowerCase();
+  const matchesSearch = (a: AgentMeta) => {
+    if (!searchQuery) return true;
+    return (
+      a.name.toLowerCase().includes(searchQuery) ||
+      a.id.toLowerCase().includes(searchQuery) ||
+      a.description.toLowerCase().includes(searchQuery)
+    );
+  };
+
+  // For the architecture view we can't dim individual nodes (ArchitectureDiagram
+  // is out-of-scope this round per spec), so we hide non-matches by filtering
+  // the input array. For dependency view, AgentGraph receives a set of matching
+  // IDs and dims non-matches in-place.
+  const architectureAgents = useMemo(
+    () =>
+      searchQuery
+        ? familyFilteredAgents.filter(matchesSearch)
+        : familyFilteredAgents,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [familyFilteredAgents, searchQuery],
+  );
+
+  const matchingIds = useMemo(() => {
+    if (!searchQuery) return null;
+    return new Set(familyFilteredAgents.filter(matchesSearch).map((a) => a.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [familyFilteredAgents, searchQuery]);
+
+  // Look up selected agent from the *full* unfiltered list so that the detail
+  // panel survives family-filter changes (issue #115, preferred option).
+  const selected = allAgents.find((a) => a.id === selectedAgent) ?? null;
 
   return (
     <div
@@ -168,9 +206,82 @@ export default function App() {
             );
           })}
         </div>
+      </div>
 
-        {/* Family filter (graph tab only) */}
-        {tab === "graph" && (
+      {/* Agents toolbar (graph tab only): view toggle + search + family filter */}
+      {tab === "graph" && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: theme.spacing["3"],
+            padding: `${theme.spacing["2"]} 20px`,
+            borderBottom: `1px solid ${theme.border.subtle}`,
+            flexShrink: 0,
+            flexWrap: "wrap",
+          }}
+        >
+          {/* View mode toggle (#103) */}
+          <div
+            role="group"
+            aria-label="Graph view mode"
+            style={{
+              display: "inline-flex",
+              border: `1px solid ${theme.border.default}`,
+              borderRadius: theme.radius.sm,
+              overflow: "hidden",
+            }}
+          >
+            {(
+              [
+                ["architecture", "Architecture"],
+                ["dependency", "Dependency Chains"],
+              ] as const
+            ).map(([mode, label]) => {
+              const active = viewMode === mode;
+              return (
+                <button
+                  key={mode}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setViewMode(mode)}
+                  style={{
+                    background: active ? theme.surface.surface : "transparent",
+                    border: "none",
+                    color: active ? theme.text.primary : theme.text.muted,
+                    fontWeight: active ? 600 : 400,
+                    fontSize: 11,
+                    padding: `4px ${theme.spacing["3"]}`,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Search (#112) */}
+          <input
+            type="search"
+            value={agentSearch}
+            onChange={(e) => setAgentSearch(e.target.value)}
+            placeholder="Search agents…"
+            aria-label="Search agents by name or description"
+            style={{
+              background: theme.surface.surface,
+              border: `1px solid ${theme.border.default}`,
+              borderRadius: theme.radius.sm,
+              color: theme.text.primary,
+              padding: `4px ${theme.spacing["2"]}`,
+              fontSize: 12,
+              fontFamily: "inherit",
+              minWidth: 200,
+            }}
+          />
+
+          {/* Family filter pills (#119: All/Clear label, × glyph on active) */}
           <div
             style={{
               marginLeft: "auto",
@@ -190,31 +301,56 @@ export default function App() {
                 padding: "4px 10px",
                 fontSize: 11,
                 cursor: "pointer",
+                fontFamily: "inherit",
               }}
             >
-              All
+              {familyFilter === null ? "All" : "Clear"}
             </button>
-            {ALL_FAMILIES.map((f) => (
-              <button
-                key={f}
-                onClick={() => setFamilyFilter(familyFilter === f ? null : f)}
-                style={{
-                  background:
-                    familyFilter === f ? `${FAMILY_COLORS[f]}33` : "none",
-                  border: `1px solid ${familyFilter === f ? FAMILY_COLORS[f] : "#334155"}`,
-                  borderRadius: 6,
-                  color: familyFilter === f ? "#f1f5f9" : "#64748b",
-                  padding: "4px 10px",
-                  fontSize: 11,
-                  cursor: "pointer",
-                }}
-              >
-                {f}
-              </button>
-            ))}
+            {ALL_FAMILIES.map((f) => {
+              const active = familyFilter === f;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setFamilyFilter(active ? null : f)}
+                  aria-pressed={active}
+                  aria-label={
+                    active
+                      ? `${f} filter active, click to remove`
+                      : `Filter by ${f}`
+                  }
+                  style={{
+                    background: active ? `${FAMILY_COLORS[f]}33` : "none",
+                    border: `1px solid ${active ? FAMILY_COLORS[f] : "#334155"}`,
+                    borderRadius: 6,
+                    color: active ? "#f1f5f9" : "#64748b",
+                    padding: "4px 10px",
+                    fontSize: 11,
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontFamily: "inherit",
+                  }}
+                >
+                  <span>{f}</span>
+                  {active && (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        fontSize: 12,
+                        lineHeight: 1,
+                        opacity: 0.8,
+                      }}
+                    >
+                      ×
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Body */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
@@ -243,10 +379,10 @@ export default function App() {
                 >
                   Loading agents…
                 </div>
-              ) : familyFilter === null ? (
+              ) : viewMode === "architecture" ? (
                 <div style={{ flex: 1, minHeight: 0 }}>
                   <ArchitectureDiagram
-                    agents={allAgents}
+                    agents={architectureAgents}
                     onSelect={setSelectedAgent}
                     onFilterFamily={setFamilyFilter}
                   />
@@ -254,10 +390,11 @@ export default function App() {
               ) : (
                 <div style={{ flex: 1, minHeight: 0 }}>
                   <AgentGraph
-                    agents={agents}
-                    edges={edges}
+                    agents={familyFilteredAgents}
+                    edges={familyFilteredEdges}
                     selectedAgent={selectedAgent}
                     onSelectAgent={setSelectedAgent}
+                    dimmedIds={matchingIds}
                   />
                 </div>
               )}
@@ -327,7 +464,8 @@ export default function App() {
             handoff
           </span>
           <span style={{ marginLeft: "auto" }}>
-            {agents.length} agents · {edges.length} edges
+            {familyFilteredAgents.length} agents · {familyFilteredEdges.length}{" "}
+            edges
           </span>
         </div>
       )}
