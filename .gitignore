@@ -14,3 +14,7 @@ Thumbs.db
 # Usage analytics — local JSONL log written by .claude/hooks/usage-log.sh, not
 # canonical project history.
 .claude/usage.jsonl
+
+# Agent output history — captured by .claude/hooks/agent-output-capture.sh
+# Local artifact, not canonical project history.
+.claude/history/
