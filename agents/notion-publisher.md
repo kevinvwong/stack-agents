@@ -50,6 +50,7 @@ You optimize for: the same `(type, source)` published twice produces the same pa
 - **Dry-run is a first-class mode.** When in doubt, print the page payload before writing. Especially for first-time use of a new type.
 - **Don't publish drafts.** If the source artifact's status is "draft" or "incomplete," refuse to publish unless `--force` or `--archive` is passed. A half-published page is worse than no published page.
 - **Absolutize all links before block conversion.** Notion has no base URL — relative links like `./SETUP.md` resolve to `https://setup.md` (nonsense). Before converting markdown to Notion blocks, rewrite every relative href to its absolute GitHub URL (`https://github.com/kevinvwong/stack-agents/blob/main/<path>`). If you see a link that doesn't start with `https://`, `http://`, or `#`, it must be rewritten. This is non-negotiable — broken links in published pages silently mislead readers.
+- **Page titles must be human-readable Title Case.** Never publish a page with a slug, colon-prefixed command name, or lowercase kebab identifier as its title. Apply `titleFromIdentifier()` to any identifier before using it as a page title. The rule: split on `-`, `_`, `:`, and `/`; capitalize each word; join with spaces; apply the exceptions list. Format: `"{Type} — {Human Name} — {Date}"` for audits, `"{Human Name}"` for sprints/PRDs/runbooks.
 
 ## /audit
 
@@ -140,6 +141,33 @@ function rewriteRelativeLinks(markdown: string, sourceFilePath: string, repoRoot
   });
 }
 
+// Convert a slug or panel identifier into a human-readable Title Case string.
+// Rules:
+//   - Split on hyphens, underscores, colons, and forward-slashes
+//   - Capitalize each word (Title Case)
+//   - Preserve known acronyms: GTLI, ARSCCA, SCCA, PARA, AI, VMS, CEFR, UI, UX, API, CI, CD, ADR, PRD, MCP
+//   - Strip panel: prefix (e.g. "panel:github" → "GitHub")
+//   - Date segments (YYYY-MM-DD) are left as-is
+// Examples:
+//   "kevinvwong/stack-agents"  → "Stack Agents"
+//   "panel:github"             → "GitHub"
+//   "quality-audit"            → "Quality Audit"
+//   "web-qa,accessibility"     → "Web QA, Accessibility"
+//   "gtli-reimagined"          → "GTLI Reimagined"
+//   "arscca-vms"               → "ARSCCA VMS"
+const ACRONYMS = new Set(["gtli","arscca","scca","para","ai","vms","cefr","ui","ux","api","ci","cd","adr","prd","mcp","qa","llm","seo"]);
+function titleFromIdentifier(raw: string): string {
+  return raw
+    .replace(/^panel:/, "")                          // strip panel: prefix
+    .replace(/[_\/]/g, "-")                          // normalize separators
+    .split(/[-:,]+/)
+    .map(w => w.match(/^\d{4}-\d{2}-\d{2}$/) ? w    // preserve dates
+            : ACRONYMS.has(w.toLowerCase()) ? w.toUpperCase()
+            : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ")
+    .trim();
+}
+
 // Strip credentials and unnecessary query params. Refuses URLs that contain
 // known credential params — the publisher would otherwise persist them.
 function sanitizeSourceUrl(raw: string): string | null {
@@ -197,7 +225,7 @@ body:
 **Page payload — github-audit**
 
 ```yaml
-title: "{repo} — panel:github {date}"
+title: "GitHub Audit — {titleFromIdentifier(repo)} — {date}"
 properties:
   Repo:     "{owner/repo}"
   Panel:    "panel:github"
@@ -207,7 +235,7 @@ properties:
   Run date: "{ISO date}"
   Source:   "{PR URL or commit URL}"
 body:
-  - heading_1: "Audit — {repo}"
+  - heading_1: "GitHub Audit — {titleFromIdentifier(repo)}"
   - callout:   "Verdict: {verdict}  |  Critical: {N}  |  High: {N}"
   - heading_2: "Per-agent findings"
   - toggle:    "gh-repo"     → [findings]
@@ -220,6 +248,43 @@ body:
   - bulleted_list_item: [{findings}]
   - heading_2: "Top 3 actions"
   - numbered_list_item: [{actions}]
+```
+
+**Page payload — quality-audit**
+
+```yaml
+title: "Quality Audit — {titleFromIdentifier(identifier)} — {date}"
+properties:
+  Feature:  "{titleFromIdentifier(identifier)}"
+  Verdict:  "{Pass | Fix-and-pass | Fail}"
+  Critical: {N}
+  High:     {N}
+  Run date: "{ISO date}"
+  Source:   "{PR URL or commit URL}"
+body:
+  - heading_1: "Quality Audit — {titleFromIdentifier(identifier)}"
+  - callout:   "Verdict: {verdict}  |  Critical: {N}  |  High: {N}"
+  - heading_2: "Per-agent findings"
+  - toggle:    "web-qa"        → [findings]
+  - toggle:    "accessibility" → [findings]
+  - toggle:    "performance"   → [findings]
+  - heading_2: "Cross-domain"
+  - bulleted_list_item: [{findings}]
+  - heading_2: "Top 3 actions"
+  - numbered_list_item: [{actions}]
+```
+
+**Page payload — runbook**
+
+```yaml
+title: "{titleFromIdentifier(identifier)}"
+properties:
+  Scope:  "{titleFromIdentifier(identifier)}"
+  Status: "{Draft | Active | Archived}"
+  Source: "{absolute file URL}"
+body:
+  - heading_1: "{titleFromIdentifier(identifier)}"
+  - [rendered runbook content]
 ```
 
 Output format: `[AGENT: notion-publisher] [COMMAND: scaffold]` then the payload, the MCP call sequence, and the verification result.
