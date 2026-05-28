@@ -2,6 +2,58 @@
 
 All notable changes to this marketplace are documented here.
 
+## [2.0.0] — 2026-05-28
+
+Major release completing **Phase 10** (product + discoverability) and **Phase 11** (dashboard design system + UX). 26 PRs, ~32 issues. Also realigns `marketplace.json` (was stranded at 1.7.10 through the 1.8/1.9 releases) with the CHANGELOG/README version.
+
+### Added — new agents, commands, skills, hooks (Phase 10)
+
+- **`cross-design-system` agent** (#93) — owns design tokens, Tailwind config, shadcn/ui governance, dark-mode strategy. Roster is now 39 agents. Routing: "design tokens / dark mode / Tailwind config" → `[AGENT: design-system]`.
+- **`/stack:diff` command** (#94) — migration advisor. Parses `STACK: from=X to=Y`, routes to the changed layer's owner + downstream agents, outputs what-changes / what-stays / risks / order-of-operations / rollback.
+- **`/sprint:standup` command** (#92) — lightweight daily sprint check-in; reads `SPRINT.md` + recent activity, routes to each roster agent for a ≤3-bullet status.
+- **`/panel:onboarding` command** (#98) — 5-agent intake panel (product → data → security → infrastructure → gh-repo) producing a `BLUEPRINT.md` before scaffolding.
+- **`/agents:find` skill** (#89) — natural-language search across the agent roster.
+- **`install.sh`** (#96) — bash port of `install.ps1` for macOS/Linux (SHA-256 hash-check, backups, manifest-driven stale cleanup, Bash 3.2 compatible).
+- **Usage analytics hook** (#95) — `PreToolUse` hook logging slash-command + `[AGENT:]` invocations to gitignored `.claude/usage.jsonl`; optional PostHog forwarding via `POSTHOG_API_KEY`.
+- **Agent output auto-capture hook** (#90) — Stop-hook that archives `[AGENT:][COMMAND:]` blocks to gitignored `.claude/history/`.
+
+### Added — dashboard features (Phase 11)
+
+- **`theme.ts` design token foundation** (#105) — single source for surface/border/text/focus/spacing/radius/type. Root cause fix for color/border/radius drift.
+- **AgentDetail structured panel rebuild** (#106) — routing-ID chip, chain position with clickable predecessor/successor, parsed handoffs, frontmatter-stripped body.
+- **Architecture / Dependency Chains view toggle** (#103) — the dependency view is no longer hidden behind an accidental filter interaction.
+- **Per-tab search** across Agents, Commands, Docs (#112).
+- **Cmd+K / Ctrl+K command palette** (#91) — searches agents + commands, copies invocation to clipboard.
+- **Sprint registry UI** (#97) — Projects tab now surfaces the `sprints/` registry.
+- **Node-selection edge highlighting** in AgentGraph (#116).
+- **Keyboard accessibility baseline** (#108) — `:focus-visible`, ESC-to-close, ARIA tab roles, `prefers-reduced-motion`.
+- **Lucide SVG icons + hover states** (#118) — replaced mixed emoji/ASCII/arrow glyphs with a consistent icon set.
+- Inter + Fira Code fonts now actually loaded via `@fontsource` (#107).
+
+### Fixed — dashboard correctness + IA (Phase 11)
+
+- Issues fetch + Vercel badge silent failures now show distinct error states (#100, #109).
+- Commit sort uses real `lastCommitDate` instead of sorting by SHA prefix (#101).
+- `STACK_COLORS['Next.js']` `#000` → readable `#e2e8f0` (#102).
+- Blank ReactFlow canvas now shows a loading state (#104).
+- `FAMILY_COLORS` canonicalized into `families.ts`; Workspace recolored teal, GitHub bumped to WCAG-AA gray (#110).
+- Projects toolbar stays mounted during refresh (#111).
+- Commands tab grouped by agent family taxonomy instead of raw folder names (#113).
+- Markdown type scale widened from a 1px ramp (#114).
+- AgentDetail entry animation + panel survives family-filter changes (#115).
+- Redundant "FAMILY" node label removed (#117).
+- IA labels: "Agent Graph" tab → "Agents"; active filter pills get × deselect; "All" → "Clear" (#119).
+- Docs sidebar leads with Overview / Getting Started instead of ADR-001 (#120).
+- Dead `App.css`, dead `SortKey` member, browser tab title (#121).
+
+### Infrastructure + docs
+
+- **`vercel.json`** (#134) — builds the dashboard from `/dashboard` with repo-root context so `sync-content.mjs` can reach `agents/`, `commands/`, `docs/`. Groundwork for ADR-002 (Vercel deploy check as CI gate).
+- **`.claude/session-state.json` gitignored** (#136) — was the largest recurring source of merge noise.
+- **ADR-004** (#88) — records the agent family-prefix naming convention.
+- README screenshot placeholder + dashboard badge, getting-started placeholders completed, `agents/README.md` description column, SECURITY.md linked (#84, #85, #86, #87).
+- Removed a stray `CLAUDE.md` from the `kwong-stack-agents` plugin's `agents/` directory.
+
 ## [1.9.1] — 2026-05-27
 
 ### Fixed — Post-rename cleanup: agent filenames, dashboard graph, panel catalog (PRs #78–#82)
@@ -9,23 +61,28 @@ All notable changes to this marketplace are documented here.
 Complete cleanup pass following the v1.9.0 agent family-prefix rename (PR #66/#67). All downstream files now consistently use prefixed agent IDs.
 
 **Documentation (PR #78):**
+
 - `README.md` — badge updated to `marketplace-1.9.1-blue`
 - `agents/README.md` — fixed 13 stale pre-rename filename links across Meta, Quality, Research, Product, and Cross-cutting sections
 - `commands/README.md` — command catalog expanded: flat registry table updated from 20 → 54 entries covering all installed `.claude/commands/` files
 
 **Dashboard (PR #79):**
+
 - `dashboard/src/data/agents.ts` — fixed `CHAINS` (Quality + Research chains used short pre-rename IDs), `FAMILY_MAP` (all 38 entries updated to prefixed stems), and `STEM_TO_CHAIN_ID` mapping
 - Removed dead `dashboard/src/agent-content/` directory (34 pre-rename files, never git-tracked)
 
 **Architecture diagram + contributing guide (PR #80):**
+
 - `dashboard/src/components/ArchitectureDiagram.tsx` — added `'Workspace'` to `FAMILY_ORDER`; all 4 Notion agents now visible in the diagram
 - `.github/CONTRIBUTING.md` — updated agent naming examples to family-prefix convention
 
 **Panel catalog (PR #81):**
+
 - `docs/concepts.md` — corrected prefixed agent IDs in family-based panel table; expanded cross-family panel table from 2 → 12 rows covering all 18 panels
 - `docs/getting-started.md` — panel list updated to three categorized groups covering all 18 panels
 
 **Orchestrator command (PR #82):**
+
 - `commands/orchestrate.md` + `.claude/commands/orchestrate.md` — fixed Quality chain, Research chain, Product table, Cross-cutting table, panel shortcuts, inference rules, and synthesis pattern table (7 locations)
 
 ---
@@ -39,6 +96,7 @@ Complete cleanup pass following the v1.9.0 agent family-prefix rename (PR #66/#6
 All `_(planned)_` markers removed from `CLAUDE.md` — 0 remaining across the full command roster.
 
 Panel commands (PR #73):
+
 - `/panel:stack` — all 7 web stack agents in one pass
 - `/panel:quality` — web-qa + accessibility + performance
 - `/panel:research` — user-research + usability-testing + focus-group + expert-review
@@ -51,6 +109,7 @@ Panel commands (PR #73):
 - `/panel:launch` — full pre-launch sweep → Ship / No-Ship verdict
 
 Review, debug, AI, auth, docs, security, and GTLI commands (PR #76):
+
 - `/review:code`, `/review:data-model`, `/review:artifact`
 - `/debug:env`
 - `/ai:prompt-test`, `/ai:prompt-design`
@@ -61,6 +120,7 @@ Review, debug, AI, auth, docs, security, and GTLI commands (PR #76):
 - `/panel:gtli-ux`, `/panel:gtli-jgcc`, `/panel:gtli-sim`
 
 **Notion session hooks (PRs #74, #75):**
+
 - `.claude/hooks/notion-status.sh` — new hook with two entry points:
   - `open` mode: emits workspace status lines (title, db count) + `NOTION_CONFIGURED` machine signal for MCP queries
   - `close` mode: diffs HEAD vs `origin/main` for publishable docs (runbooks, ADRs, PRDs); emits `NOTION_PUBLISH:` lines
@@ -70,6 +130,7 @@ Review, debug, AI, auth, docs, security, and GTLI commands (PR #76):
 - Fix (PR #75): Windows MSYS path converted to native Windows path for Node.js (`/c/Users/...` → `C:/Users/...`); `NOTION_CONFIGURED` filtered from rendered box output
 
 **Dashboard URL routing (PR #76):**
+
 - `dashboard/src/App.tsx` — `useHashTab` hook: hash-based tab routing (`#graph`, `#projects`, `#docs`, `#commands`); browser back/forward supported; no router dependency
 
 ---
@@ -81,21 +142,25 @@ Review, debug, AI, auth, docs, security, and GTLI commands (PR #76):
 Full `/panel:github` sweep (PRs #65–#71). All six GitHub agents ran; findings triaged to quick wins and follow-ups.
 
 **CI hardening:**
+
 - `.github/workflows/ci.yml` (#65) — job timeout limits (5 min references/PRDs, 15 min dashboard); all actions SHA-pinned.
 - `.github/workflows/release.yml` (#65) — automated release workflow triggered on `v*` tags; creates GitHub Release with auto-generated notes.
 - `.github/workflows/dependabot-auto-merge.yml` (#69) — auto-merges Dependabot patch/minor PRs after CI passes.
 - `.github/workflows/stale.yml` (#71) — marks PRs stale after 30 days; label-only (never auto-closes); `actions/stale@v9.1.0` SHA-pinned.
 
 **Agent renames + roster hygiene (#66, #67):**
+
 - All unprefixed agents given family prefixes (`web-`, `game-`, `research-`, `product-`, `quality-`, `cross-`, `notion-`, `meta-`).
 - Plugin mirror (`plugins/kwong-stack-agents/agents/`) synced to prefixed names.
 - `install.ps1` canonical source corrected to `agents/` (not the plugin mirror).
 
 **install.ps1 hardening (#68):**
+
 - CLAUDE.md sync: root `CLAUDE.md` now deployed to `~/.claude/CLAUDE.md` on every install.
 - Manifest-based stale cleanup: `~/.claude/kwong-stack-agents.manifest` tracks installed filenames; only removes manifest entries absent from source; foreign agents untouched.
 
 **Docs (#65, #69, #70):**
+
 - `docs/runbooks/release-process.md` — full release runbook.
 - `scripts/README.md` — documents all three linter scripts.
 - `docs/SETUP.md` — updated to reflect CLAUDE.md sync step and manifest-based stale cleanup; split Windows/macOS install paths.
@@ -111,6 +176,7 @@ Full `/panel:github` sweep (PRs #65–#71). All six GitHub agents ran; findings 
 ### Added — Phase 6 Claude Code feature leverage + Phase 9a sync-content fix
 
 **Phase 6a — Hooks (PR #56)**
+
 - `.claude/hooks/bash-guard.sh` — `PreToolUse` blocks destructive Bash patterns (`rm -rf` unscoped, `git reset --hard`, `git push --force`, `git clean -f`, `DROP TABLE`, shutdown/reboot, fork bomb). Pass `--force` to bypass.
 - `.claude/hooks/format-on-write.sh` — `PostToolUse` auto-formats `.ts/.tsx/.js/.json/.md/.yaml` via Prettier after every `Edit`/`Write`. Async; silent no-op if Prettier not installed.
 - `.claude/hooks/session-stop.sh` — `Stop` hook writes `.claude/session-state.json` at end of every turn. Keeps session briefing accurate without manual `/session:close`.
@@ -118,23 +184,28 @@ Full `/panel:github` sweep (PRs #65–#71). All six GitHub agents ran; findings 
 - `.claude/settings.json` — wired all four new hooks.
 
 **Phase 6c — Scheduled agents (PR #58)**
+
 - `.claude/scheduled/daily-ci-audit.sh` — daily CI health + Dependabot PR count. Writes dated log to `.claude/debug/`; prunes files older than 7 days.
 - `.claude/scheduled/weekly-pr-health.sh` — weekly PR staleness (open > 7d, no reviewer, stale CHANGES_REQUESTED).
 - `.claude/routines/` — cron descriptor JSON files (`0 8 * * *` daily, `0 9 * * 1` Monday).
 
 **Phase 6d — MCP servers (PR #58)**
+
 - `~/.claude/mcp.json` — added `sentry` (`@sentry/mcp-server@latest`) and `slack` (`@modelcontextprotocol/server-slack`). Token placeholders — fill in after install.
 - `agents/web-observability.md` — `## MCP Tools` section + `/audit` updated to call live Sentry data when configured.
 
 **Phase 6e — Worktree isolation (PR #57)**
+
 - `agents/meta-project-setup.md`, `agents/meta-sprint-assembler.md`, `dog-add.md`, `dog-remove.md` — `## Isolation` section added.
 - `agents/README.md` — step 7 in "Adding a New Agent" checklist for scaffold agents.
 
 **Phase 9a — sync-content fix (PR #59)**
+
 - `dashboard/scripts/sync-content.mjs` — fixed Windows path doubling via `fileURLToPath()`. Syncs 75 files: agents=38, commands=27, docs=10.
 - `dashboard/.gitignore` — added `src/agent-content/` (legacy pre-migration path).
 
 ### Fixed
+
 - `main` CI unblocked — unquoted `[AGENT:]` in workflow step name caused YAML parse error + 0 jobs on every push. Quoted the step name.
 - Branch protection regression — `main` had no rule. Re-applied: required status check, `enforce_admins: true`, force-push/delete blocked.
 - Stale `feat/dog-agents` origin branch deleted.
@@ -147,6 +218,7 @@ Full `/panel:github` sweep (PRs #65–#71). All six GitHub agents ran; findings 
 Massive session-driven build. Five parallel writing agents executed Phase 7-9 work; reference linter green throughout.
 
 **Phase 8 — Agent lifecycle (workforce pattern):**
+
 - `agents/meta-agent-lifecycle.md` (#45) — new meta-agent, sibling to `sprint-assembler` and `project-setup`. Owns `/agents:*` commands; treats roster as staff.
 - `commands/agents/agents-hire.md` (#39) — atomic create: agent file + Notion row with rollback.
 - `commands/agents/agents-fire.md` (#40) — deprecate (Notion Status=Deprecated, file → `agents/.deprecated/`, surfaces stale `[AGENT:]` refs).
@@ -157,19 +229,23 @@ Massive session-driven build. Five parallel writing agents executed Phase 7-9 wo
 - `docs/adr/ADR-003-agent-lifecycle.md` (#46) — workforce pattern (hire/train/upskill/combine/fire/eliminate; 90-day deprecation window; Active/Deprecated/Eliminated states).
 
 **Phase 8 — schema + backfill (live workspace):**
+
 - Agents Notion database schema augmented (#37) — added `Hired` (date), `Last upskilled` (date), `Deprecation reason` (rich_text), `Replaced by` (self-relation with `Replaces` reverse), `Owner` (person), `Usage 30d` (number).
 - All 37 agent rows backfilled with `Hired` dates from git log (#38). Dates: 2026-05-19 → 2026-05-26.
 
 **Phase 9 — Docs surface content:**
+
 - `docs/concepts.md` (#49) — 298-line primitives intro (Agent / Panel / Sprint / Command / Hook / Runbook). ASCII diagrams.
 - `docs/getting-started.md` (#50) — 303-line narrative walkthrough (install → first audit → panel → sprint → publish).
 - `README.md` polished (#51) — tagline + why-this-exists + dashboard screenshot + one-line install + top 5 commands + status badges. Existing content reorganized, nothing deleted.
 
 **Phase 7 — workspace polish:**
+
 - Integration runbook Source URL flipped from PR #2 to `docs/SETUP.md` on main (#35).
 - Phase 8 + Phase 9 Sprint rows in Notion flipped Planned → Active.
 
 **Routing updates:**
+
 - `CLAUDE.md` — `agent-lifecycle` added to Meta roster; new `### — Agents (workforce) —` commands section; routing rules added.
 - `agents/README.md` — `agent-lifecycle` added to Meta family table.
 - `commands/README.md` — `agents/` folder section added before `notion/`.
@@ -186,6 +262,7 @@ Massive session-driven build. Five parallel writing agents executed Phase 7-9 wo
 - Phase 9 dashboard work (#47, #48, #52, #53) — defer; touches the Vite app, best handled with testing
 
 ### kwong (marketplace)
+
 - Bumped to 1.7.6.
 
 ---
@@ -205,19 +282,23 @@ Claude Code (workspace root → portfolio view of all canonical DBs)
 ```
 
 **New canonical database — `Projects`:**
+
 - Properties: Name, Repo (URL), Stack (multi_select with the bootstrap presets), Status (Active/Paused/Archived), Owner, Description, Started
 - One row per project that publishes to the workspace
 - Relation target for the new `Project` property on every cross-project database
 
 **Schema migration on 7 databases:**
+
 - `Sprints.Project` was a rich_text → now a relation to Projects (DROP + ADD)
 - `PRDs`, `Research`, `Analytics specs`, `Quality audits`, `Game design docs`, `Runbooks` each got a new `Project` relation column
 
 **Backfill (11 rows):**
+
 - 8 Sprint rows (Phases 1–8) → Project = stack-agents
 - 3 Runbook rows (Notion integration runbook, ADR-001, ADR-002) → Project = stack-agents
 
 **stack-agents project subpage:**
+
 - Created under Claude Code (live at `https://www.notion.so/36dc266f7d7c81dfb3f4c0b9ff1f7a89`)
 - Hosts 7 linked-database views: Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design, Runbooks
 - GitHub audits view is filtered by `Repo contains stack-agents` (text filter works in DSL)
@@ -228,12 +309,14 @@ Claude Code (workspace root → portfolio view of all canonical DBs)
 Single source of truth for each artifact type, but every project gets its own dashboard. Portfolio queries are just the unfiltered canonical view; project dashboards are linked views with the Project filter. New projects = create a row in Projects + a new subpage + paste linked views. No schema duplication.
 
 ### Repo updates
+
 - `.notion/config.json` adds `projects` entry; `last_verified` bumped.
 - `agents/notion-architect.md` Canonical Workspace Layout updated; `Projects` schema added to `/scaffold`; `Sprints.Project` changed from rich_text to relation.
 - `commands/notion/notion-bootstrap.md` + `notion-setup.md` `--databases` lists include `projects`.
 - Plugin mirrors. Marketplace 1.7.5.
 
 ### Known limitations
+
 - The view DSL doesn't accept relation-based filters (`FILTER "Project" CONTAINS …` parses to empty). Linked views on project pages currently show all data. Workaround: filter in Notion UI per view; or use a text property for project name instead of relation if filter automation matters. Tracked as Phase 9 candidate.
 
 ---
@@ -247,6 +330,7 @@ A new canonical database, `Agents`, mirrors the repo's `agents/*.md` roster. One
 `Sprints.Agents` was a free-text multi_select — anyone could type a typo or a non-existent agent name. It's now a **relation** to the Agents database. Clicking an agent chip on a Sprint row navigates to the agent record, which links back to the repo file via Source.
 
 Migration:
+
 - New Agents database scaffolded under Claude Code parent.
 - 37 rows populated, one per current agent file.
 - `Sprints.Agents` column DROP + re-ADD as `RELATION('agents_data_source_id')`.
@@ -279,11 +363,13 @@ Last verified (DATE)
 Default views: `Active` (filtered, sorted by Last verified desc) and `By type` (board, grouped by Type).
 
 Migration on the live "Claude Code" workspace:
+
 - New Runbooks database created at `https://www.notion.so/481518bc424245b4b9f8e302a2954f94` (`data_source_id` `7d7f9a11-91b4-45fa-8fe3-8c1ce5f450bb`).
 - The existing two runbook subpages (`Notion integration runbook`, `ADR-002: Vercel deploy check as the CI gate`) were moved into the database via `notion-move-pages` and have their Type / Status / Owner / Source / Last verified set. Their URLs are unchanged.
 - The legacy Runbooks page (`36dc266f-7d7c-8155-9810-d27c7075bffb`) was renamed to "Runbooks (legacy index — see Runbooks database)" and its body replaced with a redirect callout. Kept as a legacy URL so old links don't break.
 
 Repo updates:
+
 - `.notion/config.json` — `runbooks` entry now has `data_source_id`.
 - `agents/notion-architect.md` — Canonical Workspace Layout table updated; new YAML schema in `/scaffold`.
 - `commands/notion/notion-bootstrap.md` + `notion-setup.md` — examples and notes updated.
@@ -317,10 +403,11 @@ GH Actions billable minutes can be exhausted (it just was on PR #2), blocking PR
 
 ### Fixed
 
-- **`notion-url-sanitize` hook false positive**: previously scanned the entire `tool_input` payload as a string, which blocked publishes whose body content merely *described* credential patterns (e.g. `"don't pass ?token=..."` in a runbook). Now uses `jq` to extract only URL-shaped string values (`^https?://`) and scans those, leaving body markdown alone. Same pattern catches actual credentialed URLs; no longer trips on documentation.
+- **`notion-url-sanitize` hook false positive**: previously scanned the entire `tool_input` payload as a string, which blocked publishes whose body content merely _described_ credential patterns (e.g. `"don't pass ?token=..."` in a runbook). Now uses `jq` to extract only URL-shaped string values (`^https?://`) and scans those, leaving body markdown alone. Same pattern catches actual credentialed URLs; no longer trips on documentation.
 - **PRD metric-specificity regex** in `lint-prds.mjs` was multiline-anchored, causing `$` in a lookahead to match end-of-line and stop the section capture at the first newline. Replaced with explicit string slicing.
 
 ### kwong (marketplace)
+
 - Bumped to 1.7.1.
 
 ---
@@ -332,11 +419,13 @@ GH Actions billable minutes can be exhausted (it just was on PR #2), blocking PR
 Two new hook recipes installable into `~/.claude/settings.json` so they apply to every project automatically (existing and future):
 
 **`lint-references`** (PreToolUse / Bash):
+
 - Blocks `git commit` if any `[AGENT: X]` or `/cmd:y` reference is broken.
 - Silent no-op in any repo that doesn't have `agents/` and `commands/` — safe for projects that aren't orchestration repos.
 - Carries the linter script with it: installs `lint-references.mjs` to `~/.claude/scripts/` and `lint-references-on-commit.sh` to `~/.claude/hooks/`.
 
 **`notion-url-sanitize`** (PreToolUse / Notion MCP):
+
 - Blocks `notion-create-pages` and `notion-update-page` calls whose payload contains a URL with credential query params (`token`, `access_token`, `api_key`, `secret`, `password`, `signature`, `auth`, `x-amz-signature`).
 - Belt-and-suspenders for `notion-publisher`'s `sanitizeSourceUrl` spec — catches the case where an agent doesn't follow its own spec, or where someone publishes via the MCP tool directly.
 - Redacts the credential value before echoing the blocked param name so the secret isn't logged.
@@ -349,6 +438,7 @@ Two new hook recipes installable into `~/.claude/settings.json` so they apply to
 - **Linter** (`scripts/lint-references.mjs`) is now cwd-aware: accepts `--root <path>`, auto-detects when not invoked from a stack-agents-style repo, and exits 0 silently if there are no `agents/` and `commands/` to lint. Also strips inline code spans before scanning so illustrative `` `[AGENT: X]` `` examples don't false-positive.
 
 ### kwong (marketplace)
+
 - Bumped to 1.7.0.
 
 ---
@@ -358,31 +448,37 @@ Two new hook recipes installable into `~/.claude/settings.json` so they apply to
 ### Added — Notion integration reliability + security pass
 
 **`/notion:bootstrap` (kwong-commands):**
+
 - New one-shot first-time setup command. Resolves parent, scaffolds canonical databases (via `notion-architect`), and writes `.notion/config.json` so future `/notion:publish` / `/notion:audit` calls don't re-resolve databases by title every run.
 - Schema for `.notion/config.json` published at `templates/notion-config.schema.json` (versioned, JSON Schema draft-07).
 - Idempotent. Re-running merges with existing config. `--force` overwrites managed keys; `--dry-run` prints the plan without writing.
 
 **Ancestor-path confirmation (`notion-architect`):**
+
 - Mandatory pre-flight before any database creation: surface the parent's full workspace > team > page path and require user confirmation. Guards against writing canonical databases into a personal scratch page when the MCP token is workspace-wide.
 
 **Source URL sanitization (`notion-publisher`):**
+
 - Sanitize every `Source` URL before write — strip query params not on a safe-param allowlist (`v`, `tab`, `pvs`), drop opaque fragment tokens, normalize trailing slashes.
 - Refuse to publish when the URL contains credential params (`token`, `access_token`, `api_key`, `password`, `secret`, `signature`, etc.) — fail with a clear message rather than silently persisting credentials as a property.
 - Retry contract added: 409 / 429 / 5xx retried 3x with jittered backoff (250-1100ms).
 
 **`--json` output mode on panels:**
+
 - `/panel:publish`, `/panel:notion`, `/panel:knowledge` now support a `--json` flag that emits a single JSON block matching a documented schema. Exit-code semantics defined per panel.
 - Designed for CI gating — wire `/panel:publish --json` into PRD review to auto-block NOT_READY artifacts.
 
 ### Added — reference linter + CI job
 
 **`scripts/lint-references.mjs`:**
+
 - Node script (no dependencies, ESM, Node 18+) that validates every `[AGENT: X]` and `/namespace:verb` reference across `agents/`, `commands/`, `CLAUDE.md`, and README files.
 - Scans `plugins/kwong-agents/agents/` to recognize cross-plugin agent names.
 - Supports `.lint-references-ignore` for documented-but-unbuilt commands (tracked debt).
 - Flags: `--json` (CI consumption), `--quiet` (errors only).
 
 **CI integration:**
+
 - New `references` job in `.github/workflows/ci.yml` runs the linter on every push/PR. Fails on any unresolved reference. ~2-second job, no install step required.
 
 ### Fixed — drift surfaced by the new linter
@@ -391,6 +487,7 @@ Two new hook recipes installable into `~/.claude/settings.json` so they apply to
 - Handoff lines in `i18n.md` and `finops.md` referenced `[AGENT: web-ai-llm]`; the agent's name is `ai-llm`. Fixed.
 
 ### kwong (marketplace)
+
 - Bumped to 1.6.0.
 
 ---
@@ -400,6 +497,7 @@ Two new hook recipes installable into `~/.claude/settings.json` so they apply to
 ### kwong-stack-agents (1.2.0)
 
 **Changed — split the single `notion` agent into 4 Workspace specialists:**
+
 - `notion-architect` — workspace topology, database schemas, properties, relations, views, templates. Owns `/notion:setup`.
 - `notion-publisher` — outbound publishing, idempotent upserts by `Source`, body block rendering, property mapping. Owns `/notion:publish`.
 - `notion-importer` — inbound reading, ID resolution, page/database rendering to markdown, provenance stamping. Read-only. Owns `/notion:import`.
@@ -412,19 +510,23 @@ Dependency chain: `notion-architect → notion-publisher → notion-importer →
 ### kwong-commands
 
 **Added — `/notion:audit`:**
+
 - `/notion:audit [--scope <list>] [--auto-flag] [--propose-archives]` — runs by `notion-governance`. Surfaces ownerless pages, stale drafts, duplicates, broken `Source` URLs, schema drift, and permission risks. Read-only by default; archive proposals always require confirmation.
 
 **Added — 3 cross-agent panels:**
+
 - `/panel:notion` — all 4 Notion specialists in dependency order, with cross-specialty synthesis (where architect/publisher/importer/governance conflict).
 - `/panel:knowledge` — `notion-architect` + `notion-governance` + `gh-docs`. Cross-surface documentation audit between Notion and the repo. Surfaces docs in the wrong home, duplicated truth, and broken cross-links.
 - `/panel:publish` — `product` + `analytics` + `notion-publisher`. Quality gate before publishing a PRD or analytics spec. Verdict is binary: READY / READY WITH FIXES / NOT READY. Supports `--auto-publish` only when verdict is READY.
 
 **Updated — existing `/notion:*` commands re-pointed to specialists:**
+
 - `/notion:setup` → `notion-architect`
 - `/notion:publish` → `notion-publisher`
 - `/notion:import` → `notion-importer`
 
 ### kwong (marketplace)
+
 - Bumped to 1.5.0.
 
 ---
@@ -434,9 +536,11 @@ Dependency chain: `notion-architect → notion-publisher → notion-importer →
 ### kwong-stack-agents (1.1.0)
 
 **Added — `notion` agent (new Workspace family):**
+
 - `notion` — Notion workspace + database design, page templates, views, canonical-database scaffolding, idempotent publishing of agent/panel/sprint outputs, and importing pages/databases as session context. Owns the Notion MCP surface (`notion-search`, `notion-fetch`, `notion-create-pages`, `notion-update-page`, `notion-create-database`, `notion-create-view`, comments).
 
 **Changed — Handoff edits across existing agents to route publishing to Notion:**
+
 - `product` — PRD → `/notion:publish prd`; import existing PRDs via `/notion:import --as prd --into product`
 - `analytics` — event schemas + A/B test plans → `/notion:publish analytics`
 - `user-research`, `focus-group`, `expert-review` — research reports → `/notion:publish research`
@@ -445,11 +549,13 @@ Dependency chain: `notion-architect → notion-publisher → notion-importer →
 - `/panel:github` — synthesis now emits a handoff line to publish the audit
 
 **Updated — orchestrator routing:**
+
 - `CLAUDE.md` adds a Workspace family, routing rules for Notion requests, and a `/notion:*` command table.
 
 ### kwong-commands (new)
 
 **Added — 3 `/notion:*` slash commands (source: `stack-agents/commands/notion/`):**
+
 - `/notion:setup --parent <page-url-or-id>` — bootstrap canonical databases (Sprints, PRDs, Research, Analytics specs, GitHub audits, Quality audits, Game design docs, Runbooks) with default views. Non-destructive; `--force` is additive (never deletes).
 - `/notion:publish <type> <identifier>` — idempotent upsert by `Source` URL for: `sprint`, `prd`, `research`, `analytics`, `github-audit`, `quality-audit`, `game-design`, `runbook`.
 - `/notion:import <url-or-id> [--as <type>] [--into <agent>]` — read-only fetch of a page or database into session context, with optional handoff to a downstream agent.
@@ -463,6 +569,7 @@ Dependency chain: `notion-architect → notion-publisher → notion-importer →
 **Added — 33 specialist agents across 8 engineering domains (source: `stack-agents`):**
 
 Web Stack (dependency chain: data → security → ai-llm → application → infrastructure → observability → presentation):
+
 - `data` — Neon, Drizzle ORM, migrations, RLS, blob storage
 - `security` — Clerk, RBAC, Upstash rate limiting, RLS, CSP/HSTS headers
 - `ai-llm` — Claude API, Deepgram STT, ElevenLabs TTS, system prompts, streaming, cost tracking
@@ -472,6 +579,7 @@ Web Stack (dependency chain: data → security → ai-llm → application → in
 - `presentation` — Next.js 15 App Router, Server Components, Tailwind CSS 4, shadcn/ui
 
 Game Design (dependency chain: game-design → narrative → level-design → game-ux → game-tech → production):
+
 - `game-design` — core mechanics, systems, game loop, balance, design pillars
 - `narrative` — story structure, dialogue systems, branching narrative, lore
 - `level-design` — spatial design, pacing, encounter design, player flow
@@ -480,6 +588,7 @@ Game Design (dependency chain: game-design → narrative → level-design → ga
 - `production` — scope management, milestone planning, playtesting, risk, release readiness
 
 GitHub (dependency chain: gh-repo → gh-actions → gh-issues → gh-prs → gh-releases → gh-docs):
+
 - `gh-repo` — branch protection, CODEOWNERS, Dependabot, secret scanning
 - `gh-actions` — GitHub Actions workflows, permissions, action pinning, caching
 - `gh-issues` — label taxonomy, issue templates, triage workflow, Projects v2
@@ -488,26 +597,31 @@ GitHub (dependency chain: gh-repo → gh-actions → gh-issues → gh-prs → gh
 - `gh-docs` — README, CONTRIBUTING, SECURITY.md, API docs, ADRs, runbooks
 
 Quality (dependency chain: web-qa → accessibility → performance):
+
 - `web-qa` — Playwright E2E, Vitest unit/integration, test pyramid, flake triage
 - `accessibility` — WCAG 2.1/2.2 AA/AAA, axe-core, screen-reader testing, ARIA authoring
 - `performance` — Core Web Vitals, Lighthouse CI, bundle analysis, rendering strategy
 - `game-qa` — playtesting protocols, functional QA, regression suites, certification
 
 Research (dependency chain: user-research → usability-testing → focus-group → expert-review):
+
 - `user-research` — user interviews, surveys, JTBD, personas, affinity mapping
 - `usability-testing` — think-aloud protocols, moderated/unmoderated studies, task analysis
 - `focus-group` — focus group design, facilitation, concept testing, synthesis
 - `expert-review` — heuristic evaluation (Nielsen, Mayer, PLAY), design critique
 
 Product:
+
 - `product` — PRDs, user stories, RICE/MoSCoW, OKRs, success metrics, roadmap framing
 - `analytics` — PostHog event schemas, funnel design, A/B test design, retention analysis
 
 Cross-cutting:
+
 - `i18n` — next-intl, ICU messages, RTL support, locale routing, locale-aware formatting
 - `finops` — Claude/ElevenLabs/Deepgram cost tracking, Vercel/Neon spend, prompt caching, budgets
 
 Meta:
+
 - `sprint-assembler` — assembles custom sprint teams, generates missing agents, installs sprint orchestrators
 - `project-setup` — installs Claude Code orchestration into existing repos or bootstraps new repos from scratch
 
@@ -516,23 +630,28 @@ Meta:
 **Added — 13 stack-agents commands (source: `stack-agents`):**
 
 Orchestration:
+
 - `orchestrate` — master orchestrator; routes any request to the correct agent(s), emits output in dependency order, synthesizes cross-cutting findings. Requires kwong-stack-agents.
 
 Web Stack:
+
 - `audit` — structured audit across one or more stack layers, grouped by severity
 - `scaffold` — production-ready boilerplate generation for a target feature or layer
 - `advise` — architectural recommendation with recommendation + tradeoffs + next step
 - `fullstack` — all 7 web agents in dependency order with cross-cutting synthesis
 
 Panels:
+
 - `panel:game` — all 6 game design agents as a panel with cross-discipline synthesis. Requires kwong-stack-agents.
 - `panel:github` — all 6 GitHub agents as a panel with cross-domain synthesis. Requires kwong-stack-agents.
 
 Setup:
+
 - `setup:project` — install Claude Code orchestration into an existing repo or bootstrap a new repo (--mode config | bootstrap). Stacks: nextjs, nextjs-ai, nextjs-edu, nextjs-events, nextjs-knowledge, vite-react, game.
 - `setup:hooks` — install hook recipes into `.claude/settings.json`
 
 Sprint management:
+
 - `sprint:assemble` — assemble a custom sprint team from the agent pool and install into a target project
 - `sprint:dissolve` — remove a sprint from a target project (preserves registry)
 - `sprint:list` — list all sprints with usage history, status, and agent composition
@@ -545,13 +664,16 @@ Sprint management:
 **Added — 9 new agents:**
 
 AI tooling:
+
 - `ai-prompt-engineer` — system prompt architecture, structured output schemas, few-shot design, agentic loop design, prompt regression. Context-aware for GTLI_YLAI, GTLI_Reimagined, lexio, ernest, accessport-analyzer, secondbrain.
 
 Auth security auditors:
+
 - `nextauth-auditor` — NextAuth.js v4/v5 security audit: session strategy, CSRF, JWT config, provider setup, callback security, middleware coverage, RBAC. Primary context: arscca-VMS.
 - `clerk-auditor` — Clerk security audit: middleware protection, server-side authorization, org/role RBAC, JWT templates, webhook signature verification, OAuth scope. Primary context: GTLI_YLAI.
 
 Design team (discipline-based):
+
 - `visual-designer` — typography, color systems, spacing, visual hierarchy, brand consistency, emotional tone
 - `interaction-designer` — microinteractions, feedback timing, loading states, form behavior, multi-step flows, voice/AI interaction patterns
 - `cognitive-psychologist` — cognitive load (CLT), working memory, attention, Gestalt, mental model alignment, NNS readability
@@ -564,6 +686,7 @@ Design team (discipline-based):
 ### kwong-commands (1.0.0 → 1.1.0)
 
 **Added — 4 new slash commands:**
+
 - `ux-review` — runs all 5 UX persona agents in parallel (ux-admin, ux-coordinator, ux-director, ux-learner, ux-synthesis) then synthesizes a unified priority backlog. Requires kwong-agents.
 - `doc-audit` — drives doc-writer in assessment-only mode: inventories all project docs, produces a prioritized rewrite queue without modifying anything. Requires kwong-agents.
 - `security-baseline` — first-pass security sweep invoking semgrep, codeql, insecure-defaults, supply-chain-risk-auditor, and agentic-actions-auditor in parallel. Requires kwong-skills.
@@ -578,6 +701,7 @@ Initial release.
 **Added — 24 agents from 3 source repos:**
 
 Content pipeline (source: `arscca-VMS`):
+
 - `assessment` — generates assessment JSON for GTLI content pipeline (frontmatter synthesized)
 - `lesson` — generates lesson text JSON (frontmatter synthesized)
 - `orchestrator` — orchestrates video-script + lesson + assessment + qa in sequence (frontmatter synthesized)
@@ -585,6 +709,7 @@ Content pipeline (source: `arscca-VMS`):
 - `video-script` — generates video script JSON (frontmatter synthesized)
 
 UX persona reviewers (source: `arscca-VMS`; identical copies in `GTLI_Reimagined` dropped):
+
 - `ux-admin` — GTLI administrator persona
 - `ux-coordinator` — studio production coordinator persona
 - `ux-director` — cohort director persona
@@ -592,11 +717,13 @@ UX persona reviewers (source: `arscca-VMS`; identical copies in `GTLI_Reimagined
 - `ux-synthesis` — cross-persona synthesis after 2+ persona reviews
 
 Course analysis tools (source: `GLTI-Course_Analyzer`):
+
 - `doc-writer` — documentation reviewer and rewriter
 - `simulated-user-panel` — 5-persona usability testing panel
 - `ux-ui-reviewer` — UI/UX and React component reviewer
 
 JGCC educational quality auditors (source: `GTLI_YLAI`):
+
 - `jgcc-developmental-appropriateness` — developmental fit (conditional)
 - `jgcc-diversity-representation` — diversity and representation audit
 - `jgcc-engagement-auditor` — engagement quality audit (mandatory)
@@ -614,6 +741,7 @@ JGCC educational quality auditors (source: `GTLI_YLAI`):
 ### kwong-commands (1.0.0)
 
 **Added — 1 command (source: `GTLI_YLAI`):**
+
 - `jgcc-review` — orchestrates full 11-agent JGCC suite: 7 mandatory in parallel, 4 conditional, then synthesizes a Four Pillars score + prioritized remediation backlog. **Requires kwong-agents.**
 
 ### kwong-skills (1.0.0)

@@ -1,11 +1,11 @@
 [![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
-[![Marketplace](https://img.shields.io/badge/marketplace-1.9.1-blue)](./CHANGELOG.md)
+[![Marketplace](https://img.shields.io/badge/marketplace-2.0.0-blue)](./CHANGELOG.md)
 [![Dashboard](https://img.shields.io/badge/dashboard-local-blue)](./dashboard/README.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 # stack-agents
 
-38 specialist Claude Code agents + a master orchestrator + a Notion-integrated dashboard for solo and small-team multi-agent workflows.
+39 specialist Claude Code agents + a master orchestrator + a Notion-integrated dashboard for solo and small-team multi-agent workflows.
 
 ## Why this exists
 
@@ -78,7 +78,7 @@ data → security → ai-llm → application → infrastructure → observabilit
 ### Structure
 
 ```
-agents/              — 38 specialist agent .md files (see agents/README.md)
+agents/              — 39 specialist agent .md files (see agents/README.md)
 commands/
   web/               — /stack:* commands
   game/              — /panel:game command
@@ -123,7 +123,7 @@ npm run dev
 # → http://localhost:5173
 ```
 
-- **Agent Graph tab** — 38 agents as nodes, colored by family. Click any node to read the full agent spec. Filter by family. Solid edges = dependency chain, dashed = handoff.
+- **Agents tab** — 39 agents as nodes, colored by family, with an Architecture / Dependency Chains view toggle and a search box. Click any node to read the full agent spec (routing ID, chain position, handoffs, then the full markdown). Filter by family. Solid edges = dependency chain, dashed = handoff; selecting a node highlights its connected edges.
 - **Projects tab** — auto-discovers all git repos in `~/GitHub/`, shows detected stack, recent commits, git status (ahead/behind/dirty), GitHub/production/local links, and open issues.
 
 ### Commands
