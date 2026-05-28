@@ -1,10 +1,15 @@
 # ADR-002: Vercel deploy check as the CI gate
 
-**Status:** Superseded — GH Actions retained as merge gate (2026-05-27)
-**Date:** 2026-05-27
+**Status:** Accepted — groundwork complete; Vercel activation pending one-time web import (2026-05-28)
+**Date:** 2026-05-27 (revived 2026-05-28)
 **Author:** Kevin Wong
 
-> **Update (2026-05-27):** This ADR's proposed migration to Vercel as the required status check has been deferred indefinitely. Issue #29 (Vercel connection verification) remains open. Branch protection on `main` was restored on 2026-05-27 requiring all three GH Actions checks (`Agent + command reference linter`, `PRD structural linter`, `Dashboard — lint + build`). Until #29 is resolved and Vercel is confirmed as a connected check provider, GH Actions **is** the actual merge gate and this is the intentional state — not a temporary fallback.
+> **Update (2026-05-28):** Revived. The engineering groundwork is now on `main`:
+>
+> - `vercel.json` (#134) builds the dashboard from repo root — `buildCommand: cd dashboard && npm ci && npm run build`, output `dashboard/dist` — so `sync-content.mjs` can reach `../agents`, `../commands`, `../docs`.
+> - `scripts/test-vercel-build.mjs` + the `Vercel build (vercel.json parity)` CI job (#151) run the exact `vercel.json` build on every PR, so the deploy config can't silently break and the gate stays trustworthy.
+>
+> **GH Actions remains the active merge gate until the one-time Vercel import is done.** No `stack-agents` Vercel project exists yet (verified via the Vercel API on 2026-05-28), so no Vercel check is posted on PRs — and a check that has never appeared cannot be required without permanently blocking every merge. The remaining steps are in "Manual step required" below, in strict order.
 
 ---
 
@@ -59,15 +64,25 @@ The GitHub Actions workflow (`Dashboard — lint + build`) remains in `.github/w
 
 ## Manual step required
 
-Branch protection on `main` must be updated on github.com — this can't be done from the repo:
+Two phases, in order. **Do not reorder** — requiring a status check that does not yet exist permanently blocks all merges to `main`.
 
-1. Settings → Branches → branch protection rule for `main` → Edit
-2. Under "Require status checks to pass before merging":
-   - Remove `Dashboard — lint + build`
-   - Add the Vercel check name (search for "Vercel" in the search box; the exact name depends on the Vercel project)
-3. Save
+### Phase 1 — Create the Vercel check (one-time, vercel.com)
 
-Until that change is made, branch protection still expects the (now non-running) GH Actions check.
+1. `vercel.com/new` → Import `kevinvwong/stack-agents`.
+2. **Root Directory: leave as `./`** (not `dashboard/`). The build needs repo-root context; `vercel.json` handles the descent into `dashboard/`. The `Vercel build (vercel.json parity)` CI job already proves this path builds.
+3. Framework Preset: "Other" (`vercel.json` sets `framework: null`).
+4. Deploy. Confirm the first build succeeds and the dashboard renders.
+5. Open any PR → confirm a check named `Vercel` (or `Vercel – stack-agents`) appears and goes green. **Note the exact string.**
+
+### Phase 2 — Flip the gate (github.com)
+
+1. Settings → Branches → `main` rule → Edit.
+2. Under "Require status checks to pass before merging", add the exact Vercel check name from Phase 1 step 5.
+3. Keep `Agent + command reference linter`, `PRD structural linter`, and `Vercel build (vercel.json parity)` required — they catch what a Vercel deploy alone won't (reference integrity, PRD structure, and `vercel.json` drift). Optionally drop `Dashboard — lint + build`, since Vercel now covers the build.
+4. Re-enable "Require a pull request before merging" + 1 approving review (closes #28).
+5. Save.
+
+Until Phase 1 is complete, GH Actions is the gate and that is the intended state — not a temporary fallback.
 
 ---
 
