@@ -39,7 +39,6 @@ Master Orchestrator (you — CLAUDE.md)
 │   ├── /sprint:assemble      Build a custom sprint team
 │   ├── /sprint:list          List all sprints + usage history
 │   ├── /sprint:status        Sprint health check (run from target project)
-│   ├── /sprint:standup       Daily check-in across the sprint roster
 │   └── /sprint:dissolve      Remove sprint from target project
 │
 └── Notion                    commands/notion/*.md  (workspace publishing + import + audit)
@@ -146,8 +145,7 @@ GitHub: "scaffold a release workflow" → `[AGENT: gh-releases]`
 GitHub: "audit our README" → `[AGENT: gh-docs]`
 
 Sprint: "spin up a sprint for X" → `[AGENT: meta-sprint-assembler]` via `/sprint:assemble`  
-Sprint: "what sprints are active?" → `[AGENT: meta-sprint-assembler]` via `/sprint:list`  
-Sprint: "daily check-in" / "run the sprint standup" → `/sprint:standup` (from target project)
+Sprint: "what sprints are active?" → `[AGENT: meta-sprint-assembler]` via `/sprint:list`
 
 Setup: "add Claude config to this repo" → `[AGENT: meta-project-setup]` via `/setup:project --mode config`  
 Setup: "bootstrap a new Next.js project" → `[AGENT: meta-project-setup]` via `/setup:project --mode bootstrap --stack nextjs`  
@@ -170,6 +168,7 @@ Agents (workforce): "review the roster" → `[AGENT: meta-agent-lifecycle]` via 
 "full quality sweep" → `/panel:quality`  
 "run a full research pass" → `/panel:research`  
 "what does my sprint team think?" → `/panel:sprint:<name>` (from target project)
+"starting a new project from scratch" / "I have a project idea — where do I start?" → `/panel:onboarding`  
 
 **Multi-agent request** — coordinate in dependency order, emit each agent's output in full:
 
@@ -302,39 +301,39 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 
 > Panels convene all agents in a family around a shared artifact. Each agent responds from their discipline, then a synthesis pass surfaces cross-domain conflicts.
 
-| Command                | Usage                               | Agents Convened                                                                            |
-| ---------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------ |
-| `/panel:github`        | `/panel:github [focus]`             | All 6 GitHub agents + cross-domain synthesis                                               |
-| `/panel:game`          | `/panel:game [artifact]`            | All 6 Game Design agents + cross-discipline synthesis                                      |
-| `/panel:stack`         | `/panel:stack`                      | All 7 Web agents + cross-layer synthesis                                                   |
-| `/panel:quality`       | `/panel:quality [scope]`            | web-qa + accessibility + performance                                                       |
-| `/panel:research`      | `/panel:research [question]`        | user-research + usability-testing + focus-group + expert-review                            |
-| `/panel:design`        | `/panel:design [scope]`             | visual-designer + interaction-designer + information-architect                             |
-| `/panel:psych`         | `/panel:psych [scope]`              | cognitive-psychologist + behavioral-psychologist                                           |
-| `/panel:security`      | `/panel:security`                   | security + env-debugger + static analysis                                                  |
-| `/panel:website`       | `/panel:website TARGET_SITE: <url>` | website-audit + student-lens + UX                                                          |
-| `/panel:content`       | `/panel:content [module spec]`      | video-script + lesson + assessment + QA                                                    |
-| `/panel:ai-feature`    | `/panel:ai-feature [feature]`       | ai-llm + prompt-engineer + application                                                     |
-| `/panel:launch`        | `/panel:launch`                     | Full pre-launch sweep → Ship / No-Ship verdict                                             |
-| `/panel:gtli-ux`       | `/panel:gtli-ux`                    | All 5 GTLI UX persona agents + synthesis                                                   |
-| `/panel:gtli-jgcc`     | `/panel:gtli-jgcc`                  | All 11 JGCC learning quality agents + synthesis                                            |
-| `/panel:gtli-sim`      | `/panel:gtli-sim [feature]`         | Simulated user panel across GTLI archetypes                                                |
-| `/panel:notion`        | `/panel:notion [focus]`             | All 4 Notion specialists + cross-specialty synthesis                                       |
-| `/panel:knowledge`     | `/panel:knowledge [focus]`          | notion-architect + notion-governance + gh-docs — docs across Notion and the repo           |
-| `/panel:publish`       | `/panel:publish <artifact>`         | product + analytics + notion-publisher — publish-readiness gate for PRDs / analytics specs |
-| `/panel:sprint:<name>` | `/panel:sprint:<name>`              | All agents in the named sprint team                                                        |
+| Command                | Usage                                          | Agents Convened                                                                                                                                    |
+| ---------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/panel:github`        | `/panel:github [focus]`                        | All 6 GitHub agents + cross-domain synthesis                                                                                                       |
+| `/panel:game`          | `/panel:game [artifact]`                       | All 6 Game Design agents + cross-discipline synthesis                                                                                              |
+| `/panel:stack`         | `/panel:stack`                                 | All 7 Web agents + cross-layer synthesis                                                                                                           |
+| `/panel:quality`       | `/panel:quality [scope]`                       | web-qa + accessibility + performance                                                                                                               |
+| `/panel:onboarding`    | `/panel:onboarding "<idea>" [--target <path>]` | product + data + security + infrastructure + gh-repo — produces `BLUEPRINT.md` at the target project root before `/setup:project --mode bootstrap`                  |
+| `/panel:research`      | `/panel:research [question]`                   | user-research + usability-testing + focus-group + expert-review                                                                                    |
+| `/panel:design`        | `/panel:design [scope]`                        | visual-designer + interaction-designer + information-architect                                                                                     |
+| `/panel:psych`         | `/panel:psych [scope]`                         | cognitive-psychologist + behavioral-psychologist                                                                                                   |
+| `/panel:security`      | `/panel:security`                              | security + env-debugger + static analysis                                                                                                          |
+| `/panel:website`       | `/panel:website TARGET_SITE: <url>`            | website-audit + student-lens + UX                                                                                                                  |
+| `/panel:content`       | `/panel:content [module spec]`                 | video-script + lesson + assessment + QA                                                                                                            |
+| `/panel:ai-feature`    | `/panel:ai-feature [feature]`                  | ai-llm + prompt-engineer + application                                                                                                             |
+| `/panel:launch`        | `/panel:launch`                                | Full pre-launch sweep → Ship / No-Ship verdict                                                                                                     |
+| `/panel:gtli-ux`       | `/panel:gtli-ux`                               | All 5 GTLI UX persona agents + synthesis                                                                                                           |
+| `/panel:gtli-jgcc`     | `/panel:gtli-jgcc`                             | All 11 JGCC learning quality agents + synthesis                                                                                                    |
+| `/panel:gtli-sim`      | `/panel:gtli-sim [feature]`                    | Simulated user panel across GTLI archetypes                                                                                                        |
+| `/panel:notion`        | `/panel:notion [focus]`                        | All 4 Notion specialists + cross-specialty synthesis                                                                                               |
+| `/panel:knowledge`     | `/panel:knowledge [focus]`                     | notion-architect + notion-governance + gh-docs — docs across Notion and the repo                                                                   |
+| `/panel:publish`       | `/panel:publish <artifact>`                    | product + analytics + notion-publisher — publish-readiness gate for PRDs / analytics specs                                                         |
+| `/panel:sprint:<name>` | `/panel:sprint:<name>`                         | All agents in the named sprint team                                                                                                                |
 
 ### — Sprint Commands —
 
 > Sprints assemble a custom team of agents for a specific project. The assembled orchestrator is installed into the target project and activates in that project's Claude sessions.
 
-| Command            | Usage                                                          | Description                                                                                       |
-| ------------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `/sprint:assemble` | `/sprint:assemble "<goal>" --project <path>`                   | Assemble a sprint team, generate missing agents, install orchestrator                             |
-| `/sprint:list`     | `/sprint:list [--status active\|dissolved] [--project <path>]` | List all sprints + usage history                                                                  |
-| `/sprint:status`   | `/sprint:status`                                               | Sprint health check (run from target project)                                                     |
-| `/sprint:standup`  | `/sprint:standup [--agent <name>]`                             | Daily check-in — pulls activity + routes to roster for ≤3-bullet status (run from target project) |
-| `/sprint:dissolve` | `/sprint:dissolve "<name>"`                                    | Remove sprint from target project (preserves registry)                                            |
+| Command            | Usage                                                          | Description                                                           |
+| ------------------ | -------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `/sprint:assemble` | `/sprint:assemble "<goal>" --project <path>`                   | Assemble a sprint team, generate missing agents, install orchestrator |
+| `/sprint:list`     | `/sprint:list [--status active\|dissolved] [--project <path>]` | List all sprints + usage history                                      |
+| `/sprint:status`   | `/sprint:status`                                               | Sprint health check (run from target project)                         |
+| `/sprint:dissolve` | `/sprint:dissolve "<name>"`                                    | Remove sprint from target project (preserves registry)                |
 
 ### — Code Review —
 
