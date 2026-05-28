@@ -2,9 +2,23 @@ import type { Plugin } from "vite";
 import { spawnSync } from "child_process";
 import { execFileSync } from "child_process";
 import { existsSync, readdirSync, readFileSync } from "fs";
+import { homedir } from "os";
 import { join, basename } from "path";
 
-const GITHUB_ROOT = "C:/Users/kwong318/GitHub";
+// Where the dashboard looks for sibling git repos to surface in the Projects
+// tab. Configurable so it works off the original author's Windows box:
+//   STACK_AGENTS_GITHUB_ROOT  — explicit override (any OS)
+//   ~/GitHub                  — cross-platform default if it exists
+//   C:/Users/kwong318/GitHub  — legacy fallback (original dev host)
+// Resolution is lazy + guarded (see discoverRepoPaths) so a missing root
+// degrades to "no projects" instead of a 500.
+function repoRoot(): string {
+  const override = process.env.STACK_AGENTS_GITHUB_ROOT;
+  if (override) return override;
+  const home = join(homedir(), "GitHub");
+  if (existsSync(home)) return home;
+  return "C:/Users/kwong318/GitHub";
+}
 
 interface ProjectLinks {
   github?: string;
@@ -48,12 +62,17 @@ function runGit(args: string[], cwd: string): string {
 }
 
 function discoverRepoPaths(): string[] {
-  const entries = readdirSync(GITHUB_ROOT, { withFileTypes: true });
-  return entries
-    .filter(
-      (e) => e.isDirectory() && existsSync(join(GITHUB_ROOT, e.name, ".git")),
-    )
-    .map((e) => join(GITHUB_ROOT, e.name));
+  const root = repoRoot();
+  try {
+    return readdirSync(root, { withFileTypes: true })
+      .filter((e) => e.isDirectory() && existsSync(join(root, e.name, ".git")))
+      .map((e) => join(root, e.name));
+  } catch {
+    // Root missing or unreadable (wrong OS, path unset, perms) — there are
+    // simply no sibling repos to scan. Never throw: this runs inside async
+    // middleware where an uncaught throw becomes an HTTP 500.
+    return [];
+  }
 }
 
 function getGitInfo(projectPath: string): GitInfo {
@@ -323,20 +342,33 @@ export function apiPlugin(): Plugin {
       });
 
       server.middlewares.use("/__api/projects", async (_req, res) => {
-        if (!projectCache) {
-          const paths = discoverRepoPaths();
-          projectCache = await scanAllProjects(paths);
-        }
         res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify(projectCache));
+        try {
+          if (!projectCache) {
+            projectCache = await scanAllProjects(discoverRepoPaths());
+          }
+          res.end(JSON.stringify(projectCache));
+        } catch (err) {
+          // Degrade to an empty list (renders "no projects") rather than a 500.
+          console.error("[stack-agents-api] /__api/projects scan failed:", err);
+          res.end(JSON.stringify([]));
+        }
       });
 
       server.middlewares.use("/__api/projects/refresh", async (_req, res) => {
-        projectCache = null;
-        const paths = discoverRepoPaths();
-        projectCache = await scanAllProjects(paths);
         res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify({ ok: true, count: projectCache.length }));
+        try {
+          projectCache = await scanAllProjects(discoverRepoPaths());
+          res.end(JSON.stringify({ ok: true, count: projectCache.length }));
+        } catch (err) {
+          console.error(
+            "[stack-agents-api] /__api/projects/refresh failed:",
+            err,
+          );
+          res.end(
+            JSON.stringify({ ok: false, error: "scan_failed", count: 0 }),
+          );
+        }
       });
 
       server.middlewares.use("/__api/issues", (req, res) => {
