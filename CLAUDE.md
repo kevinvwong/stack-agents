@@ -167,7 +167,6 @@ Agents (workforce): "review the roster" → `[AGENT: meta-agent-lifecycle]` via 
 "review my game design" → `/panel:game`  
 "full quality sweep" → `/panel:quality`  
 "run a full research pass" → `/panel:research`  
-"starting a new project from scratch" / "I have a project idea — where do I start?" → `/panel:onboarding`  
 "what does my sprint team think?" → `/panel:sprint:<name>` (from target project)
 "starting a new project from scratch" / "I have a project idea — where do I start?" → `/panel:onboarding`  
 
@@ -323,7 +322,6 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | `/panel:notion`        | `/panel:notion [focus]`                        | All 4 Notion specialists + cross-specialty synthesis                                                                                               |
 | `/panel:knowledge`     | `/panel:knowledge [focus]`                     | notion-architect + notion-governance + gh-docs — docs across Notion and the repo                                                                   |
 | `/panel:publish`       | `/panel:publish <artifact>`                    | product + analytics + notion-publisher — publish-readiness gate for PRDs / analytics specs                                                         |
-| `/panel:onboarding`    | `/panel:onboarding "<idea>" [--target <path>]` | product + data + security + infrastructure + gh-repo — produces `BLUEPRINT.md` at the target project root before `/setup:project --mode bootstrap` |
 | `/panel:sprint:<name>` | `/panel:sprint:<name>`                         | All agents in the named sprint team                                                                                                                |
 
 ### — Sprint Commands —
