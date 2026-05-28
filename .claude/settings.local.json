@@ -42,7 +42,8 @@
       "Bash(grep *)",
       "Bash(npm *)",
       "PowerShell(Start-Process powershell -ArgumentList \"-NoExit\", \"-Command\", \"Set-Location 'C:\\\\Users\\\\kwong318\\\\GitHub\\\\stack-agents\\\\dashboard'; npm run dev\" -WindowStyle Normal)",
-      "Bash(gh milestone *)"
+      "Bash(gh milestone *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)"
     ]
   }
 }
