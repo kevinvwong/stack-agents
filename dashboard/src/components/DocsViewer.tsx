@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { loadDocs, type DocPage } from "../data/docs";
+import { groupDocs, loadDocs, type DocPage } from "../data/docs";
 
 export function DocsViewer() {
   const [docs, setDocs] = useState<DocPage[]>([]);
@@ -11,22 +11,15 @@ export function DocsViewer() {
     loadDocs()
       .then((pages) => {
         setDocs(pages);
-        setSelectedId((current) => current ?? pages[0]?.id ?? null);
+        const firstInOrder = groupDocs(pages)[0]?.[1]?.[0]?.id;
+        setSelectedId((current) => current ?? firstInOrder ?? null);
       })
       .finally(() => {
         setLoading(false);
       });
   }, []);
 
-  const grouped = useMemo(() => {
-    const map = new Map<string, DocPage[]>();
-    for (const d of docs) {
-      const list = map.get(d.group) ?? [];
-      list.push(d);
-      map.set(d.group, list);
-    }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
-  }, [docs]);
+  const grouped = useMemo(() => groupDocs(docs), [docs]);
 
   const selected = docs.find((d) => d.id === selectedId) ?? null;
 
