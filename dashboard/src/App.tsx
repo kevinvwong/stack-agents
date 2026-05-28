@@ -212,7 +212,34 @@ export default function App() {
         >
           stack-agents
         </span>
-        <div role="tablist" style={{ display: "flex", alignItems: "center" }}>
+        {/* #108: Arrow key navigation for roving tabindex (ARIA tablist pattern).
+            Left/Right arrow moves focus+selection; Home/End jump to first/last. */}
+        <div
+          role="tablist"
+          style={{ display: "flex", alignItems: "center" }}
+          onKeyDown={(e) => {
+            const tabs: Tab[] = ["graph", "projects", "docs", "commands"];
+            const currentIndex = tabs.indexOf(tab);
+            let next: Tab | null = null;
+            if (e.key === "ArrowRight") {
+              next = tabs[(currentIndex + 1) % tabs.length];
+            } else if (e.key === "ArrowLeft") {
+              next = tabs[(currentIndex - 1 + tabs.length) % tabs.length];
+            } else if (e.key === "Home") {
+              next = tabs[0];
+            } else if (e.key === "End") {
+              next = tabs[tabs.length - 1];
+            }
+            if (next) {
+              e.preventDefault();
+              setTab(next);
+              // Move focus to the newly active tab button
+              requestAnimationFrame(() => {
+                (document.getElementById(`tab-${next}`) as HTMLElement | null)?.focus();
+              });
+            }
+          }}
+        >
           {(["graph", "projects", "docs", "commands"] as Tab[]).map((t) => {
             const isActive = tab === t;
             const Icon = TAB_ICONS[t];
@@ -443,7 +470,12 @@ export default function App() {
       {/* Body */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {tab === "graph" && (
-          <>
+          <div
+            role="tabpanel"
+            id="tabpanel-graph"
+            aria-labelledby="tab-graph"
+            style={{ flex: 1, display: "flex", overflow: "hidden", minHeight: 0 }}
+          >
             <div
               style={{
                 flex: selected ? "1 1 60%" : "1 1 100%",
@@ -496,20 +528,35 @@ export default function App() {
                 />
               </div>
             )}
-          </>
+          </div>
         )}
         {tab === "projects" && (
-          <div style={{ flex: 1, overflow: "hidden" }}>
+          <div
+            role="tabpanel"
+            id="tabpanel-projects"
+            aria-labelledby="tab-projects"
+            style={{ flex: 1, overflow: "hidden" }}
+          >
             <ProjectDashboard />
           </div>
         )}
         {tab === "docs" && (
-          <div style={{ flex: 1, overflow: "hidden" }}>
+          <div
+            role="tabpanel"
+            id="tabpanel-docs"
+            aria-labelledby="tab-docs"
+            style={{ flex: 1, overflow: "hidden" }}
+          >
             <DocsViewer />
           </div>
         )}
         {tab === "commands" && (
-          <div style={{ flex: 1, overflow: "hidden" }}>
+          <div
+            role="tabpanel"
+            id="tabpanel-commands"
+            aria-labelledby="tab-commands"
+            style={{ flex: 1, overflow: "hidden" }}
+          >
             <CommandsViewer />
           </div>
         )}
