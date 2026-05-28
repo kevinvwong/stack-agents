@@ -1,13 +1,9 @@
-export type AgentFamily =
-  | 'Web Stack'
-  | 'Quality'
-  | 'Research'
-  | 'Product'
-  | 'Cross-cutting'
-  | 'Workspace'
-  | 'Game Design'
-  | 'GitHub'
-  | 'Meta'
+import { FAMILY_COLORS, type Family } from '../families'
+
+// Re-export FAMILY_COLORS so existing consumers can keep importing from '../data/agents'.
+// Canonical source is dashboard/src/families.ts.
+export { FAMILY_COLORS }
+export type AgentFamily = Family
 
 export interface AgentMeta {
   id: string
@@ -51,18 +47,6 @@ export const CHAINS: { family: AgentFamily; chain: string[] }[] = [
     chain: ['notion-architect', 'notion-publisher', 'notion-importer', 'notion-governance'],
   },
 ]
-
-export const FAMILY_COLORS: Record<AgentFamily, string> = {
-  'Web Stack': '#3b82f6',
-  'Quality': '#10b981',
-  'Research': '#f59e0b',
-  'Product': '#8b5cf6',
-  'Cross-cutting': '#06b6d4',
-  'Workspace': '#a855f7',
-  'Game Design': '#ef4444',
-  'GitHub': '#6b7280',
-  'Meta': '#ec4899',
-}
 
 // Map agent file stem → family
 const FAMILY_MAP: Record<string, AgentFamily> = {
