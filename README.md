@@ -1,5 +1,6 @@
 [![CI](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/kevinvwong/stack-agents/actions/workflows/ci.yml)
 [![Marketplace](https://img.shields.io/badge/marketplace-1.9.1-blue)](./CHANGELOG.md)
+[![Dashboard](https://img.shields.io/badge/dashboard-local-blue)](./dashboard/README.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
 # stack-agents
@@ -11,6 +12,8 @@
 Claude Code can run any prompt, but on a real project the hard part is knowing which prompt to run and where the answer lives a week later. stack-agents gives you a routing layer (the master orchestrator in `CLAUDE.md`), a roster of opinionated specialists for the layers of a modern web/game stack, and persistent project memory in Notion via the bundled publishing and import commands. The dashboard makes the agent graph and your project portfolio browsable so the system stays legible as it grows.
 
 ![Dashboard agent graph](docs/screenshots/dashboard-agent-graph.png)
+
+<!-- The image above is a 1×1 placeholder. See docs/screenshots/README.md for how to capture a real screenshot from the local dashboard. -->
 
 ## Install
 
@@ -253,6 +256,12 @@ cp CLAUDE.md your-project/.claude/CLAUDE.md
 5. Run `cd dashboard && npm run dev` — the agent appears in the graph automatically
 
 See `agents/README.md` for the full agent index and [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full workflow.
+
+---
+
+## Security
+
+Report vulnerabilities privately — see [`.github/SECURITY.md`](./.github/SECURITY.md) for the disclosure policy, scope, and response SLA. Please **do not** open a public GitHub issue for security reports.
 
 ---
 

@@ -100,16 +100,40 @@ Summary: 0 critical, 1 high, 1 medium, 0 low
 ---
 
 [AGENT: gh-issues] [COMMAND: audit]
-... (similar shape)
+Domain lens: label taxonomy, issue templates, triage workflow, milestones
+### Medium
+- [ ] **No `bug` / `feat` / `chore` label taxonomy** — issues get one-off labels per author.
+- [ ] **No issue templates in `.github/ISSUE_TEMPLATE/`** — repro steps land inconsistently.
+Summary: 0 critical, 0 high, 2 medium, 1 low
+
+---
 
 [AGENT: gh-prs] [COMMAND: audit]
-... (similar shape)
+Domain lens: PR templates, review rules, auto-merge, size labeling
+### High
+- [ ] **No `CODEOWNERS`-driven required reviewers** — anyone in the org can self-approve.
+### Medium
+- [ ] **No PR template in `.github/pull_request_template.md`** — descriptions drift in quality.
+Summary: 0 critical, 1 high, 1 medium, 0 low
+
+---
 
 [AGENT: gh-releases] [COMMAND: audit]
-... (similar shape)
+Domain lens: semver, changelog, GitHub Releases, tag conventions
+### Medium
+- [ ] **No `CHANGELOG.md`** — release notes are only in tag bodies; consumers can't diff.
+- [ ] **Tag pattern is inconsistent** — `v1.0.0` and `release-1.0.0` both present.
+Summary: 0 critical, 0 high, 2 medium, 0 low
+
+---
 
 [AGENT: gh-docs] [COMMAND: audit]
-... (similar shape)
+Domain lens: README, CONTRIBUTING, SECURITY.md, ADRs, runbooks
+### High
+- [ ] **No `SECURITY.md`** — vulnerability reports have no defined channel.
+### Medium
+- [ ] **README missing Quick Start** — first-run experience is a scavenger hunt.
+Summary: 0 critical, 1 high, 1 medium, 1 low
 
 ---
 
@@ -142,14 +166,17 @@ templates before open-sourcing.
 | --------------- | -------- | ---- | ------ | --- |
 | gh-repo         | 1        | 1    | 2      | 0   |
 | gh-actions      | 0        | 1    | 1      | 0   |
-| ...             |          |      |        |     |
+| gh-issues       | 0        | 0    | 2      | 1   |
+| gh-prs          | 0        | 1    | 1      | 0   |
+| gh-releases     | 0        | 0    | 2      | 0   |
+| gh-docs         | 0        | 1    | 1      | 1   |
 | cross-domain    | 1        | 1    | 0      | 0   |
-| **Total**       | 2        | 5    | 6      | 1   |
+| **Total**       | 2        | 5    | 9      | 2   |
 
 → HANDOFF TO notion-publisher: publish via /notion:publish github-audit my-org/my-app
 ```
 
-**Why panels matter:** single-agent audits give you depth; panels surface the *seams* between domains — the kinds of issues that exist because two systems disagree about a contract neither of them owns. The `branch-protection-name-mismatch` finding above never shows up in any single agent's audit. That's the panel's job.
+**Why panels matter:** single-agent audits give you depth; panels surface the _seams_ between domains — the kinds of issues that exist because two systems disagree about a contract neither of them owns. The `branch-protection-name-mismatch` finding above never shows up in any single agent's audit. That's the panel's job.
 
 Other family panels follow the same pattern — `/panel:quality`, `/panel:research`, `/panel:game`, `/panel:notion`, `/panel:stack`. Cross-cutting panels target specific gates: `/panel:security`, `/panel:design`, `/panel:ai-feature`, `/panel:launch`, `/panel:knowledge`, `/panel:publish`. GTLI-specific panels: `/panel:gtli-ux`, `/panel:gtli-jgcc`, `/panel:gtli-sim`. Full catalog in `commands/README.md`.
 
@@ -298,6 +325,6 @@ Run the same command again — the publisher finds the existing page by `Source`
 - **Agent catalog** — every agent, what it owns, when to call it: `agents/README.md`
 - **Command catalog** — every slash command grouped by surface: `commands/README.md`
 - **Runbooks** — repeatable procedures for the recurring rituals (sprint kickoff, Notion publish cycle, branch protection bypass): `docs/runbooks/`
-- **Plan** — what's shipped, what's next, what's deferred: `PLAN.md`
+- **Changelog** — released history of every marketplace version: `CHANGELOG.md`
 
 Once you're past these, the master orchestrator (`CLAUDE.md`) is the routing reference — keep it open whenever you're unsure which agent owns a question.
