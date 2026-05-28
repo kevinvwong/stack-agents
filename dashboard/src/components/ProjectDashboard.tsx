@@ -1,7 +1,28 @@
+import type { ComponentType } from "react";
 import { useEffect, useMemo, useState } from "react";
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  ExternalLink,
+  GitBranch,
+  Home,
+  ListChecks,
+  RefreshCw,
+  Rocket,
+  Star,
+  Triangle,
+  X,
+} from "lucide-react";
 import { SprintRegistry } from "./SprintRegistry";
 import { loadSprints } from "../data/sprints";
 import { theme } from "../theme";
+
+// Issue #118: shared Lucide icon size + stroke for dashboard chrome.
+// `currentColor` inherits from the parent element so icons pick up
+// theme tokens automatically (status colors, hover states, etc.).
+const ICON_SIZE = 16;
+const ICON_STROKE = 2;
 
 interface ProjectLinks {
   github?: string;
@@ -99,10 +120,18 @@ function LinkPill({
   href,
   label,
   title,
+  icon: Icon,
 }: {
   href: string;
   label: string;
   title: string;
+  // Optional Lucide icon component — rendered before the label.
+  // Inherits color from the parent via `currentColor` (#118).
+  icon?: ComponentType<{
+    size?: number;
+    strokeWidth?: number;
+    "aria-hidden"?: boolean;
+  }>;
 }) {
   return (
     <a
@@ -124,6 +153,7 @@ function LinkPill({
         textDecoration: "none",
         flexShrink: 0,
         letterSpacing: "0.02em",
+        transition: "color 120ms ease, border-color 120ms ease",
       }}
       onMouseEnter={(e) => {
         (e.currentTarget as HTMLAnchorElement).style.color = "#f1f5f9";
@@ -134,6 +164,7 @@ function LinkPill({
         (e.currentTarget as HTMLAnchorElement).style.borderColor = "#334155";
       }}
     >
+      {Icon && <Icon size={12} strokeWidth={ICON_STROKE} aria-hidden={true} />}
       {label}
     </a>
   );
@@ -143,10 +174,17 @@ function StatPill({
   value,
   label,
   color,
+  icon: Icon,
 }: {
   value: number | string;
   label: string;
   color?: string;
+  // Optional Lucide icon (#118) — rendered before the value, inherits color.
+  icon?: ComponentType<{
+    size?: number;
+    strokeWidth?: number;
+    "aria-hidden"?: boolean;
+  }>;
 }) {
   return (
     <span
@@ -164,6 +202,7 @@ function StatPill({
         fontVariantNumeric: "tabular-nums",
       }}
     >
+      {Icon && <Icon size={11} strokeWidth={ICON_STROKE} aria-hidden={true} />}
       {value}
     </span>
   );
@@ -207,6 +246,7 @@ function VercelBadge({ projectId }: { projectId: string }) {
         style={{
           display: "inline-flex",
           alignItems: "center",
+          gap: 4,
           fontSize: 11,
           color: "#64748b",
           background: "#64748b18",
@@ -216,7 +256,7 @@ function VercelBadge({ projectId }: { projectId: string }) {
           flexShrink: 0,
         }}
       >
-        ▲ ?
+        <Triangle size={11} strokeWidth={ICON_STROKE} aria-hidden="true" /> ?
       </span>
     );
   }
@@ -225,12 +265,12 @@ function VercelBadge({ projectId }: { projectId: string }) {
   const color = VERCEL_STATE_COLORS[status.state] ?? "#64748b";
   const label =
     status.state === "READY"
-      ? "▲ live"
+      ? "live"
       : status.state === "ERROR"
-        ? "▲ error"
+        ? "error"
         : status.state === "BUILDING"
-          ? "▲ building"
-          : `▲ ${status.state.toLowerCase()}`;
+          ? "building"
+          : status.state.toLowerCase();
 
   const pill = (
     <span
@@ -238,6 +278,7 @@ function VercelBadge({ projectId }: { projectId: string }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
+        gap: 4,
         fontSize: 11,
         fontWeight: 600,
         color,
@@ -248,6 +289,7 @@ function VercelBadge({ projectId }: { projectId: string }) {
         flexShrink: 0,
       }}
     >
+      <Triangle size={11} strokeWidth={ICON_STROKE} aria-hidden="true" />
       {label}
     </span>
   );
@@ -370,22 +412,41 @@ function ProjectCard({
             minWidth: 0,
           }}
         >
-          {/* Pin button */}
+          {/* Pin button — issue #118: Lucide Star (filled when pinned). */}
           <button
             onClick={onTogglePin}
             title={pinned ? "Unpin project" : "Pin project"}
+            aria-label={pinned ? "Unpin project" : "Pin project"}
+            aria-pressed={pinned}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background =
+                theme.surface.overlay;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background =
+                "transparent";
+            }}
             style={{
-              background: "none",
+              background: "transparent",
               border: "none",
               cursor: "pointer",
-              padding: 0,
-              fontSize: 13,
+              padding: 2,
+              borderRadius: theme.radius.sm,
               color: pinned ? "#a78bfa" : "#334155",
               flexShrink: 0,
-              lineHeight: 1,
+              lineHeight: 0,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background-color 120ms ease, color 120ms ease",
             }}
           >
-            {pinned ? "★" : "☆"}
+            <Star
+              size={ICON_SIZE}
+              strokeWidth={ICON_STROKE}
+              fill={pinned ? "currentColor" : "none"}
+              aria-hidden="true"
+            />
           </button>
           <span
             style={{
@@ -416,7 +477,7 @@ function ProjectCard({
             <VercelBadge projectId={project.vercelProjectId} />
           )}
         </div>
-        {/* Branch badge */}
+        {/* Branch badge — issue #118: Lucide GitBranch replaces the ⎇ glyph. */}
         <span
           style={{
             fontSize: 11,
@@ -428,9 +489,13 @@ function ProjectCard({
             flexShrink: 0,
             marginLeft: 8,
             fontFamily: "monospace",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
           }}
         >
-          ⎇ {project.git.branch !== "unknown" ? project.git.branch : "?"}
+          <GitBranch size={11} strokeWidth={ICON_STROKE} aria-hidden="true" />
+          {project.git.branch !== "unknown" ? project.git.branch : "?"}
         </span>
       </div>
 
@@ -447,15 +512,17 @@ function ProjectCard({
           {project.links.production && (
             <LinkPill
               href={project.links.production}
-              label="↗ prod"
+              label="prod"
               title={project.links.production}
+              icon={ExternalLink}
             />
           )}
           {project.links.local && (
             <LinkPill
               href={project.links.local}
-              label="⌂ local"
+              label="local"
               title={project.links.local}
+              icon={Home}
             />
           )}
         </div>
@@ -486,7 +553,7 @@ function ProjectCard({
         </div>
       )}
 
-      {/* Sprints */}
+      {/* Sprints — issue #118: Lucide Rocket replaces the 🏃 emoji. */}
       {project.sprints.length > 0 && (
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {project.sprints.map((s) => (
@@ -499,9 +566,13 @@ function ProjectCard({
                 color: "#34d399",
                 borderRadius: 4,
                 padding: "1px 6px",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
               }}
             >
-              🏃 {s}
+              <Rocket size={11} strokeWidth={ICON_STROKE} aria-hidden="true" />
+              {s}
             </span>
           ))}
         </div>
@@ -518,16 +589,18 @@ function ProjectCard({
       >
         {ahead > 0 && (
           <StatPill
-            value={`↑${ahead}`}
+            value={ahead}
             label={`${ahead} commit${ahead !== 1 ? "s" : ""} ahead of origin`}
             color="#22c55e"
+            icon={ArrowUp}
           />
         )}
         {behind > 0 && (
           <StatPill
-            value={`↓${behind}`}
+            value={behind}
             label={`${behind} commit${behind !== 1 ? "s" : ""} behind origin`}
             color="#f59e0b"
+            icon={ArrowDown}
           />
         )}
         {dirty > 0 && (
@@ -539,11 +612,19 @@ function ProjectCard({
         )}
         <button
           onClick={loadIssues}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              theme.surface.overlay;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              theme.surface.base;
+          }}
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: 4,
-            background: "#0f172a",
+            background: theme.surface.base,
             border: "1px solid #1e3a5f",
             color: issuesError
               ? "#f59e0b"
@@ -557,6 +638,7 @@ function ProjectCard({
             fontSize: 11,
             cursor: "pointer",
             fontVariantNumeric: "tabular-nums",
+            transition: "background-color 120ms ease",
           }}
           title={
             issuesError
@@ -568,7 +650,8 @@ function ProjectCard({
                   : "Show issues"
           }
         >
-          📋 {issuesError ? "!" : issues === null ? "…" : issues.length}
+          <ListChecks size={11} strokeWidth={ICON_STROKE} aria-hidden="true" />
+          {issuesError ? "!" : issues === null ? "…" : issues.length}
         </button>
       </div>
 
@@ -583,11 +666,29 @@ function ProjectCard({
             color: "#f59e0b",
           }}
         >
-          <span>
-            ⚠ Could not load issues — check <code>gh auth status</code>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            <AlertTriangle
+              size={11}
+              strokeWidth={ICON_STROKE}
+              aria-hidden="true"
+            />
+            Could not load issues — check <code>gh auth status</code>
           </span>
           <button
             onClick={retryIssues}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background =
+                "#f59e0b22";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = "none";
+            }}
             style={{
               background: "none",
               border: "1px solid #f59e0b55",
@@ -596,6 +697,7 @@ function ProjectCard({
               padding: "1px 7px",
               fontSize: 11,
               cursor: "pointer",
+              transition: "background-color 120ms ease",
             }}
           >
             retry
@@ -800,20 +902,44 @@ export function ProjectDashboard() {
           <button
             onClick={refresh}
             disabled={loading}
+            aria-label={loading ? "Scanning…" : "Re-scan all projects"}
             title={loading ? "Scanning…" : "Re-scan all projects"}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                (e.currentTarget as HTMLButtonElement).style.background =
+                  theme.surface.overlay;
+                (e.currentTarget as HTMLButtonElement).style.color =
+                  theme.text.primary;
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background =
+                theme.surface.surface;
+              (e.currentTarget as HTMLButtonElement).style.color =
+                theme.text.secondary;
+            }}
             style={{
-              background: "#1e293b",
-              border: "1px solid #334155",
+              background: theme.surface.surface,
+              border: `1px solid ${theme.border.default}`,
               borderRadius: 6,
-              color: "#94a3b8",
+              color: theme.text.secondary,
               padding: "7px 12px",
               fontSize: 13,
               cursor: loading ? "wait" : "pointer",
               flexShrink: 0,
               opacity: loading ? 0.7 : 1,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background-color 120ms ease, color 120ms ease",
             }}
           >
-            {loading ? "⟳" : "↺"}
+            <RefreshCw
+              size={ICON_SIZE}
+              strokeWidth={ICON_STROKE}
+              aria-hidden="true"
+              className={loading ? "stack-spin" : undefined}
+            />
           </button>
         </div>
 
@@ -831,17 +957,34 @@ export function ProjectDashboard() {
             {activeChips.size > 0 && (
               <button
                 onClick={() => setActiveChips(new Set())}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    theme.surface.surface;
+                  (e.currentTarget as HTMLButtonElement).style.color =
+                    theme.text.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    "transparent";
+                  (e.currentTarget as HTMLButtonElement).style.color =
+                    "#475569";
+                }}
                 style={{
-                  background: "none",
-                  border: "1px solid #334155",
+                  background: "transparent",
+                  border: `1px solid ${theme.border.default}`,
                   borderRadius: 12,
                   color: "#475569",
                   fontSize: 11,
                   padding: "2px 8px",
                   cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  transition: "background-color 120ms ease, color 120ms ease",
                 }}
               >
-                ✕ clear
+                <X size={11} strokeWidth={ICON_STROKE} aria-hidden="true" />
+                clear
               </button>
             )}
           </div>
@@ -881,7 +1024,12 @@ export function ProjectDashboard() {
                 gap: 8,
               }}
             >
-              <span style={{ fontSize: 14 }}>⟳</span>
+              <RefreshCw
+                size={14}
+                strokeWidth={ICON_STROKE}
+                aria-hidden="true"
+                className="stack-spin"
+              />
               <span>Scanning projects…</span>
             </div>
           ) : (
@@ -952,7 +1100,7 @@ function SprintsSection({
           userSelect: "none",
         }}
       >
-        <span aria-hidden="true">🏃</span>
+        <Rocket size={ICON_SIZE} strokeWidth={ICON_STROKE} aria-hidden="true" />
         <span>Sprints</span>
         <span
           style={{
