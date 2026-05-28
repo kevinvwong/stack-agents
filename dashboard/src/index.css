@@ -133,3 +133,15 @@ body {
 .react-flow__node {
   cursor: pointer;
 }
+
+/* Issue #118: spin keyframes for loading-state Lucide icons (RefreshCw).
+   Respected by the reduced-motion media query above. */
+@keyframes stack-spin-kf {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.stack-spin {
+  animation: stack-spin-kf 1s linear infinite;
+  transform-origin: center;
+}

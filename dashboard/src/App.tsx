@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Map, FolderOpen, BookOpen, Terminal } from "lucide-react";
 import { AgentGraph } from "./components/AgentGraph";
 import { ArchitectureDiagram } from "./components/ArchitectureDiagram";
 import { AgentDetail } from "./components/AgentDetail";
@@ -45,11 +46,22 @@ function useHashTab(): [Tab, (t: Tab) => void] {
   return [tab, setTab];
 }
 
+// Issue #118: Lucide SVG icons for nav chrome — replaces the prior emoji
+// vocabulary (🗺📁📖⌘) so the dashboard renders consistently across
+// platforms (notably Windows, where emoji rendered as full-size color
+// bitmaps clashing with the dark dev-tool aesthetic).
+const TAB_ICONS: Record<Tab, typeof Map> = {
+  graph: Map,
+  projects: FolderOpen,
+  docs: BookOpen,
+  commands: Terminal,
+};
+
 const TAB_LABELS: Record<Tab, string> = {
-  graph: "🗺 Agents",
-  projects: "📁 Projects",
-  docs: "📖 Docs",
-  commands: "⌘ Commands",
+  graph: "Agents",
+  projects: "Projects",
+  docs: "Docs",
+  commands: "Commands",
 };
 
 const ALL_FAMILIES: AgentFamily[] = [
@@ -177,6 +189,7 @@ export default function App() {
         <div role="tablist" style={{ display: "flex", alignItems: "center" }}>
           {(["graph", "projects", "docs", "commands"] as Tab[]).map((t) => {
             const isActive = tab === t;
+            const Icon = TAB_ICONS[t];
             return (
               <button
                 key={t}
@@ -186,6 +199,22 @@ export default function App() {
                 aria-controls={`tabpanel-${t}`}
                 tabIndex={isActive ? 0 : -1}
                 onClick={() => setTab(t)}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      theme.surface.surface;
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      theme.text.secondary;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.background =
+                      "transparent";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      theme.text.muted;
+                  }
+                }}
                 style={{
                   background: "none",
                   border: "none",
@@ -199,8 +228,14 @@ export default function App() {
                   cursor: "pointer",
                   fontSize: 13,
                   textTransform: "capitalize",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  transition: "background-color 120ms ease, color 120ms ease",
+                  fontFamily: "inherit",
                 }}
               >
+                <Icon size={16} strokeWidth={2} aria-hidden="true" />
                 {TAB_LABELS[t]}
               </button>
             );
