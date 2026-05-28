@@ -6,6 +6,7 @@ import { AgentDetail } from "./components/AgentDetail";
 import { ProjectDashboard } from "./components/ProjectDashboard";
 import { DocsViewer } from "./components/DocsViewer";
 import { CommandsViewer } from "./components/CommandsViewer";
+import { CommandPalette } from "./components/CommandPalette";
 import {
   loadAgents,
   buildEdges,
@@ -15,6 +16,15 @@ import {
   type Edge,
 } from "./data/agents";
 import { theme } from "./theme";
+
+// Detect Mac via navigator.platform / userAgent so we can show the right
+// modifier glyph (⌘ vs Ctrl). Defaults to non-Mac in non-browser contexts.
+function isMacPlatform(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const p = navigator.platform || "";
+  const ua = navigator.userAgent || "";
+  return /Mac|iPod|iPhone|iPad/i.test(p) || /Mac OS X/i.test(ua);
+}
 
 type Tab = "graph" | "projects" | "docs" | "commands";
 type ViewMode = "architecture" | "dependency";
@@ -85,6 +95,8 @@ export default function App() {
   const [agentsLoading, setAgentsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>("architecture");
   const [agentSearch, setAgentSearch] = useState("");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const isMac = useMemo(() => isMacPlatform(), []);
 
   useEffect(() => {
     loadAgents()
@@ -95,6 +107,20 @@ export default function App() {
       .finally(() => {
         setAgentsLoading(false);
       });
+  }, []);
+
+  // Global Cmd+K (Mac) / Ctrl+K (Windows/Linux) shortcut to toggle the
+  // command palette. We intentionally don't gate on `paletteOpen` here —
+  // pressing the shortcut while open should toggle it closed.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   // Family filter narrows the data within the active view. It never swaps
@@ -241,6 +267,33 @@ export default function App() {
             );
           })}
         </div>
+        {/* ⌘K / Ctrl+K hint chip — also opens the palette on click (#91). */}
+        <button
+          type="button"
+          onClick={() => setPaletteOpen(true)}
+          aria-label="Open command palette"
+          title={
+            isMac
+              ? "Open command palette (⌘K)"
+              : "Open command palette (Ctrl+K)"
+          }
+          style={{
+            marginLeft: "auto",
+            background: theme.surface.surface,
+            border: `1px solid ${theme.border.default}`,
+            borderRadius: theme.radius.sm,
+            color: theme.text.secondary,
+            padding: `2px ${theme.spacing["2"]}`,
+            fontSize: 11,
+            fontFamily: "'Fira Code', monospace",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <span aria-hidden="true">{isMac ? "⌘K" : "Ctrl+K"}</span>
+        </button>
       </div>
 
       {/* Agents toolbar (graph tab only): view toggle + search + family filter */}
@@ -504,6 +557,9 @@ export default function App() {
           </span>
         </div>
       )}
+
+      {/* Global Cmd+K / Ctrl+K command palette (#91). */}
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </div>
   );
 }
