@@ -294,7 +294,6 @@ Dependency chain: `gh-repo → gh-actions → gh-issues → gh-prs → gh-releas
 | `/stack:scaffold` | `/stack:scaffold [target]` | One or more web agents by target |
 | `/stack:advise` | `/stack:advise [question]` | One web agent by question domain |
 | `/stack:diff` | `/stack:diff [scope] STACK: from=X to=Y` | Primary agent for the changed layer + downstream agents whose config shifts |
-| `/stack:diff` | `/stack:diff [scope] STACK: from=X to=Y` | Primary agent for the changed layer + downstream agents whose config shifts |
 | `/stack:fullstack` | `/stack:fullstack` | All 7 web agents in dependency order |
 
 ### — Panel Commands —
