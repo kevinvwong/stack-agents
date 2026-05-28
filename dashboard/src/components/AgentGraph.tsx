@@ -26,6 +26,10 @@ interface Props {
   edges: Edge[];
   selectedAgent: string | null;
   onSelectAgent: (id: string | null) => void;
+  // If set (non-null), agents whose id is NOT in the set dim to opacity 0.2;
+  // matching agents stay at full opacity. `null` disables the dim treatment
+  // (no active search). (Issue #112.)
+  dimmedIds?: Set<string> | null;
 }
 
 // Layout: arrange agents in rows by family
@@ -147,6 +151,7 @@ export function AgentGraph({
   edges,
   selectedAgent,
   onSelectAgent,
+  dimmedIds,
 }: Props) {
   const initialNodes = useMemo(() => layoutNodes(agents), [agents]);
 
@@ -210,11 +215,46 @@ export function AgentGraph({
     [selectedAgent, onSelectAgent],
   );
 
+  // When a search filter is active, dim non-matching nodes to opacity 0.2 and
+  // also dim edges whose endpoints aren't both in the match set. (Issue #112.)
+  const displayedNodes = useMemo(
+    () =>
+      nodes.map((n) => {
+        const base = { ...n, selected: n.id === selectedAgent };
+        if (!dimmedIds) return base;
+        const isMatch = dimmedIds.has(n.id);
+        return {
+          ...base,
+          style: {
+            ...(n.style ?? {}),
+            opacity: isMatch ? 1 : 0.2,
+            transition: "opacity 0.15s",
+          },
+        };
+      }),
+    [nodes, selectedAgent, dimmedIds],
+  );
+
+  const displayedEdges = useMemo(() => {
+    if (!dimmedIds) return styledEdges;
+    return styledEdges.map((edge) => {
+      const bothMatch =
+        dimmedIds.has(edge.source) && dimmedIds.has(edge.target);
+      return {
+        ...edge,
+        style: {
+          ...(edge.style ?? {}),
+          opacity: bothMatch ? (edge.style?.opacity ?? 1) : 0.1,
+        },
+      };
+    });
+  }, [styledEdges, dimmedIds]);
+
   return (
     <div style={{ width: "100%", height: "100%", background: "#0f172a" }}>
       <ReactFlow
-        nodes={nodes.map((n) => ({ ...n, selected: n.id === selectedAgent }))}
-        edges={styledEdges}
+        nodes={displayedNodes}
+        edges={displayedEdges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}

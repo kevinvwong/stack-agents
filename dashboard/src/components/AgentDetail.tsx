@@ -86,12 +86,28 @@ function findChainPosition(agentId: string): ChainPosition | null {
 export function AgentDetail({ agent, onClose, onSelectAgent }: Props) {
   const color = FAMILY_COLORS[agent.family];
   const [copied, setCopied] = useState(false);
+  // Entry animation (#115). Mounts at opacity 0 / translateX(20px) and
+  // settles to (1, 0) on the first animation frame after agent.id changes.
+  // `prefers-reduced-motion` is honored globally via index.css
+  // (transition-duration is forced to 0.01ms). We track "which agent are we
+  // currently animated *in* for?" so navigating between agents re-runs the
+  // transition without calling setState synchronously inside an effect.
+  const [enteredFor, setEnteredFor] = useState<string | null>(null);
+  const entered = enteredFor === agent.id;
 
   const routingId = chainIdOf(agent.id);
   const routingChip = `[AGENT: ${routingId}]`;
   const body = useMemo(() => stripFrontmatter(agent.raw), [agent.raw]);
   const handoffTargets = useMemo(() => parseHandoffTargets(body), [body]);
   const chainPos = useMemo(() => findChainPosition(agent.id), [agent.id]);
+
+  // Schedule the "entered" flip on the next animation frame, so the initial
+  // pre-mount state (opacity 0, translateX(20px)) commits first and the
+  // transition then runs to the rest state.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEnteredFor(agent.id));
+    return () => cancelAnimationFrame(id);
+  }, [agent.id]);
 
   // ESC closes the panel (#108)
   useEffect(() => {
@@ -126,6 +142,9 @@ export function AgentDetail({ agent, onClose, onSelectAgent }: Props) {
         background: theme.surface.base,
         borderLeft: `3px solid ${color}`,
         overflow: "hidden",
+        opacity: entered ? 1 : 0,
+        transform: entered ? "translateX(0)" : "translateX(20px)",
+        transition: "opacity 0.18s ease-out, transform 0.18s ease-out",
       }}
     >
       {/* Header */}
