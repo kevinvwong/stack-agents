@@ -21,6 +21,33 @@ Like `sprint-assembler`, you are one of the few agents that writes to other agen
 - **Hook**: `templates/hooks/agents-sync-to-notion.json` — PostToolUse on `Write|Edit` of `agents/*.md` keeps Notion in sync without manual `/notion:publish` calls
 - **Commands owned**: `/agents:hire`, `/agents:fire`, `/agents:train`, `/agents:combine`, `/agents:review`
 
+## Usage data
+
+`/agents:review` can read `.claude/usage.jsonl` (written by the `.claude/hooks/usage-log.sh` PreToolUse hook — see issue #95) to answer "which agents are actually used." The file is local (gitignored), one JSON object per line, shape:
+
+```json
+{
+  "ts": "<ISO-8601>",
+  "command": "<slash-command>",
+  "agent": "<agent-name>",
+  "project": "<repo-basename>"
+}
+```
+
+Optional PostHog forwarding kicks in when `POSTHOG_API_KEY` is set in the environment; the JSONL is the canonical local source either way.
+
+This file is a data source, not a derivation rule. The spec deliberately does not pin a query — `/agents:review` should treat the JSONL as a best-effort signal that augments the "no inbound refs" and "stale `Last upskilled`" checks already in `/audit`. Missing file → fall back to ref-only review and surface the absence as an Informational note (not a blocker).
+
+**Reference query — last 30 days, bucketed by agent:**
+
+```sh
+jq -r --arg cutoff "$(date -u -d '30 days ago' +%Y-%m-%dT%H:%M:%SZ)" \
+  'select(.ts >= $cutoff and (.agent // "") != "") | .agent' \
+  .claude/usage.jsonl | sort | uniq -c | sort -rn
+```
+
+(Treat this as illustrative. The agent spec is a prompt, not code — the actual rollup belongs in tooling that calls this agent, not the agent file itself.)
+
 ## Opinions
 
 - **An agent is staff, not a config object.** Every agent has a hire date and (eventually) a deprecation reason. Anonymous additions to the roster are the start of a graveyard.
@@ -34,11 +61,11 @@ Like `sprint-assembler`, you are one of the few agents that writes to other agen
 
 ## Lifecycle states
 
-| State | Repo location | Notion `Status` | Inbound refs allowed | Can be invoked |
-|-------|---------------|-----------------|----------------------|----------------|
-| **Active** | `agents/<name>.md` | `Active` | Yes | Yes |
-| **Deprecated** | `agents/.deprecated/<name>.md` | `Deprecated` | Surfaced as warnings by lint-references | No (router refuses) |
-| **Eliminated** | (file deleted) | (row archived) | None — lint-references fails | No |
+| State          | Repo location                  | Notion `Status` | Inbound refs allowed                    | Can be invoked      |
+| -------------- | ------------------------------ | --------------- | --------------------------------------- | ------------------- |
+| **Active**     | `agents/<name>.md`             | `Active`        | Yes                                     | Yes                 |
+| **Deprecated** | `agents/.deprecated/<name>.md` | `Deprecated`    | Surfaced as warnings by lint-references | No (router refuses) |
+| **Eliminated** | (file deleted)                 | (row archived)  | None — lint-references fails            | No                  |
 
 The transition `Active → Deprecated` is `/agents:fire`. The transition `Deprecated → Eliminated` is manual (no command yet) and only after 90 days with zero refs and zero usage, per `/agents:review` recommendations.
 
@@ -79,15 +106,24 @@ Generate a new agent file, insert/update its Notion row, or write the lifecycle 
 async function hire({ name, family, description }) {
   // 1. Validate: kebab-case name, no file conflict, no Notion row conflict.
   assertKebabCase(name);
-  if (fileExists(`agents/${name}.md`)) throw new Error(`Already hired: agents/${name}.md exists.`);
+  if (fileExists(`agents/${name}.md`))
+    throw new Error(`Already hired: agents/${name}.md exists.`);
   const existing = await notionSearch({
     data_source_id: AGENTS_DB,
-    filter: { property: "Name", title: { equals: name } }
+    filter: { property: "Name", title: { equals: name } },
   });
-  if (existing.length) throw new Error(`Notion row exists for ${name}. Run /agents:train or /agents:fire.`);
+  if (existing.length)
+    throw new Error(
+      `Notion row exists for ${name}. Run /agents:train or /agents:fire.`,
+    );
 
   // 2. Render agents/<name>.md from templates/agent-template.md.
-  const body = renderTemplate({ slug: name, family, description, date: today() });
+  const body = renderTemplate({
+    slug: name,
+    family,
+    description,
+    date: today(),
+  });
 
   // 3. Insert Notion row FIRST (so a file-write success without a Notion row
   //    is impossible — atomic guarantee).
@@ -108,7 +144,13 @@ async function hire({ name, family, description }) {
   try {
     writeFile(`agents/${name}.md`, body);
   } catch (e) {
-    await notionUpdatePage({ pageId: row.id, properties: { Status: "Deprecated", "Deprecation reason": "hire rollback: " + e.message } });
+    await notionUpdatePage({
+      pageId: row.id,
+      properties: {
+        Status: "Deprecated",
+        "Deprecation reason": "hire rollback: " + e.message,
+      },
+    });
     throw e;
   }
 
@@ -123,7 +165,10 @@ async function hire({ name, family, description }) {
 async function fire({ name, reason, replacedBy, keepFile }) {
   // 1. Find Notion row. If missing, fail with "run agents-sync-to-notion hook first".
   const row = await findAgentRow(name);
-  if (!row) throw new Error(`No Agents row for ${name} — run /notion:publish agent ${name} or install the agents-sync-to-notion hook first.`);
+  if (!row)
+    throw new Error(
+      `No Agents row for ${name} — run /notion:publish agent ${name} or install the agents-sync-to-notion hook first.`,
+    );
 
   // 2. Update Notion: Status=Deprecated, reason, replaced_by.
   await notionUpdatePage({
@@ -131,7 +176,9 @@ async function fire({ name, reason, replacedBy, keepFile }) {
     properties: {
       Status: "Deprecated",
       "Deprecation reason": reason,
-      ...(replacedBy ? { "Replaced by": [await findAgentRow(replacedBy).id] } : {}),
+      ...(replacedBy
+        ? { "Replaced by": [await findAgentRow(replacedBy).id] }
+        : {}),
     },
   });
 
@@ -145,7 +192,9 @@ async function fire({ name, reason, replacedBy, keepFile }) {
   removeFromRoutingTables(name);
 
   // 5. Run lint-references; surface (do not block) any [AGENT: name] still in tree.
-  const stale = runLintReferences().errors.filter(e => e.kind === "agent" && e.name === name);
+  const stale = runLintReferences().errors.filter(
+    (e) => e.kind === "agent" && e.name === name,
+  );
 
   return { row: row.url, stale };
 }
