@@ -7,3 +7,6 @@ dist/
 Thumbs.db
 .claude/debug/
 .claude/worktrees/
+
+# Session checkpoint — local Claude Code state, not canonical project history
+.claude/session-state.json
