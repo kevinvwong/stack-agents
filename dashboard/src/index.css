@@ -6,7 +6,7 @@ body {
   margin: 0;
   background: #0f172a;
   color: #e2e8f0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -15,9 +15,24 @@ body {
   height: 100vh;
 }
 
+/* Global focus-visible + reduced motion (a11y baseline, #108) */
+:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
 /* Agent detail markdown styles */
 .agent-markdown {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.7;
   color: #cbd5e1;
 }
@@ -30,11 +45,22 @@ body {
   font-weight: 600;
 }
 
-.agent-markdown h1 { font-size: 16px; }
-.agent-markdown h2 { font-size: 14px; border-bottom: 1px solid #1e293b; padding-bottom: 6px; }
-.agent-markdown h3 { font-size: 13px; color: #94a3b8; }
+.agent-markdown h1 {
+  font-size: 18px;
+}
+.agent-markdown h2 {
+  font-size: 15px;
+  border-bottom: 1px solid #1e293b;
+  padding-bottom: 6px;
+}
+.agent-markdown h3 {
+  font-size: 13px;
+  color: #94a3b8;
+}
 
-.agent-markdown p { margin: 6px 0; }
+.agent-markdown p {
+  margin: 6px 0;
+}
 
 .agent-markdown code {
   background: #1e293b;
@@ -42,7 +68,7 @@ body {
   padding: 1px 5px;
   font-size: 11px;
   color: #7dd3fc;
-  font-family: 'Fira Code', monospace;
+  font-family: "Fira Code", monospace;
 }
 
 .agent-markdown pre {
@@ -87,9 +113,14 @@ body {
   margin: 6px 0;
 }
 
-.agent-markdown li { margin: 3px 0; }
+.agent-markdown li {
+  margin: 3px 0;
+}
 
-.agent-markdown strong { color: #f1f5f9; font-weight: 600; }
+.agent-markdown strong {
+  color: #f1f5f9;
+  font-weight: 600;
+}
 
 .agent-markdown blockquote {
   border-left: 3px solid #334155;
