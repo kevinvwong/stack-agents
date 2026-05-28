@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd dashboard && npm ci && npm run build",
+  "outputDirectory": "dashboard/dist",
+  "installCommand": "echo 'skipping root install — build script handles it in dashboard/'",
+  "framework": null,
+  "github": {
+    "silent": false,
+    "autoAlias": true
+  },
+  "trailingSlash": false,
+  "cleanUrls": true
+}
