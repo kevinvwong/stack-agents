@@ -136,27 +136,38 @@ export default function App() {
         >
           stack-agents
         </span>
-        {(["graph", "projects", "docs", "commands"] as Tab[]).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            style={{
-              background: "none",
-              border: "none",
-              borderBottom:
-                tab === t ? "2px solid #6366f1" : "2px solid transparent",
-              color: tab === t ? "#f1f5f9" : "#64748b",
-              fontWeight: tab === t ? 600 : 400,
-              padding: "0 16px",
-              height: 52,
-              cursor: "pointer",
-              fontSize: 13,
-              textTransform: "capitalize",
-            }}
-          >
-            {TAB_LABELS[t]}
-          </button>
-        ))}
+        <div role="tablist" style={{ display: "flex", alignItems: "center" }}>
+          {(["graph", "projects", "docs", "commands"] as Tab[]).map((t) => {
+            const isActive = tab === t;
+            return (
+              <button
+                key={t}
+                role="tab"
+                id={`tab-${t}`}
+                aria-selected={isActive}
+                aria-controls={`tabpanel-${t}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setTab(t)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  borderBottom: isActive
+                    ? "2px solid #6366f1"
+                    : "2px solid transparent",
+                  color: isActive ? "#f1f5f9" : "#64748b",
+                  fontWeight: isActive ? 600 : 400,
+                  padding: "0 16px",
+                  height: 52,
+                  cursor: "pointer",
+                  fontSize: 13,
+                  textTransform: "capitalize",
+                }}
+              >
+                {TAB_LABELS[t]}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Family filter (graph tab only) */}
         {tab === "graph" && (
@@ -256,6 +267,7 @@ export default function App() {
                 <AgentDetail
                   agent={selected}
                   onClose={() => setSelectedAgent(null)}
+                  onSelectAgent={setSelectedAgent}
                 />
               </div>
             )}
