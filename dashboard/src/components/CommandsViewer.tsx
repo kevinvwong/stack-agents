@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { loadCommands, type CommandPage } from "../data/commands";
+import {
+  COMMAND_GROUP_ORDER,
+  groupForFolder,
+  type CommandGroup,
+} from "../data/commandGroups";
 
 export function CommandsViewer() {
   const [commands, setCommands] = useState<CommandPage[]>([]);
@@ -18,14 +23,28 @@ export function CommandsViewer() {
       });
   }, []);
 
+  // Group commands by agent family (matching the Agents tab taxonomy) rather
+  // than by raw folder name. The Agents tab and Commands tab now share one
+  // mental model: "Web Stack", "GitHub", "Workspace", etc. — not "web", "gh",
+  // "notion". See data/commandGroups.ts for the folder → family mapping.
+  // (Issue #113.)
   const grouped = useMemo(() => {
-    const map = new Map<string, CommandPage[]>();
+    const map = new Map<CommandGroup, CommandPage[]>();
     for (const c of commands) {
-      const list = map.get(c.group) ?? [];
+      const group = groupForFolder(c.group);
+      const list = map.get(group) ?? [];
       list.push(c);
-      map.set(c.group, list);
+      map.set(group, list);
     }
-    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+    // Order groups by COMMAND_GROUP_ORDER (families first matching Agents tab,
+    // then Panels / GTLI / Security / Docs / Other). Within each group, sort
+    // commands alphabetically by title.
+    return COMMAND_GROUP_ORDER.filter((g) => map.has(g)).map((g) => {
+      const pages = (map.get(g) ?? [])
+        .slice()
+        .sort((a, b) => a.title.localeCompare(b.title));
+      return [g, pages] as const;
+    });
   }, [commands]);
 
   const selected = commands.find((c) => c.id === selectedId) ?? null;
